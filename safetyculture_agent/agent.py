@@ -54,6 +54,18 @@ from .ai.ai_tools import (
     analyze_historical_inspection_patterns,
     generate_intelligent_inspection_data
 )
+from .database.database_tools import (
+    initialize_asset_database,
+    check_asset_completion_status,
+    register_asset_for_monthly_inspection,
+    update_asset_inspection_status,
+    mark_asset_inspection_completed,
+    get_pending_assets_for_inspection,
+    get_completed_assets_report,
+    get_monthly_inspection_summary,
+    export_comprehensive_monthly_report,
+    filter_assets_to_prevent_duplicates
+)
 
 
 def update_current_time(callback_context: CallbackContext):
@@ -187,7 +199,17 @@ Always provide clear status updates and coordinate the workflow efficiently to c
         analyze_asset_image_for_inspection,
         parse_maintenance_logs_for_insights,
         analyze_historical_inspection_patterns,
-        generate_intelligent_inspection_data
+        generate_intelligent_inspection_data,
+        initialize_asset_database,
+        check_asset_completion_status,
+        register_asset_for_monthly_inspection,
+        update_asset_inspection_status,
+        mark_asset_inspection_completed,
+        get_pending_assets_for_inspection,
+        get_completed_assets_report,
+        get_monthly_inspection_summary,
+        export_comprehensive_monthly_report,
+        filter_assets_to_prevent_duplicates
     ]
 )
 
