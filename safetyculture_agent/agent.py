@@ -46,6 +46,14 @@ from .memory.memory_tools import (
     retrieve_workflow_state,
     store_inspection_history
 )
+from .ai.ai_tools import (
+    ai_match_templates_to_asset,
+    generate_dynamic_template_for_asset,
+    analyze_asset_image_for_inspection,
+    parse_maintenance_logs_for_insights,
+    analyze_historical_inspection_patterns,
+    generate_intelligent_inspection_data
+)
 
 
 def update_current_time(callback_context: CallbackContext):
@@ -173,7 +181,13 @@ Always provide clear status updates and coordinate the workflow efficiently to c
         retrieve_workflow_state,
         store_inspection_history,
         load_memory_tool,
-        preload_memory_tool
+        preload_memory_tool,
+        ai_match_templates_to_asset,
+        generate_dynamic_template_for_asset,
+        analyze_asset_image_for_inspection,
+        parse_maintenance_logs_for_insights,
+        analyze_historical_inspection_patterns,
+        generate_intelligent_inspection_data
     ]
 )
 
