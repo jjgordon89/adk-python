@@ -12,4 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Configuration module for SafetyCulture ADK agent.
+
+This module provides configuration management for model providers and API
+settings. It includes classes for loading YAML configurations, creating
+model instances, and managing provider-specific settings.
+"""
+
 from __future__ import annotations
+
+from .model_config import (
+    ModelConfiguration,
+    ModelDefinition,
+    ProviderConfig,
+    RetryOptions,
+)
+from .model_factory import ModelFactory
+from .model_loader import ModelConfigLoader
+
+__all__ = [
+    'ModelConfiguration',
+    'ModelDefinition',
+    'ProviderConfig',
+    'RetryOptions',
+    'ModelConfigLoader',
+    'ModelFactory',
+]

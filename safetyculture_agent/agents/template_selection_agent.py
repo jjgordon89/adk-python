@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from google.adk.agents.llm_agent import LlmAgent
 
+from ..config.model_factory import ModelFactory
 from ..tools.safetyculture_tools import (
     search_safetyculture_templates,
     get_safetyculture_template_details
@@ -26,10 +27,12 @@ from ..memory.memory_tools import (
     retrieve_asset_registry
 )
 
+# Initialize ModelFactory for model instantiation
+_model_factory = ModelFactory()
 
 template_selection_agent = LlmAgent(
     name="TemplateSelectionAgent",
-    model="gemini-2.0-flash-001",
+    model=_model_factory.create_model('template_selection'),
     instruction="""You are a Template Selection Agent specialized in matching inspection templates to assets.
 
 Your responsibilities:

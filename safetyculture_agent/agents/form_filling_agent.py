@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from google.adk.agents.llm_agent import LlmAgent
 
+from ..config.model_factory import ModelFactory
 from ..tools.safetyculture_tools import (
     update_safetyculture_inspection,
     get_safetyculture_inspection_details
@@ -27,10 +28,12 @@ from ..memory.memory_tools import (
     store_inspection_history
 )
 
+# Initialize ModelFactory for model instantiation
+_model_factory = ModelFactory()
 
 form_filling_agent = LlmAgent(
     name="FormFillingAgent",
-    model="gemini-2.0-flash-001",
+    model=_model_factory.create_model('data_extraction'),
     instruction="""You are a Form Filling Agent specialized in automatically populating inspection forms with asset data.
 
 Your responsibilities:

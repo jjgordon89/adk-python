@@ -88,6 +88,10 @@ uv.lock
 .gcloudignore
 .gcloudignore.local
 
+# Model Configuration
+# Local model configuration overrides
+safetyculture_agent/config/models.local.yaml
+
 # Documentation
 docs/_build/
 site/

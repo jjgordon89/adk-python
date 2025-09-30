@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from google.adk.agents.llm_agent import LlmAgent
 
+from ..config.model_factory import ModelFactory
 from ..tools.safetyculture_tools import (
     create_safetyculture_inspection,
     share_safetyculture_inspection,
@@ -27,10 +28,12 @@ from ..memory.memory_tools import (
     store_workflow_state
 )
 
+# Initialize ModelFactory for model instantiation
+_model_factory = ModelFactory()
 
 inspection_creation_agent = LlmAgent(
     name="InspectionCreationAgent",
-    model="gemini-2.0-flash-001",
+    model=_model_factory.create_model('fast'),
     instruction="""You are an Inspection Creation Agent specialized in creating new inspections from templates.
 
 Your responsibilities:

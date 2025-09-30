@@ -1,0 +1,54 @@
+# SafetyCulture ADK Agent - Python Dependencies
+# Install: pip install -r requirements.txt
+# For development: pip install -r requirements.txt --upgrade
+
+# ============================================================================
+# Core ADK Framework
+# ============================================================================
+google-adk>=1.0.0                    # Google Agent Development Kit
+
+# ============================================================================
+# Google Cloud & AI Platform
+# ============================================================================
+google-cloud-aiplatform>=1.40.0      # Vertex AI integration
+google-genai>=0.2.0                  # Google GenAI SDK for Gemini models
+
+# ============================================================================
+# HTTP & API Client
+# ============================================================================
+aiohttp>=3.9.0                       # Async HTTP client for SafetyCulture API
+
+# ============================================================================
+# Database & Storage
+# ============================================================================
+aiosqlite>=0.19.0                    # Async SQLite for asset tracking database
+
+# ============================================================================
+# Configuration & Data Validation
+# ============================================================================
+pydantic>=2.0.0                      # Data validation and settings management
+pyyaml>=6.0                          # YAML configuration file parsing
+
+# ============================================================================
+# Data Processing & Analysis
+# ============================================================================
+numpy>=1.24.0                        # Numerical computing for AI/ML features
+
+# ============================================================================
+# Development & Testing (Optional)
+# ============================================================================
+# Uncomment these for development and testing
+# pytest>=7.4.0                      # Testing framework
+# pytest-asyncio>=0.21.0             # Async test support
+# pylint>=3.0.0                      # Code linting
+# black>=23.0.0                      # Code formatting
+
+# ============================================================================
+# Notes
+# ============================================================================
+# - This project requires Python 3.9 or higher
+# - Set SAFETYCULTURE_API_TOKEN environment variable for API access
+# - Configure model provider credentials (see .env.example)
+# - The google-adk package includes FastAPI for web server functionality
+# - For local development, you may also need to install model-specific deps
+#   depending on your chosen provider (Gemini, Llama, Nvidia, Ollama)

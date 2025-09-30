@@ -1,0 +1,261 @@
+# Model Provider Configuration for SafetyCulture ADK Agent
+#
+# This file defines all available model providers and their configurations.
+# Supports both native implementations and LiteLLM for universal provider
+# access.
+
+# Default provider to use when none is specified
+default_provider: gemini
+
+# Model aliases map semantic names to specific provider/model combinations
+model_aliases:
+  coordinator: gemini/fast
+  discovery: gemini/fast
+  template_selection: gemini/pro
+  data_extraction: gemini/pro
+  analysis: gemini/pro
+  local_dev: ollama/llama3
+
+# Provider configurations
+providers:
+  # =========================================================================
+  # Gemini - Native Implementation (Primary Provider)
+  # =========================================================================
+  gemini:
+    name: gemini
+    implementation: native
+    enabled: true
+    default_model: fast
+    
+    # Environment variables required for Gemini
+    environment_vars:
+      GOOGLE_CLOUD_PROJECT: required
+      GOOGLE_CLOUD_REGION: us-central1
+    
+    # Google Cloud configuration
+    region: us-central1
+    project_id: null  # Set via GOOGLE_CLOUD_PROJECT env var
+    
+    # Model variants
+    models:
+      fast:
+        model_id: gemini-2.0-flash-001
+        display_name: Gemini 2.0 Flash
+        description: >
+          Fast, efficient model optimized for quick responses. Ideal for
+          coordination, discovery, and routine tasks.
+        temperature: 0.7
+        max_output_tokens: 8192
+        top_p: 0.95
+        top_k: 40
+        retry:
+          max_retries: 3
+          initial_delay: 1.0
+          max_delay: 60.0
+          exponential_base: 2.0
+      
+      pro:
+        model_id: gemini-2.0-pro-001
+        display_name: Gemini 2.0 Pro
+        description: >
+          Advanced model with superior reasoning capabilities. Best for
+          complex analysis, template matching, and data extraction.
+        temperature: 0.5
+        max_output_tokens: 8192
+        top_p: 0.95
+        top_k: 40
+        retry:
+          max_retries: 3
+          initial_delay: 1.0
+          max_delay: 60.0
+          exponential_base: 2.0
+
+  # =========================================================================
+  # Llama - LiteLLM via Vertex AI Model-as-a-Service
+  # =========================================================================
+  llama:
+    name: llama
+    implementation: litellm
+    enabled: false  # Enable when needed
+    default_model: llama3_70b
+    
+    # Environment variables required for Llama via Vertex AI MaaS
+    environment_vars:
+      GOOGLE_CLOUD_PROJECT: required
+      GOOGLE_CLOUD_REGION: us-central1
+      VERTEX_AI_LOCATION: us-central1
+    
+    # Vertex AI MaaS configuration
+    region: us-central1
+    project_id: null  # Set via GOOGLE_CLOUD_PROJECT env var
+    endpoint: null  # Uses Vertex AI MaaS endpoint
+    
+    # Model variants
+    models:
+      llama3_8b:
+        model_id: vertex_ai_beta/meta/llama3-8b-instruct-maas
+        display_name: Llama 3 8B Instruct
+        description: >
+          Efficient open-source model suitable for general tasks and
+          development testing.
+        temperature: 0.7
+        max_output_tokens: 4096
+        top_p: 0.9
+        top_k: 40
+        retry:
+          max_retries: 3
+          initial_delay: 1.0
+          max_delay: 60.0
+          exponential_base: 2.0
+      
+      llama3_70b:
+        model_id: vertex_ai_beta/meta/llama3-70b-instruct-maas
+        display_name: Llama 3 70B Instruct
+        description: >
+          Powerful open-source model with strong reasoning capabilities.
+          Good alternative to Gemini Pro for complex tasks.
+        temperature: 0.5
+        max_output_tokens: 4096
+        top_p: 0.9
+        top_k: 40
+        retry:
+          max_retries: 3
+          initial_delay: 1.0
+          max_delay: 60.0
+          exponential_base: 2.0
+
+  # =========================================================================
+  # Nvidia - LiteLLM via Nvidia API
+  # =========================================================================
+  nvidia:
+    name: nvidia
+    implementation: litellm
+    enabled: false  # Enable when needed
+    default_model: llama3_70b
+    
+    # Environment variables required for Nvidia
+    environment_vars:
+      NVIDIA_API_KEY: required
+    
+    # Nvidia API configuration
+    region: null
+    project_id: null
+    endpoint: https://integrate.api.nvidia.com/v1
+    
+    # Model variants
+    models:
+      llama3_8b:
+        model_id: nvidia/meta/llama3-8b-instruct
+        display_name: Llama 3 8B Instruct (Nvidia)
+        description: >
+          Llama 3 8B hosted on Nvidia infrastructure. Fast inference for
+          development and testing.
+        temperature: 0.7
+        max_output_tokens: 4096
+        top_p: 0.9
+        top_k: 40
+        retry:
+          max_retries: 3
+          initial_delay: 1.0
+          max_delay: 60.0
+          exponential_base: 2.0
+      
+      llama3_70b:
+        model_id: nvidia/meta/llama3-70b-instruct
+        display_name: Llama 3 70B Instruct (Nvidia)
+        description: >
+          Llama 3 70B hosted on Nvidia infrastructure. High performance for
+          production workloads.
+        temperature: 0.5
+        max_output_tokens: 4096
+        top_p: 0.9
+        top_k: 40
+        retry:
+          max_retries: 3
+          initial_delay: 1.0
+          max_delay: 60.0
+          exponential_base: 2.0
+      
+      mixtral_8x7b:
+        model_id: nvidia/mistralai/mixtral-8x7b-instruct-v0.1
+        display_name: Mixtral 8x7B Instruct
+        description: >
+          Mixture-of-experts model with excellent performance. Good
+          alternative for complex reasoning tasks.
+        temperature: 0.5
+        max_output_tokens: 8192
+        top_p: 0.9
+        top_k: 40
+        retry:
+          max_retries: 3
+          initial_delay: 1.0
+          max_delay: 60.0
+          exponential_base: 2.0
+
+  # =========================================================================
+  # Ollama - LiteLLM for Local Development
+  # =========================================================================
+  ollama:
+    name: ollama
+    implementation: litellm
+    enabled: false  # Enable for local development
+    default_model: llama3
+    
+    # Environment variables for Ollama
+    environment_vars:
+      OLLAMA_BASE_URL: http://localhost:11434
+    
+    # Ollama configuration
+    region: null
+    project_id: null
+    endpoint: http://localhost:11434
+    
+    # Model variants
+    models:
+      llama3:
+        model_id: ollama/llama3
+        display_name: Llama 3 (Local)
+        description: >
+          Llama 3 running locally via Ollama. No API costs, full privacy.
+          Requires local Ollama installation with model pulled.
+        temperature: 0.7
+        max_output_tokens: 4096
+        top_p: 0.9
+        top_k: 40
+        retry:
+          max_retries: 2
+          initial_delay: 0.5
+          max_delay: 30.0
+          exponential_base: 2.0
+      
+      llama3_1:
+        model_id: ollama/llama3.1
+        display_name: Llama 3.1 (Local)
+        description: >
+          Latest Llama 3.1 running locally. Enhanced capabilities over
+          Llama 3. Requires local Ollama installation.
+        temperature: 0.7
+        max_output_tokens: 8192
+        top_p: 0.9
+        top_k: 40
+        retry:
+          max_retries: 2
+          initial_delay: 0.5
+          max_delay: 30.0
+          exponential_base: 2.0
+      
+      mistral:
+        model_id: ollama/mistral
+        display_name: Mistral (Local)
+        description: >
+          Mistral 7B running locally. Efficient and capable model for
+          general tasks. Requires local Ollama installation.
+        temperature: 0.7
+        max_output_tokens: 8192
+        top_p: 0.9
+        top_k: 40
+        retry:
+          max_retries: 2
+          initial_delay: 0.5
+          max_delay: 30.0
+          exponential_base: 2.0

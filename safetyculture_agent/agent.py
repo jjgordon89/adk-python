@@ -26,6 +26,7 @@ from .agents.asset_discovery_agent import asset_discovery_agent
 from .agents.template_selection_agent import template_selection_agent
 from .agents.inspection_creation_agent import inspection_creation_agent
 from .agents.form_filling_agent import form_filling_agent
+from .config.model_factory import ModelFactory
 from .tools.safetyculture_tools import (
     search_safetyculture_assets,
     get_safetyculture_asset_details,
@@ -74,10 +75,13 @@ def update_current_time(callback_context: CallbackContext):
   callback_context.state['_workflow_started'] = True
 
 
+# Initialize ModelFactory for model instantiation
+_model_factory = ModelFactory()
+
 # Quality Assurance Agent for final review
 qa_agent = LlmAgent(
     name="QualityAssuranceAgent",
-    model="gemini-2.0-flash-001",
+    model=_model_factory.create_model('fast'),
     instruction="""You are a Quality Assurance Agent that reviews completed inspection workflows.
 
 Your responsibilities:
@@ -134,7 +138,7 @@ Provide comprehensive quality reports including:
 # Main Coordinator Agent
 coordinator_agent = LlmAgent(
     name="SafetyCultureCoordinator",
-    model="gemini-2.0-flash-001",
+    model=_model_factory.create_model('coordinator'),
     before_agent_callback=update_current_time,
     instruction="""You are the SafetyCulture Inspection Coordinator, orchestrating automated inspection workflows.
 

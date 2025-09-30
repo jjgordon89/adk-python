@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from google.adk.agents.llm_agent import LlmAgent
 
+from ..config.model_factory import ModelFactory
 from ..tools.safetyculture_tools import (
     search_safetyculture_assets,
     get_safetyculture_asset_details
@@ -25,10 +26,12 @@ from ..memory.memory_tools import (
     retrieve_asset_registry
 )
 
+# Initialize ModelFactory for model instantiation
+_model_factory = ModelFactory()
 
 asset_discovery_agent = LlmAgent(
     name="AssetDiscoveryAgent",
-    model="gemini-2.0-flash-001",
+    model=_model_factory.create_model('discovery'),
     instruction="""You are an Asset Discovery Agent specialized in finding and cataloging assets from SafetyCulture.
 
 Your responsibilities:
