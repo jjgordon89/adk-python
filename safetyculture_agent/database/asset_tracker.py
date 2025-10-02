@@ -33,6 +33,9 @@ from .monthly_summary_service import (
 
 logger = logging.getLogger(__name__)
 
+# Database retention constants
+DEFAULT_RETENTION_DAYS = 365  # Default data retention period in days
+
 
 class AssetTracker:
   """Facade for coordinating asset inspection operations.
@@ -53,7 +56,7 @@ class AssetTracker:
   def __init__(
       self,
       db_path: str = "safetyculture_assets.db",
-      retention_days: int = 365
+      retention_days: int = DEFAULT_RETENTION_DAYS
   ):
     """Initialize asset tracker.
     

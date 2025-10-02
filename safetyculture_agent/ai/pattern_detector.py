@@ -27,6 +27,32 @@ from typing import Any, Dict, List, Tuple
 
 logger = logging.getLogger(__name__)
 
+# Pattern detection constants
+MONTHLY_INSPECTION_DAYS = 35  # Upper bound for monthly inspection frequency
+QUARTERLY_INSPECTION_DAYS = 95  # Upper bound for quarterly inspection frequency
+SEMIANNUAL_INSPECTION_DAYS = 190  # Upper bound for semi-annual inspection
+EXCELLENT_CONDITION_SCORE = 5  # Score for excellent asset condition
+GOOD_CONDITION_SCORE = 4  # Score for good asset condition
+FAIR_CONDITION_SCORE = 3  # Score for fair asset condition
+POOR_CONDITION_SCORE = 2  # Score for poor asset condition
+CRITICAL_CONDITION_SCORE = 1  # Score for critical asset condition
+DEFAULT_CONDITION_SCORE = 3  # Default score when no match found
+RECENT_TREND_WINDOW = 3  # Number of recent scores for trend analysis
+TREND_THRESHOLD = 0.5  # Minimum difference to detect trend change
+TOP_COMMON_ISSUES_LIMIT = 5  # Maximum number of common issues to return
+NO_ISSUES_CONDITION_SCORE = 4  # Condition score when no recent issues
+FEW_ISSUES_CONDITION_SCORE = 3  # Condition score for few recent issues
+MANY_ISSUES_CONDITION_SCORE = 2  # Condition score for many recent issues
+FEW_ISSUES_THRESHOLD = 2  # Maximum issues considered "few"
+MAINTENANCE_LOG_CONFIDENCE = 0.7  # Confidence score for maintenance log data
+IMPROVING_TREND_SCORE = 4  # Score for assets with improving trend
+DECLINING_TREND_SCORE = 2  # Score for assets with declining trend
+STABLE_TREND_SCORE = 3  # Score for assets with stable trend
+EXCELLENT_THRESHOLD = 4.5  # Minimum weighted score for excellent condition
+GOOD_THRESHOLD = 3.5  # Minimum weighted score for good condition
+FAIR_THRESHOLD = 2.5  # Minimum weighted score for fair condition
+POOR_THRESHOLD = 1.5  # Minimum weighted score for poor condition
+
 
 @dataclass
 class HistoricalPattern:
@@ -129,11 +155,11 @@ class PatternDetector:
       avg_interval = sum(intervals) / len(intervals)
       
       # Categorize frequency based on average interval.
-      if avg_interval < 35:
+      if avg_interval < MONTHLY_INSPECTION_DAYS:
         frequency = "monthly"
-      elif avg_interval < 95:
+      elif avg_interval < QUARTERLY_INSPECTION_DAYS:
         frequency = "quarterly"
-      elif avg_interval < 190:
+      elif avg_interval < SEMIANNUAL_INSPECTION_DAYS:
         frequency = "semi-annually"
       else:
         frequency = "annually"
@@ -191,11 +217,11 @@ class PatternDetector:
       HistoricalPattern describing the condition trend.
     """
     condition_scores = {
-      "excellent": 5,
-      "good": 4,
-      "fair": 3,
-      "poor": 2,
-      "critical": 1
+      "excellent": EXCELLENT_CONDITION_SCORE,
+      "good": GOOD_CONDITION_SCORE,
+      "fair": FAIR_CONDITION_SCORE,
+      "poor": POOR_CONDITION_SCORE,
+      "critical": CRITICAL_CONDITION_SCORE
     }
     
     scores = []
@@ -205,22 +231,24 @@ class PatternDetector:
           scores.append(score)
           break
       else:
-        scores.append(3)  # Default to fair if no match.
+        scores.append(DEFAULT_CONDITION_SCORE)
     
     if len(scores) < 2:
       trend = "stable"
     else:
       # Compare recent average to older average.
-      recent_avg = sum(scores[-3:]) / len(scores[-3:])
+      recent_avg = sum(scores[-RECENT_TREND_WINDOW:]) / len(
+        scores[-RECENT_TREND_WINDOW:]
+      )
       older_avg = (
-        sum(scores[:-3]) / len(scores[:-3])
-        if len(scores) > 3
+        sum(scores[:-RECENT_TREND_WINDOW]) / len(scores[:-RECENT_TREND_WINDOW])
+        if len(scores) > RECENT_TREND_WINDOW
         else recent_avg
       )
       
-      if recent_avg > older_avg + 0.5:
+      if recent_avg > older_avg + TREND_THRESHOLD:
         trend = "improving"
-      elif recent_avg < older_avg - 0.5:
+      elif recent_avg < older_avg - TREND_THRESHOLD:
         trend = "declining"
       else:
         trend = "stable"
@@ -258,7 +286,7 @@ class PatternDetector:
       for issue, count in issue_counts.items()
       if count > 1
     ]
-    return common_issues[:5]  # Top 5 most common.
+    return common_issues[:TOP_COMMON_ISSUES_LIMIT]
   
   def assess_condition_from_multiple_sources(
     self,
@@ -300,20 +328,20 @@ class PatternDetector:
     
     # Maintenance log contribution based on issue count.
     if recent_issues_count == 0:
-      condition_scores.append(4)  # Good if no recent issues.
-    elif recent_issues_count <= 2:
-      condition_scores.append(3)  # Fair if few issues.
+      condition_scores.append(NO_ISSUES_CONDITION_SCORE)
+    elif recent_issues_count <= FEW_ISSUES_THRESHOLD:
+      condition_scores.append(FEW_ISSUES_CONDITION_SCORE)
     else:
-      condition_scores.append(2)  # Poor if many issues.
-    confidence_scores.append(0.7)
+      condition_scores.append(MANY_ISSUES_CONDITION_SCORE)
+    confidence_scores.append(MAINTENANCE_LOG_CONFIDENCE)
     
     # Historical pattern contribution.
     if trend_direction == "improving":
-      condition_scores.append(4)
+      condition_scores.append(IMPROVING_TREND_SCORE)
     elif trend_direction == "declining":
-      condition_scores.append(2)
+      condition_scores.append(DECLINING_TREND_SCORE)
     else:
-      condition_scores.append(3)
+      condition_scores.append(STABLE_TREND_SCORE)
     confidence_scores.append(trend_confidence)
     
     # Calculate weighted average.
@@ -324,13 +352,13 @@ class PatternDetector:
     overall_confidence = sum(confidence_scores) / len(confidence_scores)
     
     # Convert score back to condition.
-    if weighted_score >= 4.5:
+    if weighted_score >= EXCELLENT_THRESHOLD:
       condition = "excellent"
-    elif weighted_score >= 3.5:
+    elif weighted_score >= GOOD_THRESHOLD:
       condition = "good"
-    elif weighted_score >= 2.5:
+    elif weighted_score >= FAIR_THRESHOLD:
       condition = "fair"
-    elif weighted_score >= 1.5:
+    elif weighted_score >= POOR_THRESHOLD:
       condition = "poor"
     else:
       condition = "critical"

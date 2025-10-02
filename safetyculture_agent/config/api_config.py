@@ -26,6 +26,14 @@ from ..exceptions import SafetyCultureCredentialError
 
 logger = logging.getLogger(__name__)
 
+# API Configuration constants
+DEFAULT_REQUESTS_PER_SECOND = 10  # Default rate limit for API requests
+DEFAULT_MAX_RETRIES = 3  # Maximum retry attempts for failed requests
+DEFAULT_RETRY_DELAY_SECONDS = 1.0  # Initial delay between retries in seconds
+DEFAULT_BATCH_SIZE = 50  # Default batch size for operations
+DEFAULT_MAX_CONCURRENT_REQUESTS = 5  # Maximum concurrent API requests
+DEFAULT_REQUEST_TIMEOUT_SECONDS = 30  # Default timeout for API requests
+
 
 @dataclass
 class SafetyCultureConfig:
@@ -35,16 +43,16 @@ class SafetyCultureConfig:
   base_url: str = "https://api.safetyculture.io"
   
   # Rate limiting
-  requests_per_second: int = 10
-  max_retries: int = 3
-  retry_delay: float = 1.0
+  requests_per_second: int = DEFAULT_REQUESTS_PER_SECOND
+  max_retries: int = DEFAULT_MAX_RETRIES
+  retry_delay: float = DEFAULT_RETRY_DELAY_SECONDS
   
   # Batch processing
-  batch_size: int = 50
-  max_concurrent_requests: int = 5
+  batch_size: int = DEFAULT_BATCH_SIZE
+  max_concurrent_requests: int = DEFAULT_MAX_CONCURRENT_REQUESTS
   
   # Timeouts
-  request_timeout: int = 30
+  request_timeout: int = DEFAULT_REQUEST_TIMEOUT_SECONDS
   
   # Private credential manager
   _credential_manager: Optional[SecureCredentialManager] = None
@@ -92,7 +100,7 @@ class SafetyCultureConfig:
     
     return await self._credential_manager.get_api_token()
   
-  async def get_headers(self) -> dict[str, str]:
+  async def get_headers(self) -> Dict[str, str]:
     """Get HTTP headers for API requests.
     
     Returns:

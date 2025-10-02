@@ -24,6 +24,16 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Literal, Optional
 
+# Model configuration constants
+DEFAULT_MAX_RETRIES = 3  # Maximum number of retry attempts
+DEFAULT_INITIAL_DELAY = 1.0  # Initial delay in seconds before first retry
+DEFAULT_MAX_DELAY = 60.0  # Maximum delay in seconds between retries
+DEFAULT_EXPONENTIAL_BASE = 2.0  # Base for exponential backoff calculation
+DEFAULT_TEMPERATURE = 0.7  # Default sampling temperature
+DEFAULT_MAX_OUTPUT_TOKENS = 8192  # Default maximum output tokens
+DEFAULT_TOP_P = 0.95  # Default nucleus sampling parameter
+DEFAULT_TOP_K = 40  # Default top-k sampling parameter
+
 
 @dataclass
 class RetryOptions:
@@ -35,10 +45,10 @@ class RetryOptions:
     max_delay: Maximum delay in seconds between retries.
     exponential_base: Base for exponential backoff calculation.
   """
-  max_retries: int = 3
-  initial_delay: float = 1.0
-  max_delay: float = 60.0
-  exponential_base: float = 2.0
+  max_retries: int = DEFAULT_MAX_RETRIES
+  initial_delay: float = DEFAULT_INITIAL_DELAY
+  max_delay: float = DEFAULT_MAX_DELAY
+  exponential_base: float = DEFAULT_EXPONENTIAL_BASE
 
 
 @dataclass
@@ -58,10 +68,10 @@ class ModelDefinition:
   """
   model_id: str
   display_name: str
-  temperature: float = 0.7
-  max_output_tokens: int = 8192
-  top_p: float = 0.95
-  top_k: int = 40
+  temperature: float = DEFAULT_TEMPERATURE
+  max_output_tokens: int = DEFAULT_MAX_OUTPUT_TOKENS
+  top_p: float = DEFAULT_TOP_P
+  top_k: int = DEFAULT_TOP_K
   retry: RetryOptions = field(default_factory=RetryOptions)
   description: Optional[str] = None
 

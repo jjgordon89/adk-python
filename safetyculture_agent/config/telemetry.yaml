@@ -1,0 +1,123 @@
+# OpenTelemetry Telemetry Configuration
+# ============================================================================
+# This file contains configuration for OpenTelemetry monitoring and observability
+# for the SafetyCulture agent. Telemetry provides distributed tracing,
+# metrics collection, and performance monitoring.
+#
+# Configuration can also be set via environment variables (which take precedence):
+# - TELEMETRY_ENABLED: Enable/disable telemetry (default: true)
+# - TELEMETRY_SERVICE_NAME: Service name (default: safetyculture-agent)
+# - TELEMETRY_SERVICE_VERSION: Service version (default: 1.0.0)
+# - TELEMETRY_OTLP_ENDPOINT: OTLP endpoint for traces/metrics
+# - TELEMETRY_OTLP_INSECURE: Use insecure OTLP connection (default: true)
+# - TELEMETRY_PROMETHEUS_PORT: Prometheus metrics port (default: 8889)
+# - TELEMETRY_PROMETHEUS_ENABLED: Enable Prometheus exporter (default: true)
+# - TELEMETRY_SAMPLING_RATE: Trace sampling rate 0.0-1.0 (default: 1.0)
+
+# ============================================================================
+# Telemetry Control
+# ============================================================================
+
+# Enable or disable telemetry globally
+# Set to false to disable all telemetry with minimal overhead
+enabled: true
+
+# ============================================================================
+# Service Identification
+# ============================================================================
+
+# Service name for telemetry identification
+service_name: safetyculture-agent
+
+# Service version for telemetry identification
+service_version: "1.0.0"
+
+# ============================================================================
+# OTLP Exporter Configuration
+# ============================================================================
+
+# OTLP endpoint for traces and metrics (e.g., Jaeger, Zipkin)
+# Examples:
+#   - localhost:4317 (local Jaeger)
+#   - jaeger-collector.monitoring.svc.cluster.local:4317 (k8s)
+#   - https://otlp.example.com:4317 (cloud provider)
+# Set to null to disable OTLP export
+otlp_endpoint: null
+
+# Use insecure connection for OTLP (no TLS)
+# Set to false for production environments with proper TLS
+otlp_insecure: true
+
+# ============================================================================
+# Prometheus Metrics Configuration
+# ============================================================================
+
+# Enable Prometheus metrics exporter
+prometheus_enabled: true
+
+# Port for Prometheus metrics endpoint
+# Metrics will be available at http://localhost:{port}/metrics
+prometheus_port: 8889
+
+# ============================================================================
+# Sampling Configuration
+# ============================================================================
+
+# Trace sampling rate (0.0 to 1.0)
+# - 1.0: Sample all traces (100%)
+# - 0.1: Sample 10% of traces
+# - 0.01: Sample 1% of traces
+# Lower values reduce overhead but may miss some traces
+sampling_rate: 1.0
+
+# ============================================================================
+# Resource Attributes
+# ============================================================================
+
+# Additional resource attributes to include in telemetry
+# These help identify and filter telemetry data in your monitoring system
+resource_attributes:
+  environment: development
+  deployment.type: standalone
+  # Add custom attributes as needed:
+  # team: infrastructure
+  # region: us-west-2
+  # cluster: production
+
+# ============================================================================
+# Performance Tuning
+# ============================================================================
+
+# Maximum number of attributes per span
+# Reduce this value if you're seeing high memory usage
+max_attributes_per_span: 128
+
+# Maximum number of events per span
+# Events include exceptions and custom log records
+max_events_per_span: 128
+
+# ============================================================================
+# Usage Examples
+# ============================================================================
+#
+# 1. Enable telemetry with local Jaeger:
+#    otlp_endpoint: localhost:4317
+#    prometheus_enabled: true
+#
+# 2. Disable telemetry completely:
+#    enabled: false
+#
+# 3. Enable only Prometheus metrics (no distributed tracing):
+#    otlp_endpoint: null
+#    prometheus_enabled: true
+#
+# 4. Reduce sampling for high-traffic environments:
+#    sampling_rate: 0.1
+#
+# 5. Production configuration with secure OTLP:
+#    otlp_endpoint: https://otlp-collector.example.com:4317
+#    otlp_insecure: false
+#    sampling_rate: 0.1
+#    resource_attributes:
+#      environment: production
+#      deployment.type: kubernetes

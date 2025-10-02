@@ -22,6 +22,9 @@ import uuid
 from datetime import datetime
 from typing import Any, Dict, Optional
 
+# Secure header constants
+MIN_TOKEN_LENGTH_FOR_REDACTION = 8  # Minimum token length to trigger redaction
+
 
 class SecureHeaderManager:
   """Manages secure header injection with automatic token redaction."""
@@ -66,7 +69,7 @@ class SecureHeaderManager:
 
           # Redact tokens
           message = re.sub(
-            r'(token["\']?\s*:\s*["\']?)\S{8,}',
+            rf'(token["\']?\s*:\s*["\']?)\S{{{MIN_TOKEN_LENGTH_FOR_REDACTION},}}',
             r'\1[REDACTED]',
             message,
             flags=re.IGNORECASE

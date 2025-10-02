@@ -54,7 +54,7 @@ class ModelFactory:
     >>> model = factory.create_model()
   """
 
-  def __init__(self, config_loader: Optional[ModelConfigLoader] = None):
+  def __init__(self, config_loader: Optional[ModelConfigLoader] = None) -> None:
     """Initialize model factory.
 
     Args:
@@ -264,7 +264,7 @@ class ModelFactory:
 
     return LiteLlm(**litellm_kwargs)
 
-  def _validate_environment(self, provider: ProviderConfig):
+  def _validate_environment(self, provider: ProviderConfig) -> None:
     """Validate required environment variables are set.
 
     Args:
@@ -288,7 +288,7 @@ class ModelFactory:
           f"Please set these variables in your .env file or environment."
       )
 
-  def _apply_env_defaults(self, provider: ProviderConfig):
+  def _apply_env_defaults(self, provider: ProviderConfig) -> None:
     """Apply default environment variable values if not set.
 
     This method sets default values for environment variables that have

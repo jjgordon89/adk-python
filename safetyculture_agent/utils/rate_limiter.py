@@ -25,6 +25,9 @@ from ..exceptions import SafetyCultureRateLimitError
 
 logger = logging.getLogger(__name__)
 
+# Rate limiter constants
+TOKEN_POLL_INTERVAL = 0.1  # Sleep interval when waiting for tokens (seconds)
+
 
 class TokenBucketRateLimiter:
   """Rate limiter using token bucket algorithm with burst support.
@@ -125,7 +128,7 @@ class TokenBucketRateLimiter:
         wait_seconds = tokens_needed / self.rate
         
         # Wait a bit and try again
-        await asyncio.sleep(min(wait_seconds, 0.1))
+        await asyncio.sleep(min(wait_seconds, TOKEN_POLL_INTERVAL))
   
   async def try_acquire(self, tokens: int = 1) -> bool:
     """Try to acquire tokens without blocking.

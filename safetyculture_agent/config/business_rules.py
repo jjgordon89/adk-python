@@ -17,6 +17,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
+# Business rule constants
+DEFAULT_PRIORITY = 0  # Default priority for inspection rules
+HIGH_PRIORITY = 1  # High priority for critical fields
+MEDIUM_PRIORITY = 2  # Medium priority for standard fields
+DEFAULT_RECENT_INSPECTION_DAYS = 30  # Days to consider recent inspection
+DEFAULT_MAX_INSPECTIONS_PER_BATCH = 100  # Maximum inspections per batch
+DEFAULT_INSPECTION_DUE_DAYS = 7  # Days until inspection is due
+BATCH_SIZE_LIMIT = 50  # Batch processing size limit
+
 
 @dataclass
 class InspectionRule:
@@ -26,7 +35,7 @@ class InspectionRule:
   field_type: str
   auto_fill_value: Optional[Any] = None
   condition: Optional[str] = None
-  priority: int = 0
+  priority: int = DEFAULT_PRIORITY
   
   def applies_to_asset(self, asset_data: Dict[str, Any]) -> bool:
     """Check if this rule applies to the given asset."""
@@ -64,18 +73,18 @@ class BatchProcessingRules:
   asset_types: Optional[List[str]] = None
   site_filters: Optional[List[str]] = None
   exclude_recently_inspected: bool = True
-  recent_inspection_days: int = 30
+  recent_inspection_days: int = DEFAULT_RECENT_INSPECTION_DAYS
   
   # Template selection
   template_priority: Optional[Dict[str, int]] = None
   default_template: Optional[str] = None
   
   # Inspection scheduling
-  max_inspections_per_batch: int = 100
+  max_inspections_per_batch: int = DEFAULT_MAX_INSPECTIONS_PER_BATCH
   schedule_future_inspections: bool = False
-  inspection_due_days: int = 7
+  inspection_due_days: int = DEFAULT_INSPECTION_DUE_DAYS
   
-  def __post_init__(self):
+  def __post_init__(self) -> None:
     """Initialize default values."""
     if self.asset_types is None:
       self.asset_types = []
@@ -91,37 +100,37 @@ DEFAULT_INSPECTION_RULES = [
         field_name="Asset ID",
         field_type="textsingle",
         auto_fill_value="asset.code",
-        priority=1
+        priority=HIGH_PRIORITY
     ),
     InspectionRule(
         field_name="Asset Type",
-        field_type="textsingle", 
+        field_type="textsingle",
         auto_fill_value="asset.type.name",
-        priority=1
+        priority=HIGH_PRIORITY
     ),
     InspectionRule(
         field_name="Site Location",
         field_type="textsingle",
         auto_fill_value="asset.site.name",
-        priority=1
+        priority=HIGH_PRIORITY
     ),
     InspectionRule(
         field_name="Inspector Name",
         field_type="textsingle",
         auto_fill_value="current_user.name",
-        priority=2
+        priority=MEDIUM_PRIORITY
     ),
     InspectionRule(
         field_name="Inspection Date",
         field_type="datetime",
         auto_fill_value="current_datetime",
-        priority=1
+        priority=HIGH_PRIORITY
     )
 ]
 
 DEFAULT_BATCH_RULES = BatchProcessingRules(
     asset_types=["Car", "Equipment", "Machinery"],
     exclude_recently_inspected=True,
-    recent_inspection_days=30,
-    max_inspections_per_batch=50
+    recent_inspection_days=DEFAULT_RECENT_INSPECTION_DAYS,
+    max_inspections_per_batch=BATCH_SIZE_LIMIT
 )

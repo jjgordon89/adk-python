@@ -22,7 +22,12 @@ from typing import Any, Dict, List, Optional
 
 import aiosqlite
 
+from ..telemetry.decorators import trace_async
+
 logger = logging.getLogger(__name__)
+
+# Database retention constants
+DEFAULT_RETENTION_DAYS = 365  # Default data retention period in days
 
 
 class AssetQueries:
@@ -36,7 +41,7 @@ class AssetQueries:
       retention_days: Number of days to retain records
   """
   
-  def __init__(self, db_path: str, retention_days: int = 365):
+  def __init__(self, db_path: str, retention_days: int = DEFAULT_RETENTION_DAYS):
     """Initialize asset queries service.
     
     Args:
@@ -53,6 +58,7 @@ class AssetQueries:
     """Get current month-year string in YYYY-MM format."""
     return datetime.now().strftime("%Y-%m")
   
+  @trace_async('cleanup_old_records', {'operation': 'DELETE'})
   async def cleanup_old_records(
       self,
       archive: bool = True
@@ -182,6 +188,7 @@ class AssetQueries:
     
     return len(rows)
   
+  @trace_async('get_retention_stats', {'operation': 'SELECT'})
   async def get_retention_stats(self) -> Dict[str, Any]:
     """Get statistics about data retention.
     

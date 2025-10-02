@@ -22,6 +22,8 @@ from typing import Any, Dict, List, Optional
 
 import aiosqlite
 
+from ..telemetry.decorators import trace_async
+
 logger = logging.getLogger(__name__)
 
 
@@ -103,6 +105,7 @@ class MonthlySummaryService:
         metadata=metadata
     )
   
+  @trace_async('get_monthly_summary', {'operation': 'SELECT'})
   async def get_monthly_summary(
       self,
       month_year: Optional[str] = None
@@ -164,6 +167,7 @@ class MonthlySummaryService:
         "last_updated": current_time
       }
   
+  @trace_async('get_completed_assets', {'operation': 'SELECT'})
   async def get_completed_assets(
       self,
       month_year: Optional[str] = None
@@ -188,6 +192,7 @@ class MonthlySummaryService:
         rows = await cursor.fetchall()
         return [self._row_to_record(row) for row in rows]
   
+  @trace_async('get_pending_assets', {'operation': 'SELECT'})
   async def get_pending_assets(
       self,
       month_year: Optional[str] = None,
@@ -219,6 +224,7 @@ class MonthlySummaryService:
         rows = await cursor.fetchall()
         return [self._row_to_record(row) for row in rows]
   
+  @trace_async('export_monthly_report', {'operation': 'SELECT'})
   async def export_monthly_report(
       self,
       month_year: Optional[str] = None

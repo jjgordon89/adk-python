@@ -40,6 +40,17 @@ cryptography>=41.0.0                 # Encryption for secret management
 numpy>=1.24.0                        # Numerical computing for AI/ML features
 
 # ============================================================================
+# Observability & Monitoring
+# ============================================================================
+opentelemetry-api>=1.21.0            # OpenTelemetry API for tracing/metrics
+opentelemetry-sdk>=1.21.0            # OpenTelemetry SDK implementation
+opentelemetry-instrumentation>=0.42b0  # Base instrumentation package
+opentelemetry-instrumentation-aiohttp-client>=0.42b0  # aiohttp auto-instr
+opentelemetry-instrumentation-sqlite3>=0.42b0  # SQLite auto-instrumentation
+opentelemetry-exporter-otlp>=1.21.0  # OTLP exporter for traces/metrics
+opentelemetry-exporter-prometheus>=0.42b0  # Prometheus metrics exporter
+
+# ============================================================================
 # Development & Testing (Optional)
 # ============================================================================
 # Uncomment these for development and testing

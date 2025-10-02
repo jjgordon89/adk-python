@@ -30,6 +30,9 @@ from typing import Any, Callable, Dict, TypeVar
 
 logger = logging.getLogger(__name__)
 
+# Circuit breaker exponential backoff constants
+EXPONENTIAL_BACKOFF_BASE = 2  # Base for exponential backoff calculation
+
 T = TypeVar('T')
 
 
@@ -104,7 +107,7 @@ class CircuitBreaker:
     Returns:
         Timeout in seconds, capped at max_timeout
     """
-    timeout = self.base_timeout * (2 ** self._open_count)
+    timeout = self.base_timeout * (EXPONENTIAL_BACKOFF_BASE ** self._open_count)
     return min(timeout, self.max_timeout)
   
   def _should_attempt_reset(self) -> bool:

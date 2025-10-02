@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime
 
 from google.adk.agents.llm_agent import LlmAgent
@@ -68,8 +69,32 @@ from .database.database_tools import (
     filter_assets_to_prevent_duplicates
 )
 
+# Initialize telemetry if enabled
+logger = logging.getLogger(__name__)
 
-def update_current_time(callback_context: CallbackContext):
+try:
+  from .telemetry.telemetry_config import TelemetryConfig
+  from .telemetry.telemetry_manager import get_telemetry_manager
+
+  # Load configuration from environment variables
+  telemetry_config = TelemetryConfig.from_env()
+
+  # Initialize telemetry manager
+  telemetry_manager = get_telemetry_manager()
+  telemetry_manager.initialize(telemetry_config)
+
+  if telemetry_manager.is_enabled:
+    logger.info('OpenTelemetry monitoring enabled for SafetyCulture agent')
+  else:
+    logger.info('OpenTelemetry monitoring disabled')
+
+except Exception as e:  # pylint: disable=broad-except
+  logger.warning(
+    'Failed to initialize telemetry (continuing without monitoring): %s', e
+  )
+
+
+def update_current_time(callback_context: CallbackContext) -> None:
   """Update current time in agent state."""
   callback_context.state['_time'] = datetime.now().isoformat()
   callback_context.state['_workflow_started'] = True

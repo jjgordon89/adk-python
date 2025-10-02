@@ -25,6 +25,9 @@ from typing import Dict, Any, Optional
 
 logger = logging.getLogger(__name__)
 
+# Request signing constants
+CLOCK_SKEW_TOLERANCE_SECONDS = 60  # Allow 60s clock skew for future timestamps
+
 
 class RequestSigner:
   """Signs API requests using HMAC-SHA256 for integrity verification.
@@ -136,7 +139,7 @@ class RequestSigner:
       )
       return False
     
-    if age < -60:  # Allow 60s clock skew
+    if age < -CLOCK_SKEW_TOLERANCE_SECONDS:
       logger.warning(f"Request timestamp in future: {age}s")
       return False
     

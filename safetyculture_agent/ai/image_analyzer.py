@@ -27,6 +27,11 @@ from typing import Dict, List
 
 logger = logging.getLogger(__name__)
 
+# Image analysis confidence thresholds
+ELECTRICAL_CONFIDENCE_SCORE = 0.85  # High confidence for electrical analysis
+PUMP_CONFIDENCE_SCORE = 0.78  # Good confidence for pump analysis
+DEFAULT_CONFIDENCE_SCORE = 0.70  # Default confidence for general analysis
+
 
 @dataclass
 class ImageAnalysisResult:
@@ -160,7 +165,7 @@ class ImageAnalyzer:
         visible_damage=["Minor surface corrosion on housing"],
         safety_concerns=["Exposed wiring near junction box"],
         maintenance_indicators=["Terminal connections need tightening"],
-        confidence_score=0.85,
+        confidence_score=ELECTRICAL_CONFIDENCE_SCORE,
         extracted_text=[
           "DANGER HIGH VOLTAGE",
           "Model: XYZ-123",
@@ -173,7 +178,7 @@ class ImageAnalyzer:
         visible_damage=["Oil stain beneath pump", "Rust on mounting bolts"],
         safety_concerns=["Loose coupling guard"],
         maintenance_indicators=["Oil level appears low", "Belt shows wear"],
-        confidence_score=0.78,
+        confidence_score=PUMP_CONFIDENCE_SCORE,
         extracted_text=["PUMP MODEL P-456", "MAX PRESSURE 150 PSI"]
       )
     else:
@@ -182,7 +187,7 @@ class ImageAnalyzer:
         visible_damage=[],
         safety_concerns=[],
         maintenance_indicators=["Regular maintenance recommended"],
-        confidence_score=0.70,
+        confidence_score=DEFAULT_CONFIDENCE_SCORE,
         extracted_text=[]
       )
   

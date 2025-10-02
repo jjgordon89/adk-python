@@ -34,6 +34,10 @@ from ..utils.secure_header_manager import SecureHeaderManager
 
 logger = logging.getLogger(__name__)
 
+# HTTP/API related constants
+DEFAULT_ASSET_SEARCH_LIMIT = 50  # Default asset search limit
+DEFAULT_INSPECTION_SEARCH_LIMIT = 100  # Default inspection search limit
+
 # Shared header manager for error sanitization
 _header_manager = SecureHeaderManager()
 
@@ -41,7 +45,7 @@ _header_manager = SecureHeaderManager()
 async def search_safetyculture_assets(
     asset_types: Optional[List[str]] = None,
     site_names: Optional[List[str]] = None,
-    limit: int = 50
+    limit: int = DEFAULT_ASSET_SEARCH_LIMIT
 ) -> str:
   """
   Search for assets in SafetyCulture.
@@ -465,7 +469,7 @@ async def share_safetyculture_inspection(
 async def search_safetyculture_inspections(
     template_id: Optional[str] = None,
     modified_after: Optional[str] = None,
-    limit: int = 100
+    limit: int = DEFAULT_INSPECTION_SEARCH_LIMIT
 ) -> str:
   """
   Search for existing inspections.

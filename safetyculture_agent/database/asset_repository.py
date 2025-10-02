@@ -16,11 +16,18 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import aiosqlite
+
+from ..telemetry.decorators import trace_async
+from ..telemetry.prometheus_metrics import (
+  record_database_query,
+  record_query_duration,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +94,7 @@ class AssetRepository:
       safe_fields.append(field)
     return safe_fields
   
+  @trace_async('db_initialize', {'operation': 'initialize'})
   async def initialize(self) -> None:
     """Initialize database schema.
     
@@ -171,6 +179,7 @@ class AssetRepository:
     """Get current month-year string in YYYY-MM format."""
     return datetime.now().strftime("%Y-%m")
   
+  @trace_async('check_asset_completed', {'operation': 'SELECT'})
   async def check_asset_completed_this_month(
       self,
       asset_id: str,
@@ -196,6 +205,7 @@ class AssetRepository:
         count = await cursor.fetchone()
         return count[0] > 0
   
+  @trace_async('register_asset', {'operation': 'INSERT'})
   async def register_asset(
       self,
       asset_id: str,
@@ -288,6 +298,7 @@ class AssetRepository:
         result = await cursor.fetchone()
         return result[0] if result else None
   
+  @trace_async('register_for_inspection', {'operation': 'INSERT'})
   async def register_asset_for_inspection(
       self,
       asset_id: str,
@@ -375,6 +386,7 @@ class AssetRepository:
             return {}
         return {}
   
+  @trace_async('update_inspection_status', {'operation': 'UPDATE'})
   async def update_inspection_status(
       self,
       asset_id: str,
@@ -401,6 +413,7 @@ class AssetRepository:
       month_year = self._get_current_month_year()
     
     current_time = datetime.now().isoformat()
+    start_time = time.perf_counter()
     
     # Prepare update fields
     update_fields = ["status = ?", "updated_at = ?"]
@@ -440,6 +453,9 @@ class AssetRepository:
           WHERE asset_id = ? AND month_year = ?
       """, update_values) as cursor:
         await db.commit()
+        duration = time.perf_counter() - start_time
+        record_database_query('UPDATE', 'asset_inspections')
+        record_query_duration('UPDATE', duration, 'asset_inspections')
         return cursor.rowcount > 0
   
   async def mark_asset_completed(

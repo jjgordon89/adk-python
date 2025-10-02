@@ -51,7 +51,7 @@ class SecretManager:
       _encryption_key: Key for encrypting cached secrets
   """
   
-  def __init__(self, encryption_key: Optional[str] = None):
+  def __init__(self, encryption_key: Optional[str] = None) -> None:
     """Initialize secret manager.
     
     Args:

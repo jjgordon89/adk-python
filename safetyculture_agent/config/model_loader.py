@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Tuple
 
 import yaml
 
@@ -52,7 +52,7 @@ class ModelConfigLoader:
       self,
       config_path: Optional[Path] = None,
       allow_overrides: bool = True
-  ):
+  ) -> None:
     """Initialize the configuration loader.
 
     Args:
@@ -139,7 +139,7 @@ class ModelConfigLoader:
 
     return self._config.providers[provider_name]
 
-  def resolve_alias(self, alias: str) -> tuple[str, str]:
+  def resolve_alias(self, alias: str) -> Tuple[str, str]:
     """Resolve model alias to (provider, model) tuple.
 
     Resolves aliases defined in the configuration to their full
@@ -286,7 +286,7 @@ class ModelConfigLoader:
         default_provider=config_dict.get('default_provider', 'gemini'),
     )
 
-  def _apply_env_overrides(self):
+  def _apply_env_overrides(self) -> None:
     """Apply environment variable overrides to configuration.
 
     Checks for the MODEL_PROVIDER environment variable and applies it

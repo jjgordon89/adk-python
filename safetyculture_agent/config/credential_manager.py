@@ -27,11 +27,17 @@ from ..exceptions import SafetyCultureValidationError
 
 logger = logging.getLogger(__name__)
 
+# Credential manager constants
+TOKEN_VALIDATION_TIMEOUT_SECONDS = 10  # Timeout for token validation API calls
+TOKEN_PREVIEW_PREFIX_LENGTH = 4  # Number of characters to show at start
+TOKEN_PREVIEW_SUFFIX_LENGTH = 4  # Number of characters to show at end
+TOKEN_PREVIEW_MIN_LENGTH = 8  # Minimum length for preview generation
+
 
 class SecureCredentialManager:
   """Manages secure storage and retrieval of API credentials."""
 
-  def __init__(self):
+  def __init__(self) -> None:
     """Initialize credential manager."""
     self._cached_token: Optional[str] = None
 
@@ -73,6 +79,8 @@ class SecureCredentialManager:
     """
     if not new_token or not isinstance(new_token, str):
       raise SafetyCultureValidationError("Invalid token format")
+
+    self._cached_token = new_token
 
   async def revoke_token(self) -> None:
     """Revoke the current API token.
@@ -132,7 +140,9 @@ class SecureCredentialManager:
         async with session.get(
             f"{api_base_url}/accounts/v1/user",
             headers=headers,
-            timeout=aiohttp.ClientTimeout(total=10)
+            timeout=aiohttp.ClientTimeout(
+                total=TOKEN_VALIDATION_TIMEOUT_SECONDS
+            )
         ) as response:
           return response.status == 200
           
@@ -157,15 +167,18 @@ class SecureCredentialManager:
       }
     
     token = self._cached_token
-    preview = f"{token[:4]}...{token[-4:]}" if len(token) > 8 else "***"
+    preview = (
+        f"{token[:TOKEN_PREVIEW_PREFIX_LENGTH]}..."
+        f"{token[-TOKEN_PREVIEW_SUFFIX_LENGTH:]}"
+        if len(token) > TOKEN_PREVIEW_MIN_LENGTH
+        else "***"
+    )
     
     return {
       'has_token': True,
       'token_length': len(token),
       'token_preview': preview
     }
-
-    self._cached_token = new_token
 
   def clear_cache(self) -> None:
     """Clear cached credentials."""

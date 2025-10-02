@@ -24,9 +24,12 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
+
+# Log parsing constants
+DEFAULT_RECENT_ITEMS_COUNT = 3  # Default number of recent log entries to aggregate
 
 
 @dataclass
@@ -180,8 +183,8 @@ class LogParser:
   def aggregate_recent_maintenance(
     self,
     maintenance_logs: List[MaintenanceLogEntry],
-    count: int = 3
-  ) -> tuple[List[str], List[str], List[str]]:
+    count: int = DEFAULT_RECENT_ITEMS_COUNT
+  ) -> Tuple[List[str], List[str], List[str]]:
     """Aggregate recent maintenance information.
     
     Extracts and aggregates the most recent maintenance actions, issues,
@@ -189,7 +192,7 @@ class LogParser:
     
     Args:
       maintenance_logs: List of parsed maintenance log entries.
-      count: Number of recent entries to aggregate (default: 3).
+      count: Number of recent entries to aggregate.
     
     Returns:
       Tuple of (recent_actions, recent_issues, recent_recommendations).

@@ -32,6 +32,15 @@ from .pattern_detector import HistoricalPattern, PatternDetector
 
 logger = logging.getLogger(__name__)
 
+# Form intelligence constants
+DEFAULT_RECENT_ITEMS_COUNT = 3  # Number of recent items to display
+MAX_COMMON_ISSUES_TO_SHOW = 3  # Maximum common issues to display
+CRITICAL_ASSET_INSPECTION_DAYS = 30  # Monthly inspection for critical assets
+MEDIUM_ASSET_INSPECTION_DAYS = 90  # Quarterly inspection for medium criticality
+LOW_ASSET_INSPECTION_DAYS = 180  # Semi-annual inspection for low criticality
+DECLINING_FREQUENCY_MULTIPLIER = 0.7  # Increase frequency for declining assets
+IMPROVING_FREQUENCY_MULTIPLIER = 1.2  # Decrease frequency for improving assets
+
 
 class EnhancedFormIntelligence:
   """Enhanced form intelligence with computer vision and NLP capabilities.
@@ -195,10 +204,14 @@ class EnhancedFormIntelligence:
         recent_recommendations
       ) = self.log_parser.aggregate_recent_maintenance(maintenance_logs, 3)
       
-      form_data["recent_maintenance"] = ", ".join(recent_actions[:3])
-      form_data["known_issues"] = ", ".join(recent_issues[:3])
+      form_data["recent_maintenance"] = ", ".join(
+        recent_actions[:DEFAULT_RECENT_ITEMS_COUNT]
+      )
+      form_data["known_issues"] = ", ".join(
+        recent_issues[:DEFAULT_RECENT_ITEMS_COUNT]
+      )
       form_data["previous_recommendations"] = ", ".join(
-        recent_recommendations[:3]
+        recent_recommendations[:DEFAULT_RECENT_ITEMS_COUNT]
       )
     
     # Use historical patterns.
@@ -220,7 +233,7 @@ class EnhancedFormIntelligence:
           common_issues = pattern.typical_values.get("issues", [])
           if common_issues:
             form_data["recurring_issues"] = (
-              f"Watch for: {', '.join(common_issues[:3])}"
+              f"Watch for: {', '.join(common_issues[:MAX_COMMON_ISSUES_TO_SHOW])}"
             )
     
     # Generate intelligent recommendations.
@@ -283,7 +296,7 @@ class EnhancedFormIntelligence:
       
       if recent_issues:
         recommendations.append(
-          f"Monitor for recurring issues: {', '.join(recent_issues[:2])}"
+          f"Monitor for recurring issues: {', '.join(recent_issues[:2])}"  # Show top 2
         )
     
     # Historical pattern-based recommendations.
@@ -342,11 +355,11 @@ class EnhancedFormIntelligence:
     criticality = asset.get("criticality", "medium").lower()
     
     if criticality in ["high", "critical"]:
-      default_days = 30  # Monthly for critical assets.
+      default_days = CRITICAL_ASSET_INSPECTION_DAYS
     elif criticality == "medium":
-      default_days = 90  # Quarterly for medium criticality.
+      default_days = MEDIUM_ASSET_INSPECTION_DAYS
     else:
-      default_days = 180  # Semi-annually for low criticality.
+      default_days = LOW_ASSET_INSPECTION_DAYS
     
     # Adjust based on historical patterns.
     if historical_patterns:
@@ -358,9 +371,13 @@ class EnhancedFormIntelligence:
         
         elif pattern.pattern_type == "condition_trend":
           if pattern.trend_direction == "declining":
-            default_days = int(default_days * 0.7)  # More frequent.
+            default_days = int(
+              default_days * DECLINING_FREQUENCY_MULTIPLIER
+            )
           elif pattern.trend_direction == "improving":
-            default_days = int(default_days * 1.2)  # Less frequent.
+            default_days = int(
+              default_days * IMPROVING_FREQUENCY_MULTIPLIER
+            )
     
     # Calculate next inspection date.
     next_date = datetime.now() + timedelta(days=default_days)

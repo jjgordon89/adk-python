@@ -26,6 +26,19 @@ import aiohttp
 from aiohttp import ClientSession, ClientTimeout
 
 from ..config.api_config import SafetyCultureConfig, DEFAULT_CONFIG
+from ..telemetry.decorators import trace_async
+from ..telemetry.prometheus_metrics import (
+  record_api_latency,
+  record_api_request,
+  record_circuit_breaker_state,
+  record_rate_limit_hit,
+)
+from ..telemetry.telemetry_config import (
+  SPAN_ATTR_API_ENDPOINT,
+  SPAN_ATTR_API_METHOD,
+  SPAN_ATTR_API_STATUS_CODE,
+  SPAN_ATTR_CIRCUIT_BREAKER_STATE,
+)
 from ..exceptions import (
   SafetyCultureAPIError,
   SafetyCultureAuthError,
@@ -39,6 +52,28 @@ from ..utils.request_signer import RequestSigner, RequestSigningError
 from ..utils.secure_header_manager import SecureHeaderManager
 
 logger = logging.getLogger(__name__)
+
+# Rate limiting constants
+RATE_LIMIT_BURST_MULTIPLIER = 2  # Burst capacity as multiple of base rate
+INITIAL_BACKOFF_SECONDS = 1.0  # Initial backoff delay in seconds
+MAX_BACKOFF_SECONDS = 30.0  # Maximum backoff delay in seconds
+
+# Circuit breaker constants
+CIRCUIT_BREAKER_FAILURE_THRESHOLD = 5  # Failures before opening circuit
+CIRCUIT_BREAKER_SUCCESS_THRESHOLD = 2  # Successes to close circuit
+CIRCUIT_BREAKER_BASE_TIMEOUT_SECONDS = 60.0  # Initial circuit timeout
+CIRCUIT_BREAKER_MAX_TIMEOUT_SECONDS = 600.0  # Maximum circuit timeout
+
+# Request signing constants
+REQUEST_SIGNING_WINDOW_SECONDS = 300  # Request signature validity window
+
+# HTTP/API related constants
+DEFAULT_RETRY_AFTER_SECONDS = 60  # Default retry-after value
+EXPONENTIAL_BACKOFF_BASE = 2  # Base multiplier for exponential backoff
+DEFAULT_ASSET_SEARCH_LIMIT = 100  # Default asset search page size
+DEFAULT_ASSET_SEARCH_OFFSET = 0  # Default asset search offset
+DEFAULT_INSPECTION_SEARCH_LIMIT = 1000  # Default inspection search limit
+DEFAULT_SITE_SEARCH_LIMIT = 100  # Default site search limit
 
 
 class SafetyCultureAPIClient:
@@ -58,17 +93,17 @@ class SafetyCultureAPIClient:
     # Initialize rate limiter with config values
     self.rate_limiter = ExponentialBackoffRateLimiter(
       rate=config.requests_per_second,
-      burst=config.requests_per_second * 2,  # Allow 2x burst
-      initial_backoff=1.0,
-      max_backoff=30.0
+      burst=config.requests_per_second * RATE_LIMIT_BURST_MULTIPLIER,
+      initial_backoff=INITIAL_BACKOFF_SECONDS,
+      max_backoff=MAX_BACKOFF_SECONDS
     )
     
     # Initialize circuit breaker with default settings
     self.circuit_breaker = CircuitBreaker(
-      failure_threshold=5,
-      success_threshold=2,
-      base_timeout=60.0,
-      max_timeout=600.0
+      failure_threshold=CIRCUIT_BREAKER_FAILURE_THRESHOLD,
+      success_threshold=CIRCUIT_BREAKER_SUCCESS_THRESHOLD,
+      base_timeout=CIRCUIT_BREAKER_BASE_TIMEOUT_SECONDS,
+      max_timeout=CIRCUIT_BREAKER_MAX_TIMEOUT_SECONDS
     )
     
     # Initialize request signing (optional - only if signing key provided)
@@ -77,7 +112,7 @@ class SafetyCultureAPIClient:
     if signing_key:
       self.request_signer = RequestSigner(
         signing_key=signing_key,
-        timestamp_window=300  # 5 minutes
+        timestamp_window=REQUEST_SIGNING_WINDOW_SECONDS
       )
       logger.info("Request signing enabled")
     else:
@@ -177,6 +212,9 @@ class SafetyCultureAPIClient:
     # Acquire rate limit token before making request
     await self.rate_limiter.acquire()
     
+    # Start timing for metrics
+    start_time = time.perf_counter()
+    
     # Validate endpoint path
     safe_endpoint = self.validator.validate_endpoint(endpoint)
     
@@ -246,9 +284,18 @@ class SafetyCultureAPIClient:
           headers=headers,
           json=data if data else None
       ) as response:
+        # Record metrics
+        duration = time.perf_counter() - start_time
+        record_api_request(endpoint, method, response.status)
+        record_api_latency(endpoint, method, duration)
+        
         # Check for rate limit response from server
         if response.status == 429:
-          retry_after = response.headers.get('Retry-After', '60')
+          retry_after = response.headers.get(
+            'Retry-After',
+            str(DEFAULT_RETRY_AFTER_SECONDS)
+          )
+          record_rate_limit_hit(endpoint)
           raise SafetyCultureRateLimitError(
             f"API rate limit exceeded. Retry after {retry_after}s"
           )
@@ -266,7 +313,9 @@ class SafetyCultureAPIClient:
       logger.error(f"HTTP error: {safe_error}")
       
       if retry_count < self.config.max_retries:
-        await asyncio.sleep(self.config.retry_delay * (2 ** retry_count))
+        await asyncio.sleep(
+          self.config.retry_delay * (EXPONENTIAL_BACKOFF_BASE ** retry_count)
+        )
         return await self._make_request_internal(
             method, endpoint, params, data, retry_count + 1
         )
@@ -281,7 +330,9 @@ class SafetyCultureAPIClient:
       logger.error(f"Network error: {safe_error}")
       
       if retry_count < self.config.max_retries:
-        await asyncio.sleep(self.config.retry_delay * (2 ** retry_count))
+        await asyncio.sleep(
+          self.config.retry_delay * (EXPONENTIAL_BACKOFF_BASE ** retry_count)
+        )
         return await self._make_request_internal(
             method, endpoint, params, data, retry_count + 1
         )
@@ -306,12 +357,13 @@ class SafetyCultureAPIClient:
     return self.circuit_breaker.get_metrics()
   
   # Asset API methods
+  @trace_async('search_assets', {'operation': 'search_assets'})
   async def search_assets(
       self,
       asset_types: Optional[List[str]] = None,
       site_ids: Optional[List[str]] = None,
-      limit: int = 100,
-      offset: int = 0
+      limit: int = DEFAULT_ASSET_SEARCH_LIMIT,
+      offset: int = DEFAULT_ASSET_SEARCH_OFFSET
   ) -> Dict[str, Any]:
     """Search for assets with validated filters.
     
@@ -339,6 +391,7 @@ class SafetyCultureAPIClient:
     
     return await self._make_request('GET', '/assets/search', params=params)
   
+  @trace_async('get_asset', {'operation': 'get_asset'})
   async def get_asset(self, asset_id: str) -> Dict[str, Any]:
     """Get a specific asset by ID.
     
@@ -355,6 +408,7 @@ class SafetyCultureAPIClient:
     return await self._make_request('GET', f'/assets/{validated_id}')
   
   # Template API methods
+  @trace_async('search_templates', {'operation': 'search_templates'})
   async def search_templates(
       self,
       fields: Optional[List[str]] = None,
@@ -376,6 +430,7 @@ class SafetyCultureAPIClient:
     
     return await self._make_request('GET', '/templates/search', params=params)
   
+  @trace_async('get_template', {'operation': 'get_template'})
   async def get_template(self, template_id: str) -> Dict[str, Any]:
     """Get a specific template by ID.
     
@@ -392,12 +447,13 @@ class SafetyCultureAPIClient:
     return await self._make_request('GET', f'/templates/{validated_id}')
   
   # Inspection API methods
+  @trace_async('search_inspections', {'operation': 'search_inspections'})
   async def search_inspections(
       self,
       fields: Optional[List[str]] = None,
       template_id: Optional[str] = None,
       modified_after: Optional[str] = None,
-      limit: int = 1000
+      limit: int = DEFAULT_INSPECTION_SEARCH_LIMIT
   ) -> Dict[str, Any]:
     """Search for inspections."""
     params: Dict[str, Any] = {
@@ -416,6 +472,7 @@ class SafetyCultureAPIClient:
     
     return await self._make_request('GET', '/audits/search', params=params)
   
+  @trace_async('create_inspection', {'operation': 'create_inspection'})
   async def create_inspection(
       self,
       template_id: str,
@@ -443,6 +500,7 @@ class SafetyCultureAPIClient:
     
     return await self._make_request('POST', '/audits', data=data)
   
+  @trace_async('update_inspection', {'operation': 'update_inspection'})
   async def update_inspection(
       self,
       audit_id: str,
@@ -467,6 +525,7 @@ class SafetyCultureAPIClient:
     
     return await self._make_request('PUT', f'/audits/{validated_id}', data=data)
   
+  @trace_async('get_inspection', {'operation': 'get_inspection'})
   async def get_inspection(self, audit_id: str) -> Dict[str, Any]:
     """Get a specific inspection by ID.
     
@@ -482,6 +541,7 @@ class SafetyCultureAPIClient:
     validated_id = self.validator.validate_audit_id(audit_id)
     return await self._make_request('GET', f'/audits/{validated_id}')
   
+  @trace_async('share_inspection', {'operation': 'share_inspection'})
   async def share_inspection(
       self,
       audit_id: str,
@@ -511,10 +571,11 @@ class SafetyCultureAPIClient:
     )
   
   # Site API methods
+  @trace_async('search_sites', {'operation': 'search_sites'})
   async def search_sites(
       self,
       name_filter: Optional[str] = None,
-      limit: int = 100
+      limit: int = DEFAULT_SITE_SEARCH_LIMIT
   ) -> Dict[str, Any]:
     """Search for sites/locations."""
     params: Dict[str, Any] = {
@@ -527,6 +588,7 @@ class SafetyCultureAPIClient:
     return await self._make_request('GET', '/directories/sites', params=params)
   
   # User API methods
+  @trace_async('search_users', {'operation': 'search_users'})
   async def search_users(
       self,
       email: Optional[str] = None

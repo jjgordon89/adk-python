@@ -19,6 +19,14 @@ from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
+# Template scoring constants
+COMPLIANCE_FIELD_BOOST = 0.1  # Boost for each compliance-related field
+COMPLIANCE_REQUIREMENT_BOOST = 0.15  # Boost for matching compliance requirements
+MAX_COMPLIANCE_BOOST = 0.3  # Maximum compliance boost cap
+HIGH_SIMILARITY_THRESHOLD = 0.8  # Threshold for high semantic similarity
+GOOD_SIMILARITY_THRESHOLD = 0.6  # Threshold for good semantic match
+MODERATE_SIMILARITY_THRESHOLD = 0.4  # Threshold for moderate compatibility
+
 
 class TemplateScorer:
   """Calculates confidence scores for template matching.
@@ -101,7 +109,7 @@ class TemplateScorer:
     for item in template_items:
       label = item.get('label', '').lower()
       if any(field in label for field in compliance_fields):
-        boost += 0.1
+        boost += COMPLIANCE_FIELD_BOOST
     
     # Check asset compliance requirements against template name
     asset_compliance = [req.lower() for req in asset_compliance_requirements]
@@ -109,9 +117,9 @@ class TemplateScorer:
     
     for req in asset_compliance:
       if any(word in template_name for word in req.split()):
-        boost += 0.15
+        boost += COMPLIANCE_REQUIREMENT_BOOST
     
-    return min(boost, 0.3)  # Cap boost at 0.3
+    return min(boost, MAX_COMPLIANCE_BOOST)
   
   def generate_match_reasons(
       self,
@@ -139,11 +147,11 @@ class TemplateScorer:
     reasons = []
     
     # Similarity-based reasons
-    if similarity_score > 0.8:
+    if similarity_score > HIGH_SIMILARITY_THRESHOLD:
       reasons.append("High semantic similarity between asset and template")
-    elif similarity_score > 0.6:
+    elif similarity_score > GOOD_SIMILARITY_THRESHOLD:
       reasons.append("Good semantic match for asset characteristics")
-    elif similarity_score > 0.4:
+    elif similarity_score > MODERATE_SIMILARITY_THRESHOLD:
       reasons.append("Moderate compatibility with asset type")
     
     # Asset type matching

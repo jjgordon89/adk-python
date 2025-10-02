@@ -37,7 +37,7 @@ class FieldMappingLoader:
     _config_path: Path to the field mappings YAML file
   """
 
-  def __init__(self, config_path: Optional[str] = None):
+  def __init__(self, config_path: Optional[str] = None) -> None:
     """Initialize the field mapping loader.
 
     Args:
