@@ -16,6 +16,8 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
+import os
 import time
 from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin, urlencode
@@ -24,16 +26,64 @@ import aiohttp
 from aiohttp import ClientSession, ClientTimeout
 
 from ..config.api_config import SafetyCultureConfig, DEFAULT_CONFIG
+from ..exceptions import (
+  SafetyCultureAPIError,
+  SafetyCultureAuthError,
+  SafetyCultureRateLimitError,
+  SafetyCultureValidationError
+)
+from ..utils.circuit_breaker import CircuitBreaker, CircuitBreakerOpenError
+from ..utils.input_validator import InputValidator
+from ..utils.rate_limiter import ExponentialBackoffRateLimiter
+from ..utils.request_signer import RequestSigner, RequestSigningError
+from ..utils.secure_header_manager import SecureHeaderManager
+
+logger = logging.getLogger(__name__)
 
 
 class SafetyCultureAPIClient:
   """Async client for SafetyCulture API interactions."""
   
   def __init__(self, config: SafetyCultureConfig = DEFAULT_CONFIG):
+    """Initialize API client with rate limiting, security, and validation.
+    
+    Args:
+        config: SafetyCultureConfig instance with credentials and rate limits
+    """
     self.config = config
+    self.header_manager = SecureHeaderManager()
+    self.validator = InputValidator()
     self._session: Optional[ClientSession] = None
-    self._rate_limiter = asyncio.Semaphore(config.requests_per_second)
-    self._last_request_time = 0.0
+    
+    # Initialize rate limiter with config values
+    self.rate_limiter = ExponentialBackoffRateLimiter(
+      rate=config.requests_per_second,
+      burst=config.requests_per_second * 2,  # Allow 2x burst
+      initial_backoff=1.0,
+      max_backoff=30.0
+    )
+    
+    # Initialize circuit breaker with default settings
+    self.circuit_breaker = CircuitBreaker(
+      failure_threshold=5,
+      success_threshold=2,
+      base_timeout=60.0,
+      max_timeout=600.0
+    )
+    
+    # Initialize request signing (optional - only if signing key provided)
+    self.request_signer: Optional[RequestSigner] = None
+    signing_key = os.getenv('SAFETYCULTURE_SIGNING_KEY')
+    if signing_key:
+      self.request_signer = RequestSigner(
+        signing_key=signing_key,
+        timestamp_window=300  # 5 minutes
+      )
+      logger.info("Request signing enabled")
+    else:
+      logger.debug(
+        "Request signing disabled (no signing key provided)"
+      )
   
   async def __aenter__(self):
     """Async context manager entry."""
@@ -47,25 +97,11 @@ class SafetyCultureAPIClient:
       self._session = None
   
   async def _ensure_session(self):
-    """Ensure HTTP session is created."""
+    """Ensure HTTP session is created without credentials in session."""
     if not self._session:
       timeout = ClientTimeout(total=self.config.request_timeout)
-      self._session = ClientSession(
-          headers=self.config.headers,
-          timeout=timeout
-      )
-  
-  async def _rate_limit(self):
-    """Apply rate limiting."""
-    async with self._rate_limiter:
-      current_time = time.time()
-      time_since_last = current_time - self._last_request_time
-      min_interval = 1.0 / self.config.requests_per_second
-      
-      if time_since_last < min_interval:
-        await asyncio.sleep(min_interval - time_since_last)
-      
-      self._last_request_time = time.time()
+      # Create session without default headers (tokens added per-request)
+      self._session = ClientSession(timeout=timeout)
   
   async def _make_request(
       self,
@@ -75,13 +111,113 @@ class SafetyCultureAPIClient:
       data: Optional[Dict[str, Any]] = None,
       retry_count: int = 0
   ) -> Dict[str, Any]:
-    """Make HTTP request with retry logic."""
-    await self._ensure_session()
-    await self._rate_limit()
+    """Make HTTP request with circuit breaker, rate limiting, and security.
     
-    url = urljoin(self.config.base_url, endpoint)
+    Wraps the internal request implementation with a circuit breaker to
+    protect against cascading failures when the API is unavailable.
+    
+    Args:
+        method: HTTP method (GET, POST, etc)
+        endpoint: API endpoint path
+        params: Query parameters
+        data: Request body data
+        retry_count: Current retry attempt number
+        
+    Returns:
+        Response data as dictionary
+        
+    Raises:
+        CircuitBreakerOpenError: If circuit breaker is open
+        SafetyCultureAPIError: If request fails
+        SafetyCultureAuthError: If authentication fails
+        SafetyCultureRateLimitError: If rate limit exceeded
+        SafetyCultureValidationError: If URL validation fails
+    """
+    # Wrap the internal implementation with circuit breaker
+    return await self.circuit_breaker.call(
+      self._make_request_internal,
+      method,
+      endpoint,
+      params,
+      data,
+      retry_count
+    )
+  
+  async def _make_request_internal(
+      self,
+      method: str,
+      endpoint: str,
+      params: Optional[Dict[str, Any]] = None,
+      data: Optional[Dict[str, Any]] = None,
+      retry_count: int = 0
+  ) -> Dict[str, Any]:
+    """Internal HTTP request implementation with retries.
+    
+    This is the actual implementation that performs the HTTP request.
+    It's wrapped by _make_request which adds circuit breaker protection.
+    
+    Args:
+        method: HTTP method (GET, POST, etc)
+        endpoint: API endpoint path
+        params: Query parameters
+        data: Request body data
+        retry_count: Current retry attempt number
+        
+    Returns:
+        Response data as dictionary
+        
+    Raises:
+        SafetyCultureAPIError: If request fails
+        SafetyCultureAuthError: If authentication fails
+        SafetyCultureRateLimitError: If rate limit exceeded
+        SafetyCultureValidationError: If URL validation fails
+    """
+    await self._ensure_session()
+    
+    # Acquire rate limit token before making request
+    await self.rate_limiter.acquire()
+    
+    # Validate endpoint path
+    safe_endpoint = self.validator.validate_endpoint(endpoint)
+    
+    # Construct and validate full URL
+    full_url = f"{self.config.base_url}{safe_endpoint}"
+    validated_url = self.validator.validate_and_enforce_https(
+      full_url,
+      allow_localhost=False  # Strict HTTPS in production
+    )
+    
+    # Validate and sanitize parameters
     if params:
-      # Handle multiple values for same parameter (like multiple 'field' params)
+      params = self.validator.validate_params(params)
+    
+    # Get API token securely
+    api_token = await self.config.get_api_token()
+    
+    # Generate secure headers
+    headers = await self.header_manager.get_secure_headers(api_token)
+    
+    # Add request signing if enabled
+    if self.request_signer:
+      try:
+        signing_headers = self.request_signer.sign_request(
+          method=method,
+          url=validated_url,
+          body=data
+        )
+        headers.update(signing_headers)
+        logger.debug(f"Added signature headers to {method} {endpoint}")
+      except Exception as e:
+        sanitized_error = self.header_manager.sanitize_error(e)
+        logger.error(f"Failed to sign request: {sanitized_error}")
+        raise RequestSigningError(
+          f"Request signing failed: {sanitized_error}"
+        ) from e
+    
+    # Use validated URL instead of urljoin
+    url = validated_url
+    if params:
+      # Handle multiple values for same parameter
       url_params = []
       for key, value in params.items():
         if isinstance(value, list):
@@ -92,35 +228,82 @@ class SafetyCultureAPIClient:
       if url_params:
         url += '?' + '&'.join(url_params)
     
+    # Sanitize request data for logging
+    safe_params = self.header_manager.sanitize_for_logging(params)
+    safe_data = self.header_manager.sanitize_for_logging(data)
+    logger.info(
+      f"Making {method} request to {endpoint}",
+      extra={'params': safe_params, 'data': safe_data}
+    )
+    
     try:
       if self._session is None:
-        raise Exception("Session not initialized")
+        raise SafetyCultureAPIError("Session not initialized")
       
       async with self._session.request(
           method,
           url,
+          headers=headers,
           json=data if data else None
       ) as response:
-        if response.status == 429:  # Rate limited
-          if retry_count < self.config.max_retries:
-            await asyncio.sleep(self.config.retry_delay * (2 ** retry_count))
-            return await self._make_request(
-                method, endpoint, params, data, retry_count + 1
-            )
-          else:
-            raise Exception(f"Rate limit exceeded after {self.config.max_retries} retries")
+        # Check for rate limit response from server
+        if response.status == 429:
+          retry_after = response.headers.get('Retry-After', '60')
+          raise SafetyCultureRateLimitError(
+            f"API rate limit exceeded. Retry after {retry_after}s"
+          )
+        
+        if response.status == 401:
+          raise SafetyCultureAuthError(
+            "Authentication failed. Check API token."
+          )
         
         response.raise_for_status()
         return await response.json()
     
-    except aiohttp.ClientError as e:
+    except aiohttp.ClientResponseError as e:
+      safe_error = self.header_manager.sanitize_error(e)
+      logger.error(f"HTTP error: {safe_error}")
+      
       if retry_count < self.config.max_retries:
         await asyncio.sleep(self.config.retry_delay * (2 ** retry_count))
-        return await self._make_request(
+        return await self._make_request_internal(
             method, endpoint, params, data, retry_count + 1
         )
-      else:
-        raise Exception(f"API request failed after {self.config.max_retries} retries: {e}")
+      
+      raise SafetyCultureAPIError(
+        f"API request failed: {safe_error}",
+        status_code=e.status
+      ) from e
+    
+    except aiohttp.ClientError as e:
+      safe_error = self.header_manager.sanitize_error(e)
+      logger.error(f"Network error: {safe_error}")
+      
+      if retry_count < self.config.max_retries:
+        await asyncio.sleep(self.config.retry_delay * (2 ** retry_count))
+        return await self._make_request_internal(
+            method, endpoint, params, data, retry_count + 1
+        )
+      
+      raise SafetyCultureAPIError(
+        f"Network error: {safe_error}"
+      ) from e
+  
+  def get_circuit_breaker_metrics(self) -> Dict[str, Any]:
+    """Get circuit breaker metrics for monitoring.
+    
+    Returns:
+        Dictionary containing circuit breaker metrics including:
+        - state: Current circuit state (closed/open/half_open)
+        - total_calls: Total number of calls attempted
+        - total_failures: Total number of failures
+        - total_successes: Total number of successes
+        - failure_rate: Current failure rate (0.0-1.0)
+        - open_count: Number of times circuit has opened
+        - current_timeout: Current timeout value in seconds
+    """
+    return self.circuit_breaker.get_metrics()
   
   # Asset API methods
   async def search_assets(
@@ -130,7 +313,20 @@ class SafetyCultureAPIClient:
       limit: int = 100,
       offset: int = 0
   ) -> Dict[str, Any]:
-    """Search for assets with filters."""
+    """Search for assets with validated filters.
+    
+    Args:
+        asset_types: List of asset types to filter by
+        site_ids: List of site IDs to filter by
+        limit: Maximum results to return (1-1000)
+        offset: Pagination offset (0-100000)
+        
+    Returns:
+        Dictionary containing search results
+        
+    Raises:
+        SafetyCultureValidationError: If inputs are invalid
+    """
     params: Dict[str, Any] = {
         'limit': limit,
         'offset': offset
@@ -144,8 +340,19 @@ class SafetyCultureAPIClient:
     return await self._make_request('GET', '/assets/search', params=params)
   
   async def get_asset(self, asset_id: str) -> Dict[str, Any]:
-    """Get a specific asset by ID."""
-    return await self._make_request('GET', f'/assets/{asset_id}')
+    """Get a specific asset by ID.
+    
+    Args:
+        asset_id: Validated asset identifier
+        
+    Returns:
+        Dictionary containing asset details
+        
+    Raises:
+        SafetyCultureValidationError: If asset_id is invalid
+    """
+    validated_id = self.validator.validate_asset_id(asset_id)
+    return await self._make_request('GET', f'/assets/{validated_id}')
   
   # Template API methods
   async def search_templates(
@@ -170,8 +377,19 @@ class SafetyCultureAPIClient:
     return await self._make_request('GET', '/templates/search', params=params)
   
   async def get_template(self, template_id: str) -> Dict[str, Any]:
-    """Get a specific template by ID."""
-    return await self._make_request('GET', f'/templates/{template_id}')
+    """Get a specific template by ID.
+    
+    Args:
+        template_id: Validated template identifier
+        
+    Returns:
+        Dictionary containing template details
+        
+    Raises:
+        SafetyCultureValidationError: If template_id is invalid
+    """
+    validated_id = self.validator.validate_template_id(template_id)
+    return await self._make_request('GET', f'/templates/{validated_id}')
   
   # Inspection API methods
   async def search_inspections(
@@ -203,9 +421,21 @@ class SafetyCultureAPIClient:
       template_id: str,
       header_items: Optional[List[Dict[str, Any]]] = None
   ) -> Dict[str, Any]:
-    """Create a new inspection from template."""
+    """Create a new inspection from template.
+    
+    Args:
+        template_id: Validated template identifier
+        header_items: Optional header data for inspection
+        
+    Returns:
+        Dictionary containing created inspection details
+        
+    Raises:
+        SafetyCultureValidationError: If template_id is invalid
+    """
+    validated_id = self.validator.validate_template_id(template_id)
     data: Dict[str, Any] = {
-        'template_id': template_id
+        'template_id': validated_id
     }
     
     if header_items:
@@ -218,28 +448,67 @@ class SafetyCultureAPIClient:
       audit_id: str,
       items: List[Dict[str, Any]]
   ) -> Dict[str, Any]:
-    """Update inspection responses."""
+    """Update inspection responses.
+    
+    Args:
+        audit_id: Validated audit/inspection identifier
+        items: List of inspection items to update
+        
+    Returns:
+        Dictionary containing update results
+        
+    Raises:
+        SafetyCultureValidationError: If audit_id is invalid
+    """
+    validated_id = self.validator.validate_audit_id(audit_id)
     data = {
         'items': items
     }
     
-    return await self._make_request('PUT', f'/audits/{audit_id}', data=data)
+    return await self._make_request('PUT', f'/audits/{validated_id}', data=data)
   
   async def get_inspection(self, audit_id: str) -> Dict[str, Any]:
-    """Get a specific inspection by ID."""
-    return await self._make_request('GET', f'/audits/{audit_id}')
+    """Get a specific inspection by ID.
+    
+    Args:
+        audit_id: Validated audit/inspection identifier
+        
+    Returns:
+        Dictionary containing inspection details
+        
+    Raises:
+        SafetyCultureValidationError: If audit_id is invalid
+    """
+    validated_id = self.validator.validate_audit_id(audit_id)
+    return await self._make_request('GET', f'/audits/{validated_id}')
   
   async def share_inspection(
       self,
       audit_id: str,
       shares: List[Dict[str, str]]
   ) -> Dict[str, Any]:
-    """Share inspection with users or groups."""
+    """Share inspection with users or groups.
+    
+    Args:
+        audit_id: Validated audit/inspection identifier
+        shares: List of share configurations
+        
+    Returns:
+        Dictionary containing share operation results
+        
+    Raises:
+        SafetyCultureValidationError: If audit_id is invalid
+    """
+    validated_id = self.validator.validate_audit_id(audit_id)
     data = {
         'shares': shares
     }
     
-    return await self._make_request('POST', f'/audits/{audit_id}/share', data=data)
+    return await self._make_request(
+      'POST',
+      f'/audits/{validated_id}/share',
+      data=data
+    )
   
   # Site API methods
   async def search_sites(

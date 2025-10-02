@@ -29,6 +29,14 @@ from .model_config import (
 )
 from .model_factory import ModelFactory
 from .model_loader import ModelConfigLoader
+from .secret_manager import (
+    SecretManager,
+    get_secret,
+    get_secret_bool,
+    get_secret_int,
+    get_secret_manager,
+    set_secret_manager,
+)
 
 __all__ = [
     'ModelConfiguration',
@@ -37,4 +45,10 @@ __all__ = [
     'RetryOptions',
     'ModelConfigLoader',
     'ModelFactory',
+    'SecretManager',
+    'get_secret_manager',
+    'set_secret_manager',
+    'get_secret',
+    'get_secret_int',
+    'get_secret_bool',
 ]

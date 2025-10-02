@@ -12,4 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""AI-powered form intelligence and analysis capabilities.
+
+This package provides comprehensive AI capabilities for form processing,
+including computer vision, natural language processing, pattern detection,
+and intelligent template matching for inspections.
+"""
+
 from __future__ import annotations
+
+from .form_intelligence import EnhancedFormIntelligence
+from .image_analyzer import ImageAnalysisResult, ImageAnalyzer
+from .log_parser import LogParser, MaintenanceLogEntry
+from .pattern_detector import HistoricalPattern, PatternDetector
+from .template_generation import TemplateGenerator
+from .template_matcher import AITemplateMatcher, AssetProfile, TemplateMatch
+from .template_scoring import TemplateScorer
+
+__all__ = [
+  "AITemplateMatcher",
+  "AssetProfile",
+  "EnhancedFormIntelligence",
+  "HistoricalPattern",
+  "ImageAnalysisResult",
+  "ImageAnalyzer",
+  "LogParser",
+  "MaintenanceLogEntry",
+  "PatternDetector",
+  "TemplateGenerator",
+  "TemplateMatch",
+  "TemplateScorer",
+]

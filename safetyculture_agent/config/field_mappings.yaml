@@ -1,0 +1,45 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# SafetyCulture API Field ID Mappings
+# These UUIDs map to specific fields in SafetyCulture inspection templates
+# Update these if SafetyCulture changes their field IDs
+
+safetyculture_fields:
+  # Standard inspection fields
+  standard_title: "f3245d40-ea77-11e1-aff1-0800200c9a66"
+  standard_description: "f3245d41-ea77-11e1-aff1-0800200c9a67"
+  date_field: "f3245d42-ea77-11e1-aff1-0800200c9a68"
+  inspector_name: "f3245d43-ea77-11e1-aff1-0800200c9a69"
+  location_field: "f3245d44-ea77-11e1-aff1-0800200c9a70"
+  
+  # Asset-specific fields
+  asset_id_field: "f3245d45-ea77-11e1-aff1-0800200c9a71"
+  asset_name_field: "f3245d46-ea77-11e1-aff1-0800200c9a72"
+  asset_type_field: "f3245d47-ea77-11e1-aff1-0800200c9a73"
+  
+  # Status fields
+  status_field: "f3245d48-ea77-11e1-aff1-0800200c9a74"
+  completion_field: "f3245d49-ea77-11e1-aff1-0800200c9a75"
+  
+  # Compliance fields
+  compliance_status: "f3245d50-ea77-11e1-aff1-0800200c9a76"
+  regulatory_notes: "f3245d51-ea77-11e1-aff1-0800200c9a77"
+
+# Template-specific field overrides
+# Use these if a specific template has different field IDs
+template_overrides:
+  safety_inspection_template:
+    title: "custom-title-uuid-here"
+    description: "custom-desc-uuid-here"

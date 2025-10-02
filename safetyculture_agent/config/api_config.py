@@ -14,9 +14,17 @@
 
 from __future__ import annotations
 
-import os
+import logging
 from dataclasses import dataclass
+from typing import Any
+from typing import Dict
 from typing import Optional
+from urllib.parse import urlparse
+
+from .credential_manager import SecureCredentialManager
+from ..exceptions import SafetyCultureCredentialError
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -25,7 +33,6 @@ class SafetyCultureConfig:
   
   # API Configuration
   base_url: str = "https://api.safetyculture.io"
-  api_token: Optional[str] = None
   
   # Rate limiting
   requests_per_second: int = 10
@@ -39,25 +46,111 @@ class SafetyCultureConfig:
   # Timeouts
   request_timeout: int = 30
   
-  def __post_init__(self):
-    """Load API token from environment if not provided."""
-    if not self.api_token:
-      self.api_token = os.getenv('SAFETYCULTURE_API_TOKEN')
-      if not self.api_token:
-        raise ValueError(
-            "SafetyCulture API token must be provided either directly or "
-            "via SAFETYCULTURE_API_TOKEN environment variable"
-        )
+  # Private credential manager
+  _credential_manager: Optional[SecureCredentialManager] = None
   
-  @property
-  def headers(self) -> dict[str, str]:
-    """Get HTTP headers for API requests."""
+  def __post_init__(self):
+    """Initialize configuration with secure credential management and validation."""
+    if not self._credential_manager:
+      self._credential_manager = SecureCredentialManager()
+    
+    # Strict HTTPS validation
+    if not self.base_url.startswith('https://'):
+      raise ValueError(
+        f"API URL must use HTTPS protocol (got: {self.base_url}). "
+        "HTTP is not allowed for security reasons."
+      )
+    
+    # Additional URL validation
+    try:
+      parsed = urlparse(self.base_url)
+      if not parsed.netloc:
+        raise ValueError(
+          f"Invalid API URL (missing hostname): {self.base_url}"
+        )
+      if parsed.path and parsed.path != '/':
+        logger.warning(
+          f"Base URL contains path: {parsed.path}. "
+          "This may cause issues with endpoint construction."
+        )
+    except Exception as e:
+      raise ValueError(
+        f"Invalid API URL format: {self.base_url}"
+      ) from e
+  
+  async def get_api_token(self) -> str:
+    """Retrieve API token securely.
+    
+    Returns:
+        Decrypted API token
+        
+    Raises:
+        SafetyCultureCredentialError: If token retrieval fails
+    """
+    if not self._credential_manager:
+      self._credential_manager = SecureCredentialManager()
+    
+    return await self._credential_manager.get_api_token()
+  
+  async def get_headers(self) -> dict[str, str]:
+    """Get HTTP headers for API requests.
+    
+    Returns:
+        Dictionary of HTTP headers with authentication
+        
+    Raises:
+        SafetyCultureCredentialError: If token retrieval fails
+    """
+    token = await self.get_api_token()
     return {
-        'Authorization': f'Bearer {self.api_token}',
+        'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
 
+  
+  async def revoke_credentials(self) -> None:
+    """Revoke all cached credentials.
+    
+    This should be called on logout or when credentials are compromised.
+    After revocation, new API calls will fail until new credentials
+    are provided.
+    """
+    if hasattr(self, '_credential_manager') and self._credential_manager:
+      await self._credential_manager.revoke_token()
+      logger.info("Credentials revoked successfully")
+
+  async def test_credentials(self) -> bool:
+    """Test if current credentials are valid.
+    
+    Returns:
+        True if credentials are valid, False otherwise
+    """
+    if not hasattr(self, '_credential_manager') or not self._credential_manager:
+      return False
+    
+    return await self._credential_manager.test_token_validity(self.base_url)
+
+  async def get_credential_status(self) -> Dict[str, Any]:
+    """Get status of current credentials.
+    
+    Returns:
+        Dictionary with credential status information
+    """
+    if not hasattr(self, '_credential_manager') or not self._credential_manager:
+      return {'status': 'not_initialized'}
+    
+    token_info = await self._credential_manager.get_token_info()
+    
+    if not token_info['has_token']:
+      return {'status': 'no_token'}
+    
+    is_valid = await self._credential_manager.test_token_validity(self.base_url)
+    
+    return {
+      'status': 'valid' if is_valid else 'invalid',
+      'token_info': token_info
+    }
 
 # Default configuration instance
 DEFAULT_CONFIG = SafetyCultureConfig()

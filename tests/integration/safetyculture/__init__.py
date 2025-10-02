@@ -12,20 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import annotations
-
-from .asset_queries import AssetQueries
-from .asset_repository import AssetRepository
-from .asset_tracker import AssetTracker
-from .monthly_summary_service import (
-    AssetInspectionRecord,
-    MonthlySummaryService,
-)
-
-__all__ = [
-    'AssetTracker',
-    'AssetRepository',
-    'MonthlySummaryService',
-    'AssetQueries',
-    'AssetInspectionRecord',
-]
+"""Integration tests for SafetyCulture agent."""

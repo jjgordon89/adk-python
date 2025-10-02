@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -23,6 +24,18 @@ from google.adk.tools.function_tool import FunctionTool
 
 from .safetyculture_api_client import SafetyCultureAPIClient
 from ..config.api_config import DEFAULT_CONFIG
+from ..config.field_mapping_loader import get_field_loader
+from ..exceptions import (
+  SafetyCultureAPIError,
+  SafetyCultureAuthError,
+  SafetyCultureValidationError,
+)
+from ..utils.secure_header_manager import SecureHeaderManager
+
+logger = logging.getLogger(__name__)
+
+# Shared header manager for error sanitization
+_header_manager = SecureHeaderManager()
 
 
 async def search_safetyculture_assets(
@@ -62,8 +75,24 @@ async def search_safetyculture_assets(
       
       return json.dumps(response, indent=2)
   
+  except SafetyCultureAPIError as e:
+    # Sanitize error message before returning
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Asset search failed: {safe_error}")
+    raise SafetyCultureAPIError(f"Asset search failed: {safe_error}") from e
+
+  except SafetyCultureValidationError as e:
+    # Validation errors are safe to pass through
+    logger.warning(f"Invalid search parameters: {e}")
+    raise
+
   except Exception as e:
-    return f"Error searching assets: {str(e)}"
+    # Catch-all with sanitization
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Unexpected error in asset search: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Unexpected error in asset search: {safe_error}"
+    ) from e
 
 
 async def get_safetyculture_asset_details(asset_id: str) -> str:
@@ -81,8 +110,26 @@ async def get_safetyculture_asset_details(asset_id: str) -> str:
       response = await client.get_asset(asset_id)
       return json.dumps(response, indent=2)
   
+  except SafetyCultureAPIError as e:
+    # Sanitize error message before returning
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Asset details retrieval failed: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Asset details retrieval failed: {safe_error}"
+    ) from e
+
+  except SafetyCultureValidationError as e:
+    # Validation errors are safe to pass through
+    logger.warning(f"Invalid asset ID: {e}")
+    raise
+
   except Exception as e:
-    return f"Error getting asset details: {str(e)}"
+    # Catch-all with sanitization
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Unexpected error getting asset details: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Unexpected error getting asset details: {safe_error}"
+    ) from e
 
 
 async def search_safetyculture_templates(
@@ -117,8 +164,26 @@ async def search_safetyculture_templates(
       
       return json.dumps(response, indent=2)
   
+  except SafetyCultureAPIError as e:
+    # Sanitize error message before returning
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Template search failed: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Template search failed: {safe_error}"
+    ) from e
+
+  except SafetyCultureValidationError as e:
+    # Validation errors are safe to pass through
+    logger.warning(f"Invalid template search parameters: {e}")
+    raise
+
   except Exception as e:
-    return f"Error searching templates: {str(e)}"
+    # Catch-all with sanitization
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Unexpected error in template search: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Unexpected error in template search: {safe_error}"
+    ) from e
 
 
 async def get_safetyculture_template_details(template_id: str) -> str:
@@ -136,8 +201,28 @@ async def get_safetyculture_template_details(template_id: str) -> str:
       response = await client.get_template(template_id)
       return json.dumps(response, indent=2)
   
+  except SafetyCultureAPIError as e:
+    # Sanitize error message before returning
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Template details retrieval failed: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Template details retrieval failed: {safe_error}"
+    ) from e
+
+  except SafetyCultureValidationError as e:
+    # Validation errors are safe to pass through
+    logger.warning(f"Invalid template ID: {e}")
+    raise
+
   except Exception as e:
-    return f"Error getting template details: {str(e)}"
+    # Catch-all with sanitization
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(
+      f"Unexpected error getting template details: {safe_error}"
+    )
+    raise SafetyCultureAPIError(
+      f"Unexpected error getting template details: {safe_error}"
+    ) from e
 
 
 async def create_safetyculture_inspection(
@@ -165,9 +250,12 @@ async def create_safetyculture_inspection(
       # Build header items for pre-filling
       header_items = []
       
+      # Load field mappings
+      field_loader = get_field_loader()
+      
       if inspection_title:
         header_items.append({
-            "item_id": "f3245d40-ea77-11e1-aff1-0800200c9a66",  # Standard title field
+            "item_id": field_loader.get_field_id('standard_title'),
             "label": "Inspection Title",
             "type": "textsingle",
             "responses": {
@@ -177,7 +265,7 @@ async def create_safetyculture_inspection(
       
       if conducted_by:
         header_items.append({
-            "item_id": "f3245d43-ea77-11e1-aff1-0800200c9a66",  # Standard conducted by field
+            "item_id": field_loader.get_field_id('inspector_name'),
             "label": "Conducted By",
             "type": "textsingle",
             "responses": {
@@ -192,8 +280,26 @@ async def create_safetyculture_inspection(
       
       return json.dumps(response, indent=2)
   
+  except SafetyCultureAPIError as e:
+    # Sanitize error message before returning
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Inspection creation failed: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Inspection creation failed: {safe_error}"
+    ) from e
+
+  except SafetyCultureValidationError as e:
+    # Validation errors are safe to pass through
+    logger.warning(f"Invalid inspection creation parameters: {e}")
+    raise
+
   except Exception as e:
-    return f"Error creating inspection: {str(e)}"
+    # Catch-all with sanitization
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Unexpected error creating inspection: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Unexpected error creating inspection: {safe_error}"
+    ) from e
 
 
 async def update_safetyculture_inspection(
@@ -238,8 +344,26 @@ async def update_safetyculture_inspection(
       response = await client.update_inspection(audit_id, items)
       return json.dumps(response, indent=2)
   
+  except SafetyCultureAPIError as e:
+    # Sanitize error message before returning
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Inspection update failed: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Inspection update failed: {safe_error}"
+    ) from e
+
+  except SafetyCultureValidationError as e:
+    # Validation errors are safe to pass through
+    logger.warning(f"Invalid inspection update parameters: {e}")
+    raise
+
   except Exception as e:
-    return f"Error updating inspection: {str(e)}"
+    # Catch-all with sanitization
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Unexpected error updating inspection: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Unexpected error updating inspection: {safe_error}"
+    ) from e
 
 
 async def get_safetyculture_inspection_details(audit_id: str) -> str:
@@ -257,8 +381,28 @@ async def get_safetyculture_inspection_details(audit_id: str) -> str:
       response = await client.get_inspection(audit_id)
       return json.dumps(response, indent=2)
   
+  except SafetyCultureAPIError as e:
+    # Sanitize error message before returning
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Inspection details retrieval failed: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Inspection details retrieval failed: {safe_error}"
+    ) from e
+
+  except SafetyCultureValidationError as e:
+    # Validation errors are safe to pass through
+    logger.warning(f"Invalid inspection ID: {e}")
+    raise
+
   except Exception as e:
-    return f"Error getting inspection details: {str(e)}"
+    # Catch-all with sanitization
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(
+      f"Unexpected error getting inspection details: {safe_error}"
+    )
+    raise SafetyCultureAPIError(
+      f"Unexpected error getting inspection details: {safe_error}"
+    ) from e
 
 
 async def share_safetyculture_inspection(
@@ -296,8 +440,26 @@ async def share_safetyculture_inspection(
       response = await client.share_inspection(audit_id, shares)
       return json.dumps(response, indent=2)
   
+  except SafetyCultureAPIError as e:
+    # Sanitize error message before returning
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Inspection sharing failed: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Inspection sharing failed: {safe_error}"
+    ) from e
+
+  except SafetyCultureValidationError as e:
+    # Validation errors are safe to pass through
+    logger.warning(f"Invalid inspection sharing parameters: {e}")
+    raise
+
   except Exception as e:
-    return f"Error sharing inspection: {str(e)}"
+    # Catch-all with sanitization
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Unexpected error sharing inspection: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Unexpected error sharing inspection: {safe_error}"
+    ) from e
 
 
 async def search_safetyculture_inspections(
@@ -327,8 +489,26 @@ async def search_safetyculture_inspections(
       
       return json.dumps(response, indent=2)
   
+  except SafetyCultureAPIError as e:
+    # Sanitize error message before returning
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Inspection search failed: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Inspection search failed: {safe_error}"
+    ) from e
+
+  except SafetyCultureValidationError as e:
+    # Validation errors are safe to pass through
+    logger.warning(f"Invalid inspection search parameters: {e}")
+    raise
+
   except Exception as e:
-    return f"Error searching inspections: {str(e)}"
+    # Catch-all with sanitization
+    safe_error = _header_manager.sanitize_error(e)
+    logger.error(f"Unexpected error in inspection search: {safe_error}")
+    raise SafetyCultureAPIError(
+      f"Unexpected error in inspection search: {safe_error}"
+    ) from e
 
 
 # Create FunctionTool instances

@@ -15,11 +15,22 @@
 from __future__ import annotations
 
 import json
+import logging
 from typing import Any, Dict, List, Optional
 
 from google.adk.tools.function_tool import FunctionTool
 
 from .asset_tracker import AssetTracker
+from ..exceptions import (
+  SafetyCultureDatabaseError,
+  SafetyCultureValidationError,
+)
+from ..utils.secure_header_manager import SecureHeaderManager
+
+logger = logging.getLogger(__name__)
+
+# Shared header manager for error sanitization
+_header_manager = SecureHeaderManager()
 
 
 # Global asset tracker instance
@@ -36,8 +47,26 @@ async def initialize_asset_database() -> str:
     try:
         await _asset_tracker.initialize_database()
         return "Asset tracking database initialized successfully"
+    except SafetyCultureDatabaseError as e:
+        # Sanitize error message before returning
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Database initialization failed: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Database initialization failed: {safe_error}"
+        ) from e
+
+    except SafetyCultureValidationError as e:
+        # Validation errors are safe to pass through
+        logger.warning(f"Invalid database parameters: {e}")
+        raise
+
     except Exception as e:
-        return f"Error initializing database: {str(e)}"
+        # Catch-all with sanitization
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Unexpected error initializing database: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Unexpected error initializing database: {safe_error}"
+        ) from e
 
 
 async def check_asset_completion_status(asset_id: str, month_year: Optional[str] = None) -> str:
@@ -65,8 +94,26 @@ async def check_asset_completion_status(asset_id: str, month_year: Optional[str]
         
         return json.dumps(result, indent=2)
     
+    except SafetyCultureDatabaseError as e:
+        # Sanitize error message before returning
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Asset status check failed: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Asset status check failed: {safe_error}"
+        ) from e
+
+    except SafetyCultureValidationError as e:
+        # Validation errors are safe to pass through
+        logger.warning(f"Invalid asset ID or parameters: {e}")
+        raise
+
     except Exception as e:
-        return f"Error checking asset status: {str(e)}"
+        # Catch-all with sanitization
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Unexpected error checking asset status: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Unexpected error checking asset status: {safe_error}"
+        ) from e
 
 
 async def register_asset_for_monthly_inspection(
@@ -116,8 +163,26 @@ async def register_asset_for_monthly_inspection(
         
         return json.dumps(result, indent=2)
     
+    except SafetyCultureDatabaseError as e:
+        # Sanitize error message before returning
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Asset registration failed: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Asset registration failed: {safe_error}"
+        ) from e
+
+    except SafetyCultureValidationError as e:
+        # Validation errors are safe to pass through
+        logger.warning(f"Invalid asset registration parameters: {e}")
+        raise
+
     except Exception as e:
-        return f"Error registering asset: {str(e)}"
+        # Catch-all with sanitization
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Unexpected error registering asset: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Unexpected error registering asset: {safe_error}"
+        ) from e
 
 
 async def update_asset_inspection_status(
@@ -156,8 +221,26 @@ async def update_asset_inspection_status(
         
         return json.dumps(result, indent=2)
     
+    except SafetyCultureDatabaseError as e:
+        # Sanitize error message before returning
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Asset status update failed: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Asset status update failed: {safe_error}"
+        ) from e
+
+    except SafetyCultureValidationError as e:
+        # Validation errors are safe to pass through
+        logger.warning(f"Invalid status update parameters: {e}")
+        raise
+
     except Exception as e:
-        return f"Error updating asset status: {str(e)}"
+        # Catch-all with sanitization
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Unexpected error updating asset status: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Unexpected error updating asset status: {safe_error}"
+        ) from e
 
 
 async def mark_asset_inspection_completed(
@@ -197,8 +280,26 @@ async def mark_asset_inspection_completed(
         
         return json.dumps(result, indent=2)
     
+    except SafetyCultureDatabaseError as e:
+        # Sanitize error message before returning
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Asset completion marking failed: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Asset completion marking failed: {safe_error}"
+        ) from e
+
+    except SafetyCultureValidationError as e:
+        # Validation errors are safe to pass through
+        logger.warning(f"Invalid completion parameters: {e}")
+        raise
+
     except Exception as e:
-        return f"Error marking asset completed: {str(e)}"
+        # Catch-all with sanitization
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Unexpected error marking asset completed: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Unexpected error marking asset completed: {safe_error}"
+        ) from e
 
 
 async def get_pending_assets_for_inspection(
@@ -238,8 +339,28 @@ async def get_pending_assets_for_inspection(
         
         return json.dumps(result, indent=2)
     
+    except SafetyCultureDatabaseError as e:
+        # Sanitize error message before returning
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Pending assets retrieval failed: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Pending assets retrieval failed: {safe_error}"
+        ) from e
+
+    except SafetyCultureValidationError as e:
+        # Validation errors are safe to pass through
+        logger.warning(f"Invalid query parameters: {e}")
+        raise
+
     except Exception as e:
-        return f"Error getting pending assets: {str(e)}"
+        # Catch-all with sanitization
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(
+            f"Unexpected error getting pending assets: {safe_error}"
+        )
+        raise SafetyCultureDatabaseError(
+            f"Unexpected error getting pending assets: {safe_error}"
+        ) from e
 
 
 async def get_completed_assets_report(month_year: Optional[str] = None) -> str:
@@ -274,8 +395,28 @@ async def get_completed_assets_report(month_year: Optional[str] = None) -> str:
         
         return json.dumps(result, indent=2)
     
+    except SafetyCultureDatabaseError as e:
+        # Sanitize error message before returning
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Completed assets retrieval failed: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Completed assets retrieval failed: {safe_error}"
+        ) from e
+
+    except SafetyCultureValidationError as e:
+        # Validation errors are safe to pass through
+        logger.warning(f"Invalid query parameters: {e}")
+        raise
+
     except Exception as e:
-        return f"Error getting completed assets: {str(e)}"
+        # Catch-all with sanitization
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(
+            f"Unexpected error getting completed assets: {safe_error}"
+        )
+        raise SafetyCultureDatabaseError(
+            f"Unexpected error getting completed assets: {safe_error}"
+        ) from e
 
 
 async def get_monthly_inspection_summary(month_year: Optional[str] = None) -> str:
@@ -292,8 +433,28 @@ async def get_monthly_inspection_summary(month_year: Optional[str] = None) -> st
         summary = await _asset_tracker.get_monthly_summary(month_year)
         return json.dumps(summary, indent=2)
     
+    except SafetyCultureDatabaseError as e:
+        # Sanitize error message before returning
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Monthly summary retrieval failed: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Monthly summary retrieval failed: {safe_error}"
+        ) from e
+
+    except SafetyCultureValidationError as e:
+        # Validation errors are safe to pass through
+        logger.warning(f"Invalid summary parameters: {e}")
+        raise
+
     except Exception as e:
-        return f"Error getting monthly summary: {str(e)}"
+        # Catch-all with sanitization
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(
+            f"Unexpected error getting monthly summary: {safe_error}"
+        )
+        raise SafetyCultureDatabaseError(
+            f"Unexpected error getting monthly summary: {safe_error}"
+        ) from e
 
 
 async def export_comprehensive_monthly_report(month_year: Optional[str] = None) -> str:
@@ -310,8 +471,28 @@ async def export_comprehensive_monthly_report(month_year: Optional[str] = None) 
         report = await _asset_tracker.export_monthly_report(month_year)
         return json.dumps(report, indent=2)
     
+    except SafetyCultureDatabaseError as e:
+        # Sanitize error message before returning
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Monthly report export failed: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Monthly report export failed: {safe_error}"
+        ) from e
+
+    except SafetyCultureValidationError as e:
+        # Validation errors are safe to pass through
+        logger.warning(f"Invalid export parameters: {e}")
+        raise
+
     except Exception as e:
-        return f"Error exporting monthly report: {str(e)}"
+        # Catch-all with sanitization
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(
+            f"Unexpected error exporting monthly report: {safe_error}"
+        )
+        raise SafetyCultureDatabaseError(
+            f"Unexpected error exporting monthly report: {safe_error}"
+        ) from e
 
 
 async def filter_assets_to_prevent_duplicates(
@@ -355,8 +536,26 @@ async def filter_assets_to_prevent_duplicates(
         
         return json.dumps(result, indent=2)
     
+    except SafetyCultureDatabaseError as e:
+        # Sanitize error message before returning
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Asset filtering failed: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Asset filtering failed: {safe_error}"
+        ) from e
+
+    except SafetyCultureValidationError as e:
+        # Validation errors are safe to pass through
+        logger.warning(f"Invalid filtering parameters: {e}")
+        raise
+
     except Exception as e:
-        return f"Error filtering assets: {str(e)}"
+        # Catch-all with sanitization
+        safe_error = _header_manager.sanitize_error(e)
+        logger.error(f"Unexpected error filtering assets: {safe_error}")
+        raise SafetyCultureDatabaseError(
+            f"Unexpected error filtering assets: {safe_error}"
+        ) from e
 
 
 # Create FunctionTool instances for database management
