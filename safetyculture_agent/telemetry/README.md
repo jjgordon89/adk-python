@@ -14,7 +14,7 @@ The telemetry system provides:
 
 ## Architecture
 
-```
+```text
 telemetry/
 ├── __init__.py              # Public API exports
 ├── telemetry_config.py      # Configuration dataclass and constants
@@ -97,11 +97,13 @@ You can also use [`config/telemetry.yaml`](../config/telemetry.yaml) for configu
 ### Prometheus Metrics
 
 1. **Access metrics endpoint**:
+
    ```bash
    curl http://localhost:8889/metrics
    ```
 
 2. **Configure Prometheus** (`prometheus.yml`):
+
    ```yaml
    scrape_configs:
      - job_name: 'safetyculture-agent'
@@ -110,6 +112,7 @@ You can also use [`config/telemetry.yaml`](../config/telemetry.yaml) for configu
    ```
 
 3. **Common queries**:
+
    ```promql
    # API request rate
    rate(safetyculture_api_requests[5m])
@@ -127,6 +130,7 @@ You can also use [`config/telemetry.yaml`](../config/telemetry.yaml) for configu
 ### Distributed Traces (Jaeger)
 
 1. **Start Jaeger** (via Docker):
+
    ```bash
    docker run -d --name jaeger \
      -p 16686:16686 \
@@ -135,6 +139,7 @@ You can also use [`config/telemetry.yaml`](../config/telemetry.yaml) for configu
    ```
 
 2. **Configure agent**:
+
    ```bash
    export TELEMETRY_OTLP_ENDPOINT=localhost:4317
    ```
@@ -144,11 +149,13 @@ You can also use [`config/telemetry.yaml`](../config/telemetry.yaml) for configu
 ### Distributed Traces (Zipkin)
 
 1. **Start Zipkin**:
+
    ```bash
    docker run -d -p 9411:9411 openzipkin/zipkin
    ```
 
 2. **Configure agent**:
+
    ```bash
    export TELEMETRY_OTLP_ENDPOINT=localhost:9411/api/v2/spans
    ```
@@ -276,17 +283,20 @@ The telemetry system is designed for minimal overhead:
 ### Performance Tuning
 
 1. **Reduce sampling** for high-traffic endpoints:
+
    ```bash
    export TELEMETRY_SAMPLING_RATE=0.1  # Sample 10% of traces
    ```
 
 2. **Disable tracing**, keep metrics:
+
    ```bash
    export TELEMETRY_OTLP_ENDPOINT=  # Empty to disable
    export TELEMETRY_PROMETHEUS_ENABLED=true
    ```
 
 3. **Disable telemetry completely**:
+
    ```bash
    export TELEMETRY_ENABLED=false
    ```
@@ -296,17 +306,20 @@ The telemetry system is designed for minimal overhead:
 ### Metrics Not Showing Up
 
 1. **Check if telemetry is enabled**:
+
    ```bash
    curl http://localhost:8889/metrics | grep safetyculture
    ```
 
 2. **Verify environment variables**:
+
    ```bash
    echo $TELEMETRY_ENABLED
    echo $TELEMETRY_PROMETHEUS_PORT
    ```
 
 3. **Check logs** for initialization errors:
+
    ```bash
    grep -i telemetry logs/agent.log
    ```
@@ -314,11 +327,13 @@ The telemetry system is designed for minimal overhead:
 ### Traces Not Appearing in Jaeger/Zipkin
 
 1. **Verify OTLP endpoint**:
+
    ```bash
    echo $TELEMETRY_OTLP_ENDPOINT
    ```
 
 2. **Test connectivity**:
+
    ```bash
    nc -zv localhost 4317  # For local Jaeger
    ```
@@ -326,6 +341,7 @@ The telemetry system is designed for minimal overhead:
 3. **Check collector logs** for errors
 
 4. **Verify sampling rate** (not set too low):
+
    ```bash
    echo $TELEMETRY_SAMPLING_RATE
    ```
@@ -333,17 +349,20 @@ The telemetry system is designed for minimal overhead:
 ### High Memory Usage
 
 1. **Reduce span attributes**:
+
    ```python
    # In telemetry_config.py or via env var
    max_attributes_per_span: 64  # Default: 128
    ```
 
 2. **Reduce sampling rate**:
+
    ```bash
    export TELEMETRY_SAMPLING_RATE=0.1
    ```
 
 3. **Disable tracing** if only metrics are needed:
+
    ```bash
    export TELEMETRY_OTLP_ENDPOINT=
    ```
@@ -425,6 +444,7 @@ groups:
 ### Grafana Dashboard Queries
 
 **API Performance Panel**:
+
 ```promql
 # Request rate by endpoint
 sum(rate(safetyculture_api_requests[5m])) by (endpoint)
@@ -440,6 +460,7 @@ sum(rate(safetyculture_api_requests{status_code=~"5.."}[5m]))
 ```
 
 **Database Performance Panel**:
+
 ```promql
 # Query rate by operation
 sum(rate(safetyculture_db_queries[5m])) by (operation)
@@ -451,6 +472,7 @@ histogram_quantile(0.95,
 ```
 
 **System Health Panel**:
+
 ```promql
 # Circuit breaker status
 safetyculture_circuit_breaker_state
@@ -674,6 +696,7 @@ curl http://localhost:8889/metrics | grep safetyculture_api_requests
 1. **Sensitive Data**: The telemetry system automatically excludes sensitive headers (API tokens, passwords) from spans and metrics.
 
 2. **Network Security**: Use TLS for OTLP endpoints in production:
+
    ```bash
    export TELEMETRY_OTLP_INSECURE=false
    ```
@@ -692,6 +715,7 @@ curl http://localhost:8889/metrics | grep safetyculture_api_requests
 ## Changelog
 
 ### Version 1.0.0 (2025-01)
+
 - Initial OpenTelemetry integration
 - Distributed tracing for API and database operations
 - Prometheus metrics export

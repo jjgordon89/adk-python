@@ -34,10 +34,10 @@ This document outlines the architecture for a web-based GUI to interact with Goo
 
 ### Frontend Framework
 
-**React 18+ with TypeScript**
+#### React 18+ with TypeScript
 
 - **Rationale**: Industry-standard, excellent ecosystem, strong typing
-- **Benefits**: 
+- **Benefits**:
   - Component reusability
   - Virtual DOM performance
   - Extensive community support
@@ -45,7 +45,7 @@ This document outlines the architecture for a web-based GUI to interact with Goo
 
 ### State Management
 
-**Zustand + React Query (TanStack Query)**
+#### Zustand + React Query (TanStack Query)
 
 - **Zustand**: Lightweight global state management
   - Session management
@@ -62,7 +62,7 @@ This document outlines the architecture for a web-based GUI to interact with Goo
 
 ### UI Component Library
 
-**shadcn/ui**
+#### shadcn/ui
 
 - Built on Radix UI primitives
 - Fully customizable Tailwind CSS components
@@ -71,13 +71,14 @@ This document outlines the architecture for a web-based GUI to interact with Goo
 - Dark mode support
 
 **Additional UI Dependencies**:
+
 - `lucide-react` - Icon library
 - `tailwindcss` - Utility-first CSS
 - `class-variance-authority` - Component variant handling
 
 ### Build Tool
 
-**Vite**
+#### Vite
 
 - Fast development server with Hot Module Replacement (HMR)
 - Optimized production builds
@@ -90,7 +91,7 @@ This document outlines the architecture for a web-based GUI to interact with Goo
 
 ### High-Level Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                        React Frontend                        │
 │  ┌─────────────┬──────────────┬──────────────────────────┐ │
@@ -127,7 +128,7 @@ This document outlines the architecture for a web-based GUI to interact with Goo
 
 ### Component Architecture
 
-```
+```text
 src/
 ├── components/
 │   ├── session/
@@ -194,6 +195,7 @@ src/
 **Purpose**: Manage agent sessions with full CRUD operations.
 
 **Features**:
+
 - List all sessions with metadata
 - Create new sessions with agent selection
 - Resume existing sessions
@@ -201,6 +203,7 @@ src/
 - View session history and events
 
 **Key APIs Used**:
+
 - `POST /sessions` - Create session
 - `GET /sessions` - List sessions
 - `GET /sessions/{id}` - Get session details
@@ -208,6 +211,7 @@ src/
 - `GET /sessions/{id}/events` - Get session events
 
 **Component Structure**:
+
 ```tsx
 <SessionManager>
   <SessionList 
@@ -228,6 +232,7 @@ src/
 **Purpose**: Interactive conversation with agents supporting streaming responses.
 
 **Features**:
+
 - Send user messages
 - Display agent responses in real-time
 - Show tool invocations and results
@@ -235,10 +240,12 @@ src/
 - Display thinking/reasoning process
 
 **Key APIs Used**:
+
 - `POST /agent/invoke` - Send message
 - `GET /agent/stream` - Stream responses (SSE)
 
 **Component Structure**:
+
 ```tsx
 <ChatInterface>
   <MessageList>
@@ -262,6 +269,7 @@ src/
 **Purpose**: Visualize and interact with generated artifacts.
 
 **Features**:
+
 - Browse all session artifacts
 - Preview images, PDFs, text files
 - Syntax-highlighted code display
@@ -269,9 +277,11 @@ src/
 - Filter by artifact type
 
 **Key APIs Used**:
+
 - `GET /artifacts/{artifact_id}` - Get artifact content
 
 **Component Structure**:
+
 ```tsx
 <ArtifactBrowser>
   <ArtifactList 
@@ -290,6 +300,7 @@ src/
 **Purpose**: Show multi-agent orchestration and handoffs.
 
 **Features**:
+
 - Visual flow diagram
 - Agent state indicators
 - Transfer visualization
@@ -297,6 +308,7 @@ src/
 - Performance metrics
 
 **Component Structure**:
+
 ```tsx
 <AgentWorkflow>
   <FlowDiagram 
@@ -317,6 +329,7 @@ src/
 **Purpose**: Display discovered SafetyCulture assets.
 
 **Features**:
+
 - Table view of assets
 - Filter by type, location, status
 - Asset detail modal
@@ -345,6 +358,7 @@ src/
 **Purpose**: Match and select inspection templates.
 
 **Features**:
+
 - Template search
 - AI-powered matching display
 - Template preview
@@ -373,6 +387,7 @@ src/
 **Purpose**: Display and fill inspection forms.
 
 **Features**:
+
 - Dynamic form rendering
 - Field type handling (text, date, media, etc.)
 - Auto-fill visualization
@@ -403,6 +418,7 @@ src/
 **Purpose**: Browse SQLite database contents.
 
 **Features**:
+
 - Table list
 - Query interface
 - Data grid display
@@ -580,7 +596,7 @@ export function useStreaming(sessionId: string) {
 
 ---
 
-## State Management
+## Frontend State Management
 
 ### Zustand Stores
 
@@ -654,7 +670,7 @@ export const useUIStore = create<UIStore>((set) => ({
 
 ### Server-Sent Events (SSE) Flow
 
-```
+```text
 User Action → POST /agent/invoke → ADK Backend
                                         │
                                         ▼
@@ -704,7 +720,7 @@ export interface SSEEvent {
 
 The SafetyCulture agent system involves multiple specialized agents:
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │         SafetyCultureCoordinator                     │
 │         (Orchestrates entire workflow)               │
@@ -721,6 +737,7 @@ The SafetyCulture agent system involves multiple specialized agents:
 ```
 
 **UI Requirements**:
+
 1. Visual flow diagram showing agent progression
 2. Real-time status indicators for each agent
 3. Data passing visualization between agents
@@ -729,6 +746,7 @@ The SafetyCulture agent system involves multiple specialized agents:
 ### Asset Discovery Results Display
 
 **Data Structure**:
+
 ```typescript
 interface Asset {
   id: string;
@@ -743,6 +761,7 @@ interface Asset {
 ```
 
 **UI Features**:
+
 - Sortable/filterable table
 - Batch selection checkboxes
 - Quick filters (by type, location)
@@ -752,6 +771,7 @@ interface Asset {
 ### Template Matching Display
 
 **Data Structure**:
+
 ```typescript
 interface TemplateMatch {
   templateId: string;
@@ -763,6 +783,7 @@ interface TemplateMatch {
 ```
 
 **UI Features**:
+
 - Match confidence visualization (progress bar/badge)
 - AI reasoning display
 - Template preview
@@ -772,6 +793,7 @@ interface TemplateMatch {
 ### Inspection Form Rendering
 
 **Features**:
+
 - Dynamic field rendering based on template schema
 - Support for multiple field types:
   - Text input
@@ -789,6 +811,7 @@ interface TemplateMatch {
 ### Database Browser
 
 **Features**:
+
 - List all tables (assets, templates, inspections, etc.)
 - SQL query interface with syntax highlighting
 - Result grid with sorting/filtering
@@ -805,6 +828,7 @@ interface TemplateMatch {
 **Goal**: Basic functional GUI for core ADK operations.
 
 **Features**:
+
 - [ ] Session management (create, list, delete)
 - [ ] Basic chat interface
 - [ ] Message display (user/agent)
@@ -813,6 +837,7 @@ interface TemplateMatch {
 - [ ] Basic styling with shadcn/ui
 
 **Deliverables**:
+
 - Working React app with TypeScript
 - API integration for basic operations
 - Zustand stores for state
@@ -824,6 +849,7 @@ interface TemplateMatch {
 **Goal**: Real-time streaming and improved UX.
 
 **Features**:
+
 - [ ] SSE streaming implementation
 - [ ] Real-time message updates
 - [ ] Tool invocation display
@@ -833,6 +859,7 @@ interface TemplateMatch {
 - [ ] Loading states and skeletons
 
 **Deliverables**:
+
 - Streaming client implementation
 - Enhanced chat interface
 - Artifact viewing capabilities
@@ -843,6 +870,7 @@ interface TemplateMatch {
 **Goal**: Multi-agent support and advanced visualizations.
 
 **Features**:
+
 - [ ] Agent workflow visualizer
 - [ ] Multi-agent orchestration display
 - [ ] Performance metrics
@@ -852,6 +880,7 @@ interface TemplateMatch {
 - [ ] User preferences
 
 **Deliverables**:
+
 - Workflow visualization components
 - Performance dashboards
 - Advanced UI features
@@ -861,6 +890,7 @@ interface TemplateMatch {
 **Goal**: Full SafetyCulture agent support.
 
 **Features**:
+
 - [ ] Asset discovery results viewer
 - [ ] Template matching display
 - [ ] Inspection form renderer
@@ -870,6 +900,7 @@ interface TemplateMatch {
 - [ ] SafetyCulture-specific visualizations
 
 **Deliverables**:
+
 - Complete SafetyCulture agent UI
 - Specialized components for inspection workflows
 - Database viewing tools
