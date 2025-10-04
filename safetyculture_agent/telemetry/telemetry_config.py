@@ -44,9 +44,16 @@ SPAN_ATTR_ERROR_TYPE = 'safetyculture.error.type'
 # Metric name constants
 METRIC_API_REQUESTS = 'safetyculture.api.requests'
 METRIC_API_LATENCY = 'safetyculture.api.latency'
+METRIC_API_ERRORS = 'safetyculture.api.errors'
+METRIC_API_TIMEOUTS = 'safetyculture.api.timeouts'
 METRIC_DB_QUERIES = 'safetyculture.db.queries'
 METRIC_DB_QUERY_DURATION = 'safetyculture.db.query_duration'
 METRIC_CIRCUIT_BREAKER_STATE = 'safetyculture.circuit_breaker.state'
+METRIC_CIRCUIT_BREAKER_TRIPS = 'safetyculture.circuit_breaker.trips'
+METRIC_CIRCUIT_BREAKER_RECOVERIES = 'safetyculture.circuit_breaker.recoveries'
+METRIC_CIRCUIT_BREAKER_REJECTIONS = 'safetyculture.circuit_breaker.rejections'
+METRIC_CIRCUIT_BREAKER_SUCCESSES = 'safetyculture.circuit_breaker.successes'
+METRIC_CIRCUIT_BREAKER_FAILURES = 'safetyculture.circuit_breaker.failures'
 METRIC_RATE_LIMIT_HITS = 'safetyculture.rate_limit.hits'
 
 

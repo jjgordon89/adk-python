@@ -17,7 +17,7 @@
 This module implements a three-state circuit breaker to protect against
 cascading failures when making API calls. The circuit breaker transitions
 between CLOSED (normal operation), OPEN (failing fast), and HALF_OPEN
-(testing recovery).
+(testing recovery). Includes Prometheus metrics for monitoring.
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ import asyncio
 import logging
 import time
 from enum import Enum
-from typing import Any, Callable, Dict, TypeVar
+from typing import Any, Callable, Dict, Optional, TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -49,17 +49,18 @@ class CircuitBreakerOpenError(Exception):
 
 
 class CircuitBreaker:
-  """Three-state circuit breaker with exponential backoff.
+  """Three-state circuit breaker with exponential backoff and metrics.
   
   Protects API calls from cascading failures by tracking failures and
   opening the circuit when a threshold is exceeded. Uses exponential
-  backoff for recovery attempts.
+  backoff for recovery attempts. Emits Prometheus metrics for monitoring.
   
   Attributes:
       failure_threshold: Number of failures before opening circuit
       success_threshold: Number of successes needed to close from half-open
       base_timeout: Initial timeout in seconds when circuit opens
       max_timeout: Maximum timeout in seconds (caps exponential growth)
+      name: Circuit breaker identifier for metrics
   """
   
   def __init__(
@@ -67,7 +68,8 @@ class CircuitBreaker:
       failure_threshold: int = 5,
       success_threshold: int = 2,
       base_timeout: float = 60.0,
-      max_timeout: float = 600.0
+      max_timeout: float = 600.0,
+      name: Optional[str] = None
   ):
     """Initialize circuit breaker with configurable thresholds.
     
@@ -76,11 +78,13 @@ class CircuitBreaker:
         success_threshold: Successes to close from half-open (default: 2)
         base_timeout: Initial timeout in seconds (default: 60.0)
         max_timeout: Maximum timeout in seconds (default: 600.0)
+        name: Circuit breaker identifier for metrics (default: 'default')
     """
     self.failure_threshold = failure_threshold
     self.success_threshold = success_threshold
     self.base_timeout = base_timeout
     self.max_timeout = max_timeout
+    self.name = name or 'default'
     
     # State tracking
     self._state = CircuitState.CLOSED
@@ -93,8 +97,12 @@ class CircuitBreaker:
     self._total_calls = 0
     self._total_failures = 0
     self._total_successes = 0
+    self._rejected_calls = 0  # Calls rejected due to open circuit
     
     self._lock = asyncio.Lock()
+    
+    # Record initial state
+    self._record_state_metric()
   
   @property
   def state(self) -> CircuitState:
@@ -124,7 +132,7 @@ class CircuitBreaker:
     return time_since_failure >= timeout
   
   def _transition_to_open(self) -> None:
-    """Transition circuit to OPEN state."""
+    """Transition circuit to OPEN state and record metrics."""
     self._state = CircuitState.OPEN
     self._last_failure_time = time.time()
     self._open_count += 1
@@ -132,32 +140,49 @@ class CircuitBreaker:
     
     timeout = self._calculate_timeout()
     logger.warning(
-      f"Circuit breaker OPENED after {self._failure_count} failures. "
+      f"Circuit breaker '{self.name}' OPENED after "
+      f"{self._failure_count} failures. "
       f"Timeout: {timeout}s (attempt #{self._open_count})"
     )
+    
+    # Record state change metric
+    self._record_state_metric()
+    self._record_trip_metric()
   
   def _transition_to_half_open(self) -> None:
-    """Transition circuit to HALF_OPEN state for testing."""
+    """Transition circuit to HALF_OPEN state for testing and record metrics."""
     self._state = CircuitState.HALF_OPEN
     self._success_count = 0
-    logger.info("Circuit breaker transitioning to HALF_OPEN for testing")
+    logger.info(
+      f"Circuit breaker '{self.name}' transitioning to HALF_OPEN for testing"
+    )
+    
+    # Record state change metric
+    self._record_state_metric()
   
   def _transition_to_closed(self) -> None:
-    """Transition circuit to CLOSED state (normal operation)."""
+    """Transition circuit to CLOSED state and record metrics."""
     self._state = CircuitState.CLOSED
     self._failure_count = 0
     self._success_count = 0
     self._open_count = 0  # Reset open count on successful recovery
-    logger.info("Circuit breaker CLOSED - service recovered")
+    logger.info(f"Circuit breaker '{self.name}' CLOSED - service recovered")
+    
+    # Record state change and recovery metrics
+    self._record_state_metric()
+    self._record_recovery_metric()
   
   def _record_success(self) -> None:
     """Record successful call and update state accordingly."""
     self._total_successes += 1
     
+    # Record success rate metric
+    self._record_success_rate_metric()
+    
     if self._state == CircuitState.HALF_OPEN:
       self._success_count += 1
       logger.debug(
-        f"Circuit breaker success in HALF_OPEN: "
+        f"Circuit breaker '{self.name}' success in HALF_OPEN: "
         f"{self._success_count}/{self.success_threshold}"
       )
       
@@ -171,16 +196,20 @@ class CircuitBreaker:
     """Record failed call and update state accordingly."""
     self._total_failures += 1
     
+    # Record failure rate metric
+    self._record_failure_rate_metric()
+    
     if self._state == CircuitState.HALF_OPEN:
       # Any failure in half-open immediately reopens circuit
       logger.warning(
-        "Circuit breaker failure in HALF_OPEN - reopening circuit"
+        f"Circuit breaker '{self.name}' failure in HALF_OPEN - "
+        "reopening circuit"
       )
       self._transition_to_open()
     elif self._state == CircuitState.CLOSED:
       self._failure_count += 1
       logger.debug(
-        f"Circuit breaker failure count: "
+        f"Circuit breaker '{self.name}' failure count: "
         f"{self._failure_count}/{self.failure_threshold}"
       )
       
@@ -216,13 +245,16 @@ class CircuitBreaker:
       
       # Reject calls if circuit is open
       if self._state == CircuitState.OPEN:
+        self._rejected_calls += 1
+        self._record_rejection_metric()
+        
         timeout = self._calculate_timeout()
         time_remaining = (
           timeout - (time.time() - self._last_failure_time)
         )
         raise CircuitBreakerOpenError(
-          f"Circuit breaker is OPEN. Retry in {time_remaining:.1f}s "
-          f"(attempt #{self._open_count})"
+          f"Circuit breaker '{self.name}' is OPEN. "
+          f"Retry in {time_remaining:.1f}s (attempt #{self._open_count})"
         )
     
     # Execute the function call (outside lock to allow concurrency)
@@ -269,8 +301,65 @@ class CircuitBreaker:
       'total_successes': self._total_successes,
       'failure_rate': failure_rate,
       'open_count': self._open_count,
-      'current_timeout': self._calculate_timeout()
+      'current_timeout': self._calculate_timeout(),
+      'rejected_calls': self._rejected_calls
     }
+  
+  def _record_state_metric(self) -> None:
+    """Record circuit breaker state as Prometheus metric."""
+    try:
+      from ..telemetry.prometheus_metrics import record_circuit_breaker_state
+      record_circuit_breaker_state(self.name, self._state.value)
+    except Exception as e:  # pylint: disable=broad-except
+      logger.debug(f"Failed to record state metric: {e}")
+  
+  def _record_trip_metric(self) -> None:
+    """Record circuit breaker trip event."""
+    try:
+      from ..telemetry.prometheus_metrics import record_circuit_breaker_trip
+      record_circuit_breaker_trip(self.name)
+    except Exception as e:  # pylint: disable=broad-except
+      logger.debug(f"Failed to record trip metric: {e}")
+  
+  def _record_recovery_metric(self) -> None:
+    """Record circuit breaker recovery event."""
+    try:
+      from ..telemetry.prometheus_metrics import (
+        record_circuit_breaker_recovery
+      )
+      record_circuit_breaker_recovery(self.name)
+    except Exception as e:  # pylint: disable=broad-except
+      logger.debug(f"Failed to record recovery metric: {e}")
+  
+  def _record_rejection_metric(self) -> None:
+    """Record rejected call due to open circuit."""
+    try:
+      from ..telemetry.prometheus_metrics import (
+        record_circuit_breaker_rejection
+      )
+      record_circuit_breaker_rejection(self.name)
+    except Exception as e:  # pylint: disable=broad-except
+      logger.debug(f"Failed to record rejection metric: {e}")
+  
+  def _record_success_rate_metric(self) -> None:
+    """Record success rate metric."""
+    try:
+      from ..telemetry.prometheus_metrics import (
+        record_circuit_breaker_success
+      )
+      record_circuit_breaker_success(self.name)
+    except Exception as e:  # pylint: disable=broad-except
+      logger.debug(f"Failed to record success metric: {e}")
+  
+  def _record_failure_rate_metric(self) -> None:
+    """Record failure rate metric."""
+    try:
+      from ..telemetry.prometheus_metrics import (
+        record_circuit_breaker_failure
+      )
+      record_circuit_breaker_failure(self.name)
+    except Exception as e:  # pylint: disable=broad-except
+      logger.debug(f"Failed to record failure metric: {e}")
   
   def reset(self) -> None:
     """Manually reset circuit breaker to CLOSED state.
@@ -283,4 +372,8 @@ class CircuitBreaker:
     self._success_count = 0
     self._open_count = 0
     self._last_failure_time = 0.0
-    logger.info("Circuit breaker manually reset to CLOSED")
+    self._rejected_calls = 0
+    logger.info(f"Circuit breaker '{self.name}' manually reset to CLOSED")
+    
+    # Record state change metric
+    self._record_state_metric()

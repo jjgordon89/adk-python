@@ -24,9 +24,16 @@ import logging
 from typing import Any
 
 from .telemetry_config import (
+  METRIC_API_ERRORS,
   METRIC_API_LATENCY,
   METRIC_API_REQUESTS,
+  METRIC_API_TIMEOUTS,
+  METRIC_CIRCUIT_BREAKER_FAILURES,
+  METRIC_CIRCUIT_BREAKER_RECOVERIES,
+  METRIC_CIRCUIT_BREAKER_REJECTIONS,
   METRIC_CIRCUIT_BREAKER_STATE,
+  METRIC_CIRCUIT_BREAKER_SUCCESSES,
+  METRIC_CIRCUIT_BREAKER_TRIPS,
   METRIC_DB_QUERIES,
   METRIC_DB_QUERY_DURATION,
   METRIC_RATE_LIMIT_HITS,
@@ -41,6 +48,13 @@ _api_latency_histogram: Any = None
 _db_query_counter: Any = None
 _db_query_duration_histogram: Any = None
 _circuit_breaker_gauge: Any = None
+_circuit_breaker_trip_counter: Any = None
+_circuit_breaker_recovery_counter: Any = None
+_circuit_breaker_rejection_counter: Any = None
+_circuit_breaker_success_counter: Any = None
+_circuit_breaker_failure_counter: Any = None
+_api_error_counter: Any = None
+_api_timeout_counter: Any = None
 _rate_limit_counter: Any = None
 
 
@@ -328,3 +342,312 @@ def record_rate_limit_hit(
     counter.add(1, attrs)
   except Exception as e:  # pylint: disable=broad-except
     logger.error('Failed to record rate limit hit: %s', e)
+
+
+def _get_circuit_breaker_trip_counter() -> Any:
+  """Get or create the circuit breaker trips counter."""
+  global _circuit_breaker_trip_counter
+  if _circuit_breaker_trip_counter is None:
+    try:
+      manager = get_telemetry_manager()
+      if manager.is_enabled:
+        meter = manager.get_meter(__name__)
+        _circuit_breaker_trip_counter = meter.create_counter(
+          name=METRIC_CIRCUIT_BREAKER_TRIPS,
+          unit='1',
+          description='Count of circuit breaker trips (open events)',
+        )
+    except Exception as e:  # pylint: disable=broad-except
+      logger.error('Failed to create circuit breaker trip counter: %s', e)
+  return _circuit_breaker_trip_counter
+
+
+def _get_circuit_breaker_recovery_counter() -> Any:
+  """Get or create the circuit breaker recoveries counter."""
+  global _circuit_breaker_recovery_counter
+  if _circuit_breaker_recovery_counter is None:
+    try:
+      manager = get_telemetry_manager()
+      if manager.is_enabled:
+        meter = manager.get_meter(__name__)
+        _circuit_breaker_recovery_counter = meter.create_counter(
+          name=METRIC_CIRCUIT_BREAKER_RECOVERIES,
+          unit='1',
+          description='Count of circuit breaker recoveries (close events)',
+        )
+    except Exception as e:  # pylint: disable=broad-except
+      logger.error('Failed to create circuit breaker recovery counter: %s', e)
+  return _circuit_breaker_recovery_counter
+
+
+def _get_circuit_breaker_rejection_counter() -> Any:
+  """Get or create the circuit breaker rejections counter."""
+  global _circuit_breaker_rejection_counter
+  if _circuit_breaker_rejection_counter is None:
+    try:
+      manager = get_telemetry_manager()
+      if manager.is_enabled:
+        meter = manager.get_meter(__name__)
+        _circuit_breaker_rejection_counter = meter.create_counter(
+          name=METRIC_CIRCUIT_BREAKER_REJECTIONS,
+          unit='1',
+          description='Count of calls rejected by open circuit breaker',
+        )
+    except Exception as e:  # pylint: disable=broad-except
+      logger.error(
+        'Failed to create circuit breaker rejection counter: %s', e
+      )
+  return _circuit_breaker_rejection_counter
+
+
+def _get_circuit_breaker_success_counter() -> Any:
+  """Get or create the circuit breaker successes counter."""
+  global _circuit_breaker_success_counter
+  if _circuit_breaker_success_counter is None:
+    try:
+      manager = get_telemetry_manager()
+      if manager.is_enabled:
+        meter = manager.get_meter(__name__)
+        _circuit_breaker_success_counter = meter.create_counter(
+          name=METRIC_CIRCUIT_BREAKER_SUCCESSES,
+          unit='1',
+          description='Count of successful calls through circuit breaker',
+        )
+    except Exception as e:  # pylint: disable=broad-except
+      logger.error('Failed to create circuit breaker success counter: %s', e)
+  return _circuit_breaker_success_counter
+
+
+def _get_circuit_breaker_failure_counter() -> Any:
+  """Get or create the circuit breaker failures counter."""
+  global _circuit_breaker_failure_counter
+  if _circuit_breaker_failure_counter is None:
+    try:
+      manager = get_telemetry_manager()
+      if manager.is_enabled:
+        meter = manager.get_meter(__name__)
+        _circuit_breaker_failure_counter = meter.create_counter(
+          name=METRIC_CIRCUIT_BREAKER_FAILURES,
+          unit='1',
+          description='Count of failed calls through circuit breaker',
+        )
+    except Exception as e:  # pylint: disable=broad-except
+      logger.error('Failed to create circuit breaker failure counter: %s', e)
+  return _circuit_breaker_failure_counter
+
+
+def _get_api_error_counter() -> Any:
+  """Get or create the API error counter."""
+  global _api_error_counter
+  if _api_error_counter is None:
+    try:
+      manager = get_telemetry_manager()
+      if manager.is_enabled:
+        meter = manager.get_meter(__name__)
+        _api_error_counter = meter.create_counter(
+          name=METRIC_API_ERRORS,
+          unit='1',
+          description='Count of API errors by endpoint and error type',
+        )
+    except Exception as e:  # pylint: disable=broad-except
+      logger.error('Failed to create API error counter: %s', e)
+  return _api_error_counter
+
+
+def _get_api_timeout_counter() -> Any:
+  """Get or create the API timeout counter."""
+  global _api_timeout_counter
+  if _api_timeout_counter is None:
+    try:
+      manager = get_telemetry_manager()
+      if manager.is_enabled:
+        meter = manager.get_meter(__name__)
+        _api_timeout_counter = meter.create_counter(
+          name=METRIC_API_TIMEOUTS,
+          unit='1',
+          description='Count of API request timeouts by endpoint',
+        )
+    except Exception as e:  # pylint: disable=broad-except
+      logger.error('Failed to create API timeout counter: %s', e)
+  return _api_timeout_counter
+
+
+def record_circuit_breaker_trip(
+  name: str,
+  additional_attrs: dict[str, Any] | None = None
+) -> None:
+  """Record a circuit breaker trip event.
+
+  Args:
+    name: Name/identifier of the circuit breaker.
+    additional_attrs: Additional attributes to include.
+  """
+  counter = _get_circuit_breaker_trip_counter()
+  if counter is None:
+    return
+
+  try:
+    attrs = {'name': name}
+    if additional_attrs:
+      attrs.update(additional_attrs)
+
+    counter.add(1, attrs)
+  except Exception as e:  # pylint: disable=broad-except
+    logger.error('Failed to record circuit breaker trip: %s', e)
+
+
+def record_circuit_breaker_recovery(
+  name: str,
+  additional_attrs: dict[str, Any] | None = None
+) -> None:
+  """Record a circuit breaker recovery event.
+
+  Args:
+    name: Name/identifier of the circuit breaker.
+    additional_attrs: Additional attributes to include.
+  """
+  counter = _get_circuit_breaker_recovery_counter()
+  if counter is None:
+    return
+
+  try:
+    attrs = {'name': name}
+    if additional_attrs:
+      attrs.update(additional_attrs)
+
+    counter.add(1, attrs)
+  except Exception as e:  # pylint: disable=broad-except
+    logger.error('Failed to record circuit breaker recovery: %s', e)
+
+
+def record_circuit_breaker_rejection(
+  name: str,
+  additional_attrs: dict[str, Any] | None = None
+) -> None:
+  """Record a circuit breaker rejection event.
+
+  Args:
+    name: Name/identifier of the circuit breaker.
+    additional_attrs: Additional attributes to include.
+  """
+  counter = _get_circuit_breaker_rejection_counter()
+  if counter is None:
+    return
+
+  try:
+    attrs = {'name': name}
+    if additional_attrs:
+      attrs.update(additional_attrs)
+
+    counter.add(1, attrs)
+  except Exception as e:  # pylint: disable=broad-except
+    logger.error('Failed to record circuit breaker rejection: %s', e)
+
+
+def record_circuit_breaker_success(
+  name: str,
+  additional_attrs: dict[str, Any] | None = None
+) -> None:
+  """Record a successful call through circuit breaker.
+
+  Args:
+    name: Name/identifier of the circuit breaker.
+    additional_attrs: Additional attributes to include.
+  """
+  counter = _get_circuit_breaker_success_counter()
+  if counter is None:
+    return
+
+  try:
+    attrs = {'name': name}
+    if additional_attrs:
+      attrs.update(additional_attrs)
+
+    counter.add(1, attrs)
+  except Exception as e:  # pylint: disable=broad-except
+    logger.error('Failed to record circuit breaker success: %s', e)
+
+
+def record_circuit_breaker_failure(
+  name: str,
+  additional_attrs: dict[str, Any] | None = None
+) -> None:
+  """Record a failed call through circuit breaker.
+
+  Args:
+    name: Name/identifier of the circuit breaker.
+    additional_attrs: Additional attributes to include.
+  """
+  counter = _get_circuit_breaker_failure_counter()
+  if counter is None:
+    return
+
+  try:
+    attrs = {'name': name}
+    if additional_attrs:
+      attrs.update(additional_attrs)
+
+    counter.add(1, attrs)
+  except Exception as e:  # pylint: disable=broad-except
+    logger.error('Failed to record circuit breaker failure: %s', e)
+
+
+def record_api_error(
+  endpoint: str,
+  method: str,
+  error_type: str,
+  additional_attrs: dict[str, Any] | None = None
+) -> None:
+  """Record an API error metric.
+
+  Args:
+    endpoint: The API endpoint (e.g., '/assets', '/inspections').
+    method: HTTP method (e.g., 'GET', 'POST').
+    error_type: Type of error (e.g., 'timeout', 'auth', 'network').
+    additional_attrs: Additional attributes to include.
+  """
+  counter = _get_api_error_counter()
+  if counter is None:
+    return
+
+  try:
+    attrs = {
+      'endpoint': endpoint,
+      'method': method,
+      'error_type': error_type,
+    }
+    if additional_attrs:
+      attrs.update(additional_attrs)
+
+    counter.add(1, attrs)
+  except Exception as e:  # pylint: disable=broad-except
+    logger.error('Failed to record API error metric: %s', e)
+
+
+def record_api_timeout(
+  endpoint: str,
+  method: str,
+  additional_attrs: dict[str, Any] | None = None
+) -> None:
+  """Record an API timeout metric.
+
+  Args:
+    endpoint: The API endpoint (e.g., '/assets', '/inspections').
+    method: HTTP method (e.g., 'GET', 'POST').
+    additional_attrs: Additional attributes to include.
+  """
+  counter = _get_api_timeout_counter()
+  if counter is None:
+    return
+
+  try:
+    attrs = {
+      'endpoint': endpoint,
+      'method': method,
+    }
+    if additional_attrs:
+      attrs.update(additional_attrs)
+
+    counter.add(1, attrs)
+  except Exception as e:  # pylint: disable=broad-except
+    logger.error('Failed to record API timeout metric: %s', e)

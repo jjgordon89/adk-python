@@ -94,8 +94,11 @@ def trace_async(
         # OpenTelemetry not installed, run function without tracing
         return await func(*args, **kwargs)
       except Exception as e:  # pylint: disable=broad-except
+        # Telemetry failures should not prevent function execution or mask
+        # errors. Log the telemetry error but let the original exception
+        # propagate.
         logger.error('Error in tracing decorator: %s', e)
-        return await func(*args, **kwargs)
+        raise
 
     return wrapper  # type: ignore
 
@@ -164,8 +167,11 @@ def trace_sync(
         # OpenTelemetry not installed, run function without tracing
         return func(*args, **kwargs)
       except Exception as e:  # pylint: disable=broad-except
+        # Telemetry failures should not prevent function execution or mask
+        # errors. Log the telemetry error but let the original exception
+        # propagate.
         logger.error('Error in tracing decorator: %s', e)
-        return func(*args, **kwargs)
+        raise
 
     return wrapper  # type: ignore
 

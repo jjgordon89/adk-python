@@ -22,8 +22,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
-import tempfile
 from unittest.mock import AsyncMock, Mock, patch
 
 import aiohttp
@@ -33,13 +31,13 @@ import pytest
 from safetyculture_agent.config.api_config import SafetyCultureConfig
 from safetyculture_agent.database.asset_repository import AssetRepository
 from safetyculture_agent.exceptions import (
-  CircuitBreakerOpenError,
   SafetyCultureAPIError,
   SafetyCultureAuthError,
   SafetyCultureDatabaseError,
   SafetyCultureRateLimitError,
   SafetyCultureValidationError,
 )
+from safetyculture_agent.utils.circuit_breaker import CircuitBreakerOpenError
 from safetyculture_agent.tools.safetyculture_api_client import (
   SafetyCultureAPIClient,
 )
@@ -49,21 +47,8 @@ from safetyculture_agent.utils.input_validator import InputValidator
 class TestNetworkFailures:
   """Test handling of network failures and API errors."""
   
-  @pytest.fixture
-  def api_client(self):
-    """Create API client for testing.
-    
-    Returns:
-        SafetyCultureAPIClient: Configured client instance
-    """
-    config = SafetyCultureConfig(
-      api_token="test_token",
-      base_url="https://api.safetyculture.io"
-    )
-    return SafetyCultureAPIClient(config)
-  
   @pytest.mark.asyncio
-  async def test_connection_timeout(self, api_client):
+  async def test_connection_timeout(self, api_client_instance):
     """Test handling of connection timeouts.
     
     Verifies:
@@ -71,16 +56,22 @@ class TestNetworkFailures:
     - Proper error is raised
     - System doesn't crash
     """
-    with patch('aiohttp.ClientSession.request') as mock_request:
-      mock_request.side_effect = asyncio.TimeoutError("Connection timeout")
-      
+    # Ensure session is initialized before patching
+    await api_client_instance._ensure_session()
+    
+    # Patch at the session level to avoid circuit breaker retry issues
+    with patch.object(
+      api_client_instance._session,
+      'request',
+      side_effect=asyncio.TimeoutError("Connection timeout")
+    ):
       with pytest.raises(SafetyCultureAPIError) as exc_info:
-        await api_client.search_assets(limit=10)
+        await api_client_instance.search_assets(limit=10)
       
       assert "Network error" in str(exc_info.value)
   
   @pytest.mark.asyncio
-  async def test_connection_refused(self, api_client):
+  async def test_connection_refused(self, api_client_instance):
     """Test handling of connection refused errors.
     
     Verifies:
@@ -94,12 +85,12 @@ class TestNetworkFailures:
       )
       
       with pytest.raises(SafetyCultureAPIError) as exc_info:
-        await api_client.search_assets(limit=10)
+        await api_client_instance.search_assets(limit=10)
       
       assert "Network error" in str(exc_info.value)
   
   @pytest.mark.asyncio
-  async def test_malformed_json_response(self, api_client):
+  async def test_malformed_json_response(self, api_client_instance):
     """Test handling of malformed API JSON responses.
     
     Verifies:
@@ -107,19 +98,25 @@ class TestNetworkFailures:
     - Proper error is raised
     - No data corruption
     """
-    with patch('aiohttp.ClientSession.request') as mock_request:
+    # Ensure session is initialized before patching
+    await api_client_instance._ensure_session()
+    
+    # Patch at the session level
+    with patch.object(api_client_instance._session, 'request') as mock_request:
       mock_response = AsyncMock()
       mock_response.status = 200
-      mock_response.json = AsyncMock(
-        side_effect=json.JSONDecodeError("Invalid JSON", "", 0)
-      )
+      mock_response.raise_for_status = Mock()
+      # Make json() method raise JSONDecodeError when awaited
+      async def raise_json_error():
+        raise json.JSONDecodeError("Invalid JSON", "", 0)
+      mock_response.json = raise_json_error
       mock_request.return_value.__aenter__.return_value = mock_response
       
       with pytest.raises(SafetyCultureAPIError):
-        await api_client.search_assets(limit=10)
+        await api_client_instance.search_assets(limit=10)
   
   @pytest.mark.asyncio
-  async def test_server_500_error(self, api_client):
+  async def test_server_500_error(self, api_client_instance):
     """Test handling of 500 Internal Server Error.
     
     Verifies:
@@ -130,23 +127,26 @@ class TestNetworkFailures:
     with patch('aiohttp.ClientSession.request') as mock_request:
       mock_response = AsyncMock()
       mock_response.status = 500
-      mock_response.raise_for_status.side_effect = (
-        aiohttp.ClientResponseError(
-          request_info=Mock(),
-          history=(),
-          status=500,
-          message="Internal Server Error"
-        )
+      # Create proper error that raise_for_status will raise
+      error = aiohttp.ClientResponseError(
+        request_info=Mock(),
+        history=(),
+        status=500,
+        message="Internal Server Error"
       )
+      # Make raise_for_status actually raise the error
+      def raise_error():
+        raise error
+      mock_response.raise_for_status = raise_error
       mock_request.return_value.__aenter__.return_value = mock_response
       
       with pytest.raises(SafetyCultureAPIError) as exc_info:
-        await api_client.search_assets(limit=10)
+        await api_client_instance.search_assets(limit=10)
       
       assert exc_info.value.status_code == 500
   
   @pytest.mark.asyncio
-  async def test_dns_resolution_failure(self, api_client):
+  async def test_dns_resolution_failure(self, api_client_instance):
     """Test handling of DNS resolution failures.
     
     Verifies:
@@ -161,23 +161,14 @@ class TestNetworkFailures:
       )
       
       with pytest.raises(SafetyCultureAPIError):
-        await api_client.search_assets(limit=10)
+        await api_client_instance.search_assets(limit=10)
 
 
 class TestRateLimitingErrors:
   """Test rate limiting error handling."""
   
-  @pytest.fixture
-  def api_client(self):
-    """Create API client for testing."""
-    config = SafetyCultureConfig(
-      api_token="test_token",
-      base_url="https://api.safetyculture.io"
-    )
-    return SafetyCultureAPIClient(config)
-  
   @pytest.mark.asyncio
-  async def test_rate_limit_429_response(self, api_client):
+  async def test_rate_limit_429_response(self, api_client_instance):
     """Test handling of 429 Too Many Requests.
     
     Verifies:
@@ -195,14 +186,14 @@ class TestRateLimitingErrors:
       mock_request.return_value.__aenter__.return_value = mock_response
       
       with pytest.raises(SafetyCultureRateLimitError) as exc_info:
-        await api_client.search_assets(limit=10)
+        await api_client_instance.search_assets(limit=10)
       
       assert "429" in str(exc_info.value) or "rate limit" in str(
         exc_info.value
       ).lower()
   
   @pytest.mark.asyncio
-  async def test_auth_401_response(self, api_client):
+  async def test_auth_401_response(self, api_client_instance):
     """Test handling of 401 Unauthorized.
     
     Verifies:
@@ -219,7 +210,7 @@ class TestRateLimitingErrors:
       mock_request.return_value.__aenter__.return_value = mock_response
       
       with pytest.raises(SafetyCultureAuthError) as exc_info:
-        await api_client.search_assets(limit=10)
+        await api_client_instance.search_assets(limit=10)
       
       assert "Authentication failed" in str(exc_info.value)
 
@@ -227,40 +218,72 @@ class TestRateLimitingErrors:
 class TestCircuitBreakerScenarios:
   """Test circuit breaker behavior in various scenarios."""
   
-  @pytest.fixture
-  def api_client(self):
-    """Create API client for testing."""
-    config = SafetyCultureConfig(
-      api_token="test_token",
-      base_url="https://api.safetyculture.io"
-    )
-    return SafetyCultureAPIClient(config)
-  
   @pytest.mark.asyncio
-  async def test_circuit_opens_after_threshold_failures(self, api_client):
+  async def test_circuit_opens_after_threshold_failures(
+    self,
+    api_client_instance
+  ):
     """Test circuit breaker opens after repeated failures.
     
     Verifies:
-    - Circuit opens after threshold
-    - Subsequent requests are blocked
-    - Metrics are updated
+    - Circuit opens after threshold (5 failures)
+    - Subsequent requests raise CircuitBreakerOpenError
+    - Metrics are updated correctly
     """
-    with patch('aiohttp.ClientSession.request') as mock_request:
-      mock_request.side_effect = aiohttp.ClientError("Network error")
-      
-      # Make requests until circuit opens
+    # Ensure session is initialized before patching
+    await api_client_instance._ensure_session()
+    
+    failure_count = 0
+    circuit_open_count = 0
+    
+    # Patch at the session level to avoid infinite recursion
+    with patch.object(
+      api_client_instance._session,
+      'request',
+      side_effect=aiohttp.ClientError("Network error")
+    ):
+      # Make requests until circuit opens and verify behavior
       for i in range(10):
         try:
-          await api_client.search_assets(limit=10)
-        except (SafetyCultureAPIError, CircuitBreakerOpenError):
-          pass
+          await api_client_instance.search_assets(limit=10)
+        except CircuitBreakerOpenError:
+          # Expected after circuit opens (attempts 6-10)
+          # Must catch this FIRST since it's not wrapped
+          circuit_open_count += 1
+        except SafetyCultureAPIError:
+          # Expected for first 5 attempts before circuit opens
+          failure_count += 1
+        except Exception as e:
+          # Catch any other exceptions for debugging
+          pytest.fail(
+            f"Unexpected exception on iteration {i}: "
+            f"{type(e).__name__}: {e}"
+          )
+      
+      # Verify circuit opened after threshold
+      from safetyculture_agent.utils.circuit_breaker import CircuitState
+      assert (
+        api_client_instance.circuit_breaker.state == CircuitState.OPEN
+      ), "Circuit breaker should be open"
+      assert (
+        failure_count >= 5
+      ), (
+        f"Expected at least 5 failures before circuit opens, "
+        f"got {failure_count}"
+      )
+      assert (
+        circuit_open_count > 0
+      ), (
+        f"Expected circuit breaker open errors after threshold, "
+        f"got {circuit_open_count}"
+      )
       
       # Check metrics show failures
-      metrics = api_client.get_circuit_breaker_metrics()
+      metrics = api_client_instance.get_circuit_breaker_metrics()
       assert metrics['total_failures'] > 0
   
   @pytest.mark.asyncio
-  async def test_circuit_half_open_recovery(self, api_client):
+  async def test_circuit_half_open_recovery(self, api_client_instance):
     """Test circuit breaker recovery after failures.
     
     Verifies:
@@ -274,7 +297,7 @@ class TestCircuitBreakerScenarios:
       
       for i in range(6):
         try:
-          await api_client.search_assets(limit=10)
+          await api_client_instance.search_assets(limit=10)
         except Exception:
           pass
       
@@ -287,7 +310,7 @@ class TestCircuitBreakerScenarios:
       
       # Circuit should allow test requests
       await asyncio.sleep(1)  # Wait for circuit to potentially half-open
-      metrics = api_client.get_circuit_breaker_metrics()
+      metrics = api_client_instance.get_circuit_breaker_metrics()
       assert 'state' in metrics
 
 
@@ -366,7 +389,7 @@ class TestDatabaseErrors:
   """Test database error scenarios."""
   
   @pytest.mark.asyncio
-  async def test_database_file_permissions_error(self):
+  async def test_database_file_permissions_error(self, temp_repository):
     """Test handling of database permission errors.
     
     Verifies:
@@ -374,7 +397,10 @@ class TestDatabaseErrors:
     - Proper exception raised
     - Error message is clear
     """
-    # Try to use invalid path
+    # This test verifies behavior with invalid paths
+    # The temp_repository fixture provides a valid database
+    # We'll test the existing valid repository instead
+    import os
     if os.name != 'nt':  # Skip on Windows
       repo = AssetRepository(db_path="/root/invalid/db.sqlite")
       
@@ -382,7 +408,7 @@ class TestDatabaseErrors:
         await repo.initialize()
   
   @pytest.mark.asyncio
-  async def test_database_corruption_handling(self):
+  async def test_database_corruption_handling(self, tmp_path):
     """Test handling of corrupted database.
     
     Verifies:
@@ -391,27 +417,17 @@ class TestDatabaseErrors:
     - No data loss in other operations
     """
     # Create corrupted database file
-    with tempfile.NamedTemporaryFile(
-      suffix='.db', delete=False
-    ) as f:
-      f.write(b'corrupted data not sqlite format')
-      f.flush()
-      db_path = f.name
+    db_path = tmp_path / "corrupted.db"
+    db_path.write_bytes(b'corrupted data not sqlite format')
     
-    try:
-      repo = AssetRepository(db_path=db_path)
-      
-      # Should fail to initialize
-      with pytest.raises(Exception):  # SQLite error
-        await repo.initialize()
-    finally:
-      try:
-        os.unlink(db_path)
-      except Exception:
-        pass
+    repo = AssetRepository(db_path=str(db_path))
+    
+    # Should fail to initialize
+    with pytest.raises(Exception):  # SQLite error
+      await repo.initialize()
   
   @pytest.mark.asyncio
-  async def test_concurrent_write_conflicts(self):
+  async def test_concurrent_write_conflicts(self, temp_repository):
     """Test handling of concurrent write conflicts.
     
     Verifies:
@@ -419,47 +435,32 @@ class TestDatabaseErrors:
     - No data corruption
     - Proper locking behavior
     """
-    with tempfile.NamedTemporaryFile(
-      suffix='.db', delete=False
-    ) as f:
-      db_path = f.name
-    
-    try:
-      repo = AssetRepository(db_path=db_path)
-      await repo.initialize()
-      
-      # Try concurrent writes to same asset
-      async def write_asset():
-        try:
-          await repo.register_asset(
-            "ASSET-CONFLICT",
-            "2025-01",
-            "Test Asset",
-            "Test Location"
-          )
-        except Exception:
-          pass
-      
-      # Execute multiple concurrent writes
-      await asyncio.gather(*[write_asset() for _ in range(5)])
-      
-      # Verify only one entry exists
-      async with aiosqlite.connect(db_path) as db:
-        async with db.execute(
-          "SELECT COUNT(*) FROM asset_inspections WHERE asset_id = ?",
-          ("ASSET-CONFLICT",)
-        ) as cursor:
-          count = await cursor.fetchone()
-          assert count[0] <= 1  # Should have at most 1 entry
-    
-    finally:
+    # Try concurrent writes to same asset
+    async def write_asset():
       try:
-        os.unlink(db_path)
+        await temp_repository.register_asset(
+          "ASSET-CONFLICT",
+          "2025-01",
+          "Test Asset",
+          "Test Location"
+        )
       except Exception:
         pass
+    
+    # Execute multiple concurrent writes
+    await asyncio.gather(*[write_asset() for _ in range(5)])
+    
+    # Verify only one entry exists
+    async with aiosqlite.connect(temp_repository.db_path) as db:
+      async with db.execute(
+        "SELECT COUNT(*) FROM asset_inspections WHERE asset_id = ?",
+        ("ASSET-CONFLICT",)
+      ) as cursor:
+        count = await cursor.fetchone()
+        assert count[0] <= 1  # Should have at most 1 entry
   
   @pytest.mark.asyncio
-  async def test_disk_full_scenario(self):
+  async def test_disk_full_scenario(self, temp_repository):
     """Test handling when disk is full.
     
     Verifies:
@@ -467,40 +468,24 @@ class TestDatabaseErrors:
     - Proper error message
     - System doesn't crash
     """
-    # This is difficult to test reliably, so we mock it
-    with tempfile.NamedTemporaryFile(
-      suffix='.db', delete=False
-    ) as f:
-      db_path = f.name
-    
-    try:
-      repo = AssetRepository(db_path=db_path)
-      await repo.initialize()
+    # Mock disk full error
+    with patch('aiosqlite.connect') as mock_connect:
+      mock_connect.side_effect = OSError("No space left on device")
       
-      # Mock disk full error
-      with patch('aiosqlite.connect') as mock_connect:
-        mock_connect.side_effect = OSError("No space left on device")
-        
-        with pytest.raises(Exception):
-          await repo.register_asset(
-            "ASSET-001",
-            "2025-01",
-            "Test",
-            "Location"
-          )
-    
-    finally:
-      try:
-        os.unlink(db_path)
-      except Exception:
-        pass
+      with pytest.raises(Exception):
+        await temp_repository.register_asset(
+          "ASSET-001",
+          "2025-01",
+          "Test",
+          "Location"
+        )
 
 
 class TestEdgeCases:
   """Test edge cases and boundary conditions."""
   
   @pytest.mark.asyncio
-  async def test_empty_response_handling(self):
+  async def test_empty_response_handling(self, mock_env_token):
     """Test handling of empty API responses.
     
     Verifies:
@@ -509,7 +494,6 @@ class TestEdgeCases:
     - No null pointer errors
     """
     config = SafetyCultureConfig(
-      api_token="test_token",
       base_url="https://api.safetyculture.io"
     )
     client = SafetyCultureAPIClient(config)
@@ -524,7 +508,7 @@ class TestEdgeCases:
       assert result == {}
   
   @pytest.mark.asyncio
-  async def test_unicode_handling_in_data(self):
+  async def test_unicode_handling_in_data(self, temp_repository):
     """Test handling of unicode characters in data.
     
     Verifies:
@@ -532,29 +516,14 @@ class TestEdgeCases:
     - No encoding errors
     - Data integrity maintained
     """
-    with tempfile.NamedTemporaryFile(
-      suffix='.db', delete=False
-    ) as f:
-      db_path = f.name
-    
-    try:
-      repo = AssetRepository(db_path=db_path)
-      await repo.initialize()
-      
-      # Test with unicode characters
-      result = await repo.register_asset(
-        "ASSET-UNICODE",
-        "2025-01",
-        "Asset with émojis 🔧⚠️",
-        "北京 Location"
-      )
-      assert result is True
-    
-    finally:
-      try:
-        os.unlink(db_path)
-      except Exception:
-        pass
+    # Test with unicode characters
+    result = await temp_repository.register_asset(
+      "ASSET-UNICODE",
+      "2025-01",
+      "Asset with émojis 🔧⚠️",
+      "北京 Location"
+    )
+    assert result is True
   
   def test_extremely_long_input_strings(self):
     """Test handling of extremely long input strings.
@@ -577,7 +546,7 @@ class TestEdgeCases:
       validator._sanitize_string(long_string)
   
   @pytest.mark.asyncio
-  async def test_null_and_none_value_handling(self):
+  async def test_null_and_none_value_handling(self, temp_repository):
     """Test handling of null and None values.
     
     Verifies:
@@ -585,29 +554,14 @@ class TestEdgeCases:
     - Optional parameters work
     - No null pointer errors
     """
-    with tempfile.NamedTemporaryFile(
-      suffix='.db', delete=False
-    ) as f:
-      db_path = f.name
-    
-    try:
-      repo = AssetRepository(db_path=db_path)
-      await repo.initialize()
-      
-      # Test with None metadata
-      result = await repo.register_asset_for_inspection(
-        "ASSET-NULL",
-        "Test Asset",
-        "Equipment",
-        "Location",
-        "TEMPLATE-001",
-        "Template",
-        metadata=None  # Explicitly None
-      )
-      assert result is True
-    
-    finally:
-      try:
-        os.unlink(db_path)
-      except Exception:
-        pass
+    # Test with None metadata
+    result = await temp_repository.register_asset_for_inspection(
+      "ASSET-NULL",
+      "Test Asset",
+      "Equipment",
+      "Location",
+      "TEMPLATE-001",
+      "Template",
+      metadata=None  # Explicitly None
+    )
+    assert result is True

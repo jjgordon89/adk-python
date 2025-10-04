@@ -14,6 +14,10 @@ model_aliases:
   template_selection: gemini/pro
   data_extraction: gemini/pro
   analysis: gemini/pro
+  fast: gemini/fast
+  qa: gemini/fast
+  inspection_creation: gemini/fast
+  form_filling: gemini/pro
   local_dev: ollama/llama3
 
 # Provider configurations

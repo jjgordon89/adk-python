@@ -28,8 +28,10 @@ from aiohttp import ClientSession, ClientTimeout
 from ..config.api_config import SafetyCultureConfig, DEFAULT_CONFIG
 from ..telemetry.decorators import trace_async
 from ..telemetry.prometheus_metrics import (
+  record_api_error,
   record_api_latency,
   record_api_request,
+  record_api_timeout,
   record_circuit_breaker_state,
   record_rate_limit_hit,
 )
@@ -98,12 +100,13 @@ class SafetyCultureAPIClient:
       max_backoff=MAX_BACKOFF_SECONDS
     )
     
-    # Initialize circuit breaker with default settings
+    # Initialize circuit breaker with default settings and name for metrics
     self.circuit_breaker = CircuitBreaker(
       failure_threshold=CIRCUIT_BREAKER_FAILURE_THRESHOLD,
       success_threshold=CIRCUIT_BREAKER_SUCCESS_THRESHOLD,
       base_timeout=CIRCUIT_BREAKER_BASE_TIMEOUT_SECONDS,
-      max_timeout=CIRCUIT_BREAKER_MAX_TIMEOUT_SECONDS
+      max_timeout=CIRCUIT_BREAKER_MAX_TIMEOUT_SECONDS,
+      name='safetyculture_api'
     )
     
     # Initialize request signing (optional - only if signing key provided)
@@ -308,7 +311,41 @@ class SafetyCultureAPIClient:
         response.raise_for_status()
         return await response.json()
     
+    except asyncio.TimeoutError as e:
+      # Record timeout metric
+      record_api_timeout(endpoint, method)
+      record_api_error(endpoint, method, 'timeout')
+      
+      safe_error = self.header_manager.sanitize_error(e)
+      logger.error(f"Network error: {safe_error}")
+      
+      if retry_count < self.config.max_retries:
+        await asyncio.sleep(
+          self.config.retry_delay * (EXPONENTIAL_BACKOFF_BASE ** retry_count)
+        )
+        return await self._make_request_internal(
+            method, endpoint, params, data, retry_count + 1
+        )
+      
+      raise SafetyCultureAPIError(
+        f"Network error: {safe_error}"
+      ) from e
+    
+    except json.JSONDecodeError as e:
+      # Record JSON decode error metric
+      record_api_error(endpoint, method, 'json_decode')
+      
+      safe_error = self.header_manager.sanitize_error(e)
+      logger.error(f"JSON decode error: {safe_error}")
+      raise SafetyCultureAPIError(
+        f"Invalid JSON response: {safe_error}"
+      ) from e
+    
     except aiohttp.ClientResponseError as e:
+      # Record HTTP error metric with status code
+      error_type = f'http_{e.status}'
+      record_api_error(endpoint, method, error_type)
+      
       safe_error = self.header_manager.sanitize_error(e)
       logger.error(f"HTTP error: {safe_error}")
       
@@ -326,6 +363,9 @@ class SafetyCultureAPIClient:
       ) from e
     
     except aiohttp.ClientError as e:
+      # Record network error metric
+      record_api_error(endpoint, method, 'network')
+      
       safe_error = self.header_manager.sanitize_error(e)
       logger.error(f"Network error: {safe_error}")
       

@@ -17,8 +17,6 @@
 from __future__ import annotations
 
 import asyncio
-import tempfile
-from pathlib import Path
 
 import pytest
 
@@ -29,47 +27,43 @@ from safetyculture_agent.exceptions import SafetyCultureDatabaseError
 class TestDatabaseSecurity:
   """Database security test suite."""
   
-  @pytest.fixture
-  async def repository(self):
-    """Create temporary database for testing."""
-    with tempfile.NamedTemporaryFile(
-      suffix='.db',
-      delete=False
-    ) as f:
-      db_path = f.name
+  @pytest.mark.asyncio
+  async def test_sql_injection_prevention_in_field_names(self, temp_repository):
+    """Verify SQL injection blocked in field names."""
+    # Register asset first
+    await temp_repository.register_asset(
+      asset_id='asset_1',
+      month_year='2025-01',
+      asset_name='Test Asset',
+      location='Test Location'
+    )
     
-    repo = AssetRepository(db_path=db_path)
-    await repo.initialize()
-    yield repo
+    # Try SQL injection in status field - should safely handle or reject
+    malicious_status = "completed'; DROP TABLE asset_inspections; --"
     
-    # Cleanup
+    # The repository should either safely escape or reject malicious values
     try:
-      Path(db_path).unlink()
-    except Exception:
+      result = await temp_repository.update_inspection_status(
+        'asset_1',
+        malicious_status,
+        month_year='2025-01'
+      )
+      # If it succeeds, parameterization protected us
+      # Verify table still exists by querying
+      status = await temp_repository.get_asset_inspection_status(
+        'asset_1',
+        '2025-01'
+      )
+      assert status is not None
+    except (SafetyCultureDatabaseError, ValueError):
+      # If validation catches it, that's also acceptable
       pass
   
   @pytest.mark.asyncio
-  async def test_sql_injection_prevention_in_field_names(self, repository):
-    """Verify SQL injection blocked in field names."""
-    # Try SQL injection in field names
-    malicious_fields = [
-      "status; DROP TABLE asset_inspections; --"
-    ]
-    
-    for field in malicious_fields:
-      with pytest.raises((SafetyCultureDatabaseError, ValueError)):
-        # This should be caught by field validation
-        await repository.update_inspection_status(
-          'asset_1',
-          'completed',
-          month_year='2025-01'
-        )
-  
-  @pytest.mark.asyncio
-  async def test_field_whitelist_validation(self, repository):
+  async def test_field_whitelist_validation(self, temp_repository):
     """Verify only whitelisted fields can be updated."""
     # Register a test asset first
-    await repository.register_asset(
+    await temp_repository.register_asset(
       asset_id='test_asset',
       month_year='2025-01',
       asset_name='Test',
@@ -77,7 +71,7 @@ class TestDatabaseSecurity:
     )
     
     # Valid update should work
-    result = await repository.update_inspection_status(
+    result = await temp_repository.update_inspection_status(
       asset_id='test_asset',
       status='completed',
       month_year='2025-01'
@@ -87,16 +81,19 @@ class TestDatabaseSecurity:
     # Invalid field should be rejected by validation
     invalid_fields = ['evil_field = ?']
     with pytest.raises(ValueError) as exc:
-      repository._validate_and_sanitize_fields(invalid_fields)
+      temp_repository._validate_and_sanitize_fields(invalid_fields)
     
     assert 'Invalid field' in str(exc.value)
   
   @pytest.mark.asyncio
-  async def test_concurrent_registration_prevents_duplicates(self, repository):
+  async def test_concurrent_registration_prevents_duplicates(
+    self,
+    temp_repository
+  ):
     """Test concurrent registration doesn't create duplicates."""
     # Attempt concurrent registration of same asset
     tasks = [
-      repository.register_asset(
+      temp_repository.register_asset(
         asset_id='asset_concurrent',
         month_year='2025-01',
         asset_name='Test Asset',
@@ -116,14 +113,14 @@ class TestDatabaseSecurity:
     assert false_count == 9
   
   @pytest.mark.asyncio
-  async def test_parameterized_queries_prevent_injection(self, repository):
+  async def test_parameterized_queries_prevent_injection(self, temp_repository):
     """Verify parameterized queries prevent SQL injection."""
     # Register asset with malicious data
     malicious_asset_id = "asset'; DROP TABLE asset_inspections; --"
     
     # Should safely handle malicious input through parameterization
     try:
-      result = await repository.register_asset(
+      result = await temp_repository.register_asset(
         asset_id=malicious_asset_id,
         month_year='2025-01',
         asset_name='Test',
@@ -133,7 +130,7 @@ class TestDatabaseSecurity:
       assert result is True
       
       # Verify the data was stored safely (not executed as SQL)
-      status = await repository.get_asset_inspection_status(
+      status = await temp_repository.get_asset_inspection_status(
         malicious_asset_id,
         '2025-01'
       )
@@ -143,7 +140,7 @@ class TestDatabaseSecurity:
       pass
   
   @pytest.mark.asyncio
-  async def test_unique_constraint_prevents_duplicates(self, repository):
+  async def test_unique_constraint_prevents_duplicates(self, temp_repository):
     """Verify unique constraints prevent duplicate entries."""
     asset_data = {
       'asset_id': 'unique_test',
@@ -153,18 +150,18 @@ class TestDatabaseSecurity:
     }
     
     # First registration should succeed
-    result1 = await repository.register_asset(**asset_data)
+    result1 = await temp_repository.register_asset(**asset_data)
     assert result1 is True
     
     # Second registration of same asset/month should fail
-    result2 = await repository.register_asset(**asset_data)
+    result2 = await temp_repository.register_asset(**asset_data)
     assert result2 is False
   
   @pytest.mark.asyncio
-  async def test_metadata_json_injection_prevention(self, repository):
+  async def test_metadata_json_injection_prevention(self, temp_repository):
     """Verify JSON metadata doesn't allow code injection."""
     # Register asset
-    await repository.register_asset_for_inspection(
+    await temp_repository.register_asset_for_inspection(
       asset_id='metadata_test',
       asset_name='Test',
       asset_type='Equipment',
@@ -181,7 +178,7 @@ class TestDatabaseSecurity:
     }
     
     # Should safely store as JSON string
-    result = await repository.update_inspection_status(
+    result = await temp_repository.update_inspection_status(
       asset_id='metadata_test',
       status='in_progress',
       month_year='2025-01',
@@ -191,7 +188,7 @@ class TestDatabaseSecurity:
     assert result is True
     
     # Verify data was stored safely
-    metadata = await repository._get_asset_metadata(
+    metadata = await temp_repository._get_asset_metadata(
       'metadata_test',
       '2025-01'
     )
@@ -199,7 +196,7 @@ class TestDatabaseSecurity:
     assert isinstance(metadata, dict)
   
   @pytest.mark.asyncio
-  async def test_wal_mode_enabled_for_concurrency(self, repository):
+  async def test_wal_mode_enabled_for_concurrency(self, temp_repository):
     """Verify WAL mode is enabled for better concurrency."""
     # WAL mode should be set during initialization
     # We can't directly check this without DB introspection
@@ -208,7 +205,7 @@ class TestDatabaseSecurity:
     tasks = []
     for i in range(5):
       tasks.append(
-        repository.register_asset(
+        temp_repository.register_asset(
           asset_id=f'concurrent_{i}',
           month_year='2025-01',
           asset_name=f'Asset {i}',
@@ -222,10 +219,10 @@ class TestDatabaseSecurity:
     assert all(r is True for r in results)
   
   @pytest.mark.asyncio
-  async def test_transaction_isolation(self, repository):
+  async def test_transaction_isolation(self, temp_repository):
     """Verify transaction isolation prevents race conditions."""
     # Register initial asset
-    await repository.register_asset(
+    await temp_repository.register_asset(
       asset_id='transaction_test',
       month_year='2025-01',
       asset_name='Test',
@@ -234,7 +231,7 @@ class TestDatabaseSecurity:
     
     # Attempt concurrent updates
     async def update_status(new_status):
-      return await repository.update_inspection_status(
+      return await temp_repository.update_inspection_status(
         asset_id='transaction_test',
         status=new_status,
         month_year='2025-01'
@@ -251,7 +248,7 @@ class TestDatabaseSecurity:
     assert any(results)
     
     # Final status should be one of the updated values
-    final_status = await repository.get_asset_inspection_status(
+    final_status = await temp_repository.get_asset_inspection_status(
       'transaction_test',
       '2025-01'
     )
@@ -261,29 +258,11 @@ class TestDatabaseSecurity:
 class TestDatabaseAccessControl:
   """Test database access control and permissions."""
   
-  @pytest.fixture
-  async def repository(self):
-    """Create temporary database for testing."""
-    with tempfile.NamedTemporaryFile(
-      suffix='.db',
-      delete=False
-    ) as f:
-      db_path = f.name
-    
-    repo = AssetRepository(db_path=db_path)
-    await repo.initialize()
-    yield repo
-    
-    # Cleanup
-    try:
-      Path(db_path).unlink()
-    except Exception:
-      pass
-  
   @pytest.mark.asyncio
-  async def test_database_file_permissions(self, repository):
+  async def test_database_file_permissions(self, temp_repository):
     """Verify database file has appropriate permissions."""
-    db_path = Path(repository.db_path)
+    from pathlib import Path
+    db_path = Path(temp_repository.db_path)
     
     # Database file should exist
     assert db_path.exists()
@@ -292,14 +271,14 @@ class TestDatabaseAccessControl:
     assert db_path.is_file()
   
   @pytest.mark.asyncio
-  async def test_initialization_idempotent(self, repository):
+  async def test_initialization_idempotent(self, temp_repository):
     """Verify multiple initializations are safe."""
     # Initialize again
-    await repository.initialize()
-    await repository.initialize()
+    await temp_repository.initialize()
+    await temp_repository.initialize()
     
     # Should still work
-    result = await repository.register_asset(
+    result = await temp_repository.register_asset(
       asset_id='test',
       month_year='2025-01',
       asset_name='Test',
@@ -311,30 +290,11 @@ class TestDatabaseAccessControl:
 class TestQuerySafety:
   """Test query safety and prepared statements."""
   
-  @pytest.fixture
-  async def repository(self):
-    """Create temporary database for testing."""
-    with tempfile.NamedTemporaryFile(
-      suffix='.db',
-      delete=False
-    ) as f:
-      db_path = f.name
-    
-    repo = AssetRepository(db_path=db_path)
-    await repo.initialize()
-    yield repo
-    
-    # Cleanup
-    try:
-      Path(db_path).unlink()
-    except Exception:
-      pass
-  
   @pytest.mark.asyncio
-  async def test_check_asset_completed_safe_query(self, repository):
+  async def test_check_asset_completed_safe_query(self, temp_repository):
     """Verify check_asset_completed uses safe queries."""
     # Register and complete an asset
-    await repository.register_asset_for_inspection(
+    await temp_repository.register_asset_for_inspection(
       asset_id='completed_test',
       asset_name='Test',
       asset_type='Equipment',
@@ -344,21 +304,21 @@ class TestQuerySafety:
       month_year='2025-01'
     )
     
-    await repository.mark_asset_completed(
+    await temp_repository.mark_asset_completed(
       asset_id='completed_test',
       inspection_id='insp_123',
       month_year='2025-01'
     )
     
     # Check if completed - should use parameterized query
-    is_completed = await repository.check_asset_completed_this_month(
+    is_completed = await temp_repository.check_asset_completed_this_month(
       'completed_test',
       '2025-01'
     )
     assert is_completed is True
   
   @pytest.mark.asyncio
-  async def test_malicious_month_year_format(self, repository):
+  async def test_malicious_month_year_format(self, temp_repository):
     """Verify malicious month_year values are handled safely."""
     malicious_months = [
       "2025-01'; DROP TABLE asset_inspections; --",
@@ -369,7 +329,7 @@ class TestQuerySafety:
     for month in malicious_months:
       # Should either reject or safely escape
       try:
-        await repository.register_asset(
+        await temp_repository.register_asset(
           asset_id='test',
           month_year=month,
           asset_name='Test',

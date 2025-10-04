@@ -1,0 +1,2631 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.3, pytest-8.4.2, pluggy-1.6.0 -- C:\Users\jgordon3\adk-python\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\jgordon3\adk-python
+configfile: pyproject.toml
+plugins: anyio-4.11.0, asyncio-1.2.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+collecting ... collected 154 items
+
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_sql_injection_prevention_in_field_names[GOOGLE_AI] FAILED [  0%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_sql_injection_prevention_in_field_names[VERTEX] FAILED [  1%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_field_whitelist_validation[GOOGLE_AI] PASSED [  1%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_field_whitelist_validation[VERTEX] PASSED [  2%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_concurrent_registration_prevents_duplicates[GOOGLE_AI] PASSED [  3%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_concurrent_registration_prevents_duplicates[VERTEX] PASSED [  3%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_parameterized_queries_prevent_injection[GOOGLE_AI] PASSED [  4%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_parameterized_queries_prevent_injection[VERTEX] PASSED [  5%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_unique_constraint_prevents_duplicates[GOOGLE_AI] PASSED [  5%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_unique_constraint_prevents_duplicates[VERTEX] PASSED [  6%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_metadata_json_injection_prevention[GOOGLE_AI] PASSED [  7%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_metadata_json_injection_prevention[VERTEX] PASSED [  7%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_wal_mode_enabled_for_concurrency[GOOGLE_AI] PASSED [  8%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_wal_mode_enabled_for_concurrency[VERTEX] PASSED [  9%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_transaction_isolation[GOOGLE_AI] PASSED [  9%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_transaction_isolation[VERTEX] PASSED [ 10%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseAccessControl::test_database_file_permissions[GOOGLE_AI] PASSED [ 11%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseAccessControl::test_database_file_permissions[VERTEX] PASSED [ 11%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseAccessControl::test_initialization_idempotent[GOOGLE_AI] PASSED [ 12%]
+tests/unittests/safetyculture/test_database_security.py::TestDatabaseAccessControl::test_initialization_idempotent[VERTEX] PASSED [ 12%]
+tests/unittests/safetyculture/test_database_security.py::TestQuerySafety::test_check_asset_completed_safe_query[GOOGLE_AI] PASSED [ 13%]
+tests/unittests/safetyculture/test_database_security.py::TestQuerySafety::test_check_asset_completed_safe_query[VERTEX] PASSED [ 14%]
+tests/unittests/safetyculture/test_database_security.py::TestQuerySafety::test_malicious_month_year_format[GOOGLE_AI] PASSED [ 14%]
+tests/unittests/safetyculture/test_database_security.py::TestQuerySafety::test_malicious_month_year_format[VERTEX] PASSED [ 15%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_connection_timeout[GOOGLE_AI] FAILED [ 16%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_connection_timeout[VERTEX] FAILED [ 16%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_connection_refused[GOOGLE_AI] PASSED [ 17%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_connection_refused[VERTEX] PASSED [ 18%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_malformed_json_response[GOOGLE_AI] FAILED [ 18%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_malformed_json_response[VERTEX] FAILED [ 19%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_server_500_error[GOOGLE_AI] FAILED [ 20%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_server_500_error[VERTEX] FAILED [ 20%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_dns_resolution_failure[GOOGLE_AI] PASSED [ 21%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_dns_resolution_failure[VERTEX] PASSED [ 22%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestRateLimitingErrors::test_rate_limit_429_response[GOOGLE_AI] PASSED [ 22%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestRateLimitingErrors::test_rate_limit_429_response[VERTEX] PASSED [ 23%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestRateLimitingErrors::test_auth_401_response[GOOGLE_AI] PASSED [ 24%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestRateLimitingErrors::test_auth_401_response[VERTEX] PASSED [ 24%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestCircuitBreakerScenarios::test_circuit_opens_after_threshold_failures[GOOGLE_AI] FAILED [ 25%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestCircuitBreakerScenarios::test_circuit_opens_after_threshold_failures[VERTEX] FAILED [ 25%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestCircuitBreakerScenarios::test_circuit_half_open_recovery[GOOGLE_AI] PASSED [ 26%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestCircuitBreakerScenarios::test_circuit_half_open_recovery[VERTEX] PASSED [ 27%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestValidationErrors::test_invalid_asset_id_format[GOOGLE_AI] PASSED [ 27%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestValidationErrors::test_invalid_asset_id_format[VERTEX] PASSED [ 28%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestValidationErrors::test_invalid_url_validation[GOOGLE_AI] PASSED [ 29%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestValidationErrors::test_invalid_url_validation[VERTEX] PASSED [ 29%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestValidationErrors::test_invalid_query_parameters[GOOGLE_AI] PASSED [ 30%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestValidationErrors::test_invalid_query_parameters[VERTEX] PASSED [ 31%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestDatabaseErrors::test_database_file_permissions_error[GOOGLE_AI] PASSED [ 31%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestDatabaseErrors::test_database_file_permissions_error[VERTEX] PASSED [ 32%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestDatabaseErrors::test_database_corruption_handling[GOOGLE_AI] PASSED [ 33%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestDatabaseErrors::test_database_corruption_handling[VERTEX] PASSED [ 33%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestDatabaseErrors::test_concurrent_write_conflicts[GOOGLE_AI] PASSED [ 34%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestDatabaseErrors::test_concurrent_write_conflicts[VERTEX] PASSED [ 35%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestDatabaseErrors::test_disk_full_scenario[GOOGLE_AI] PASSED [ 35%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestDatabaseErrors::test_disk_full_scenario[VERTEX] PASSED [ 36%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestEdgeCases::test_empty_response_handling[GOOGLE_AI] PASSED [ 37%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestEdgeCases::test_empty_response_handling[VERTEX] PASSED [ 37%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestEdgeCases::test_unicode_handling_in_data[GOOGLE_AI] PASSED [ 38%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestEdgeCases::test_unicode_handling_in_data[VERTEX] PASSED [ 38%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestEdgeCases::test_extremely_long_input_strings[GOOGLE_AI] PASSED [ 39%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestEdgeCases::test_extremely_long_input_strings[VERTEX] PASSED [ 40%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestEdgeCases::test_null_and_none_value_handling[GOOGLE_AI] PASSED [ 40%]
+tests/unittests/safetyculture/test_error_scenarios.py::TestEdgeCases::test_null_and_none_value_handling[VERTEX] PASSED [ 41%]
+tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_token_caching_exists[GOOGLE_AI] FAILED [ 42%]
+tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_token_caching_exists[VERTEX] FAILED [ 42%]
+tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_token_revocation_clears_cache[GOOGLE_AI] PASSED [ 43%]
+tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_token_revocation_clears_cache[VERTEX] PASSED [ 44%]
+tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_token_rotation_updates_cache[GOOGLE_AI] FAILED [ 44%]
+tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_token_rotation_updates_cache[VERTEX] FAILED [ 45%]
+tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_expired_token_handling[GOOGLE_AI] PASSED [ 46%]
+tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_expired_token_handling[VERTEX] PASSED [ 46%]
+tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_missing_token_raises_error[GOOGLE_AI] FAILED [ 47%]
+tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_missing_token_raises_error[VERTEX] FAILED [ 48%]
+tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_token_info_redacts_sensitive_data[GOOGLE_AI] FAILED [ 48%]
+tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_token_info_redacts_sensitive_data[VERTEX] FAILED [ 49%]
+tests/unittests/safetyculture/test_security.py::TestInputValidation::test_sql_injection_prevention_in_asset_id[GOOGLE_AI] PASSED [ 50%]
+tests/unittests/safetyculture/test_security.py::TestInputValidation::test_sql_injection_prevention_in_asset_id[VERTEX] PASSED [ 50%]
+tests/unittests/safetyculture/test_security.py::TestInputValidation::test_xss_prevention_in_query[GOOGLE_AI] PASSED [ 51%]
+tests/unittests/safetyculture/test_security.py::TestInputValidation::test_xss_prevention_in_query[VERTEX] PASSED [ 51%]
+tests/unittests/safetyculture/test_security.py::TestInputValidation::test_parameter_injection_prevention[GOOGLE_AI] PASSED [ 52%]
+tests/unittests/safetyculture/test_security.py::TestInputValidation::test_parameter_injection_prevention[VERTEX] PASSED [ 53%]
+tests/unittests/safetyculture/test_security.py::TestInputValidation::test_field_name_injection_prevention[GOOGLE_AI] PASSED [ 53%]
+tests/unittests/safetyculture/test_security.py::TestInputValidation::test_field_name_injection_prevention[VERTEX] PASSED [ 54%]
+tests/unittests/safetyculture/test_security.py::TestInputValidation::test_url_validation_enforces_https[GOOGLE_AI] PASSED [ 55%]
+tests/unittests/safetyculture/test_security.py::TestInputValidation::test_url_validation_enforces_https[VERTEX] PASSED [ 55%]
+tests/unittests/safetyculture/test_security.py::TestInputValidation::test_endpoint_validation_prevents_path_traversal[GOOGLE_AI] PASSED [ 56%]
+tests/unittests/safetyculture/test_security.py::TestInputValidation::test_endpoint_validation_prevents_path_traversal[VERTEX] PASSED [ 57%]
+tests/unittests/safetyculture/test_security.py::TestInputValidation::test_limit_validation_prevents_resource_exhaustion[GOOGLE_AI] PASSED [ 57%]
+tests/unittests/safetyculture/test_security.py::TestInputValidation::test_limit_validation_prevents_resource_exhaustion[VERTEX] PASSED [ 58%]
+tests/unittests/safetyculture/test_security.py::TestHeaderSecurity::test_token_not_logged_in_headers[GOOGLE_AI] PASSED [ 59%]
+tests/unittests/safetyculture/test_security.py::TestHeaderSecurity::test_token_not_logged_in_headers[VERTEX] PASSED [ 59%]
+tests/unittests/safetyculture/test_security.py::TestHeaderSecurity::test_sensitive_data_removed_from_errors[GOOGLE_AI] PASSED [ 60%]
+tests/unittests/safetyculture/test_security.py::TestHeaderSecurity::test_sensitive_data_removed_from_errors[VERTEX] PASSED [ 61%]
+tests/unittests/safetyculture/test_security.py::TestHeaderSecurity::test_request_id_added_to_headers[GOOGLE_AI] PASSED [ 61%]
+tests/unittests/safetyculture/test_security.py::TestHeaderSecurity::test_request_id_added_to_headers[VERTEX] PASSED [ 62%]
+tests/unittests/safetyculture/test_security.py::TestHeaderSecurity::test_sanitize_nested_dict_structure[GOOGLE_AI] FAILED [ 62%]
+tests/unittests/safetyculture/test_security.py::TestHeaderSecurity::test_sanitize_nested_dict_structure[VERTEX] FAILED [ 63%]
+tests/unittests/safetyculture/test_security.py::TestSecretManagement::test_secret_encryption_at_rest[GOOGLE_AI] PASSED [ 64%]
+tests/unittests/safetyculture/test_security.py::TestSecretManagement::test_secret_encryption_at_rest[VERTEX] PASSED [ 64%]
+tests/unittests/safetyculture/test_security.py::TestSecretManagement::test_secret_audit_logging[GOOGLE_AI] PASSED [ 65%]
+tests/unittests/safetyculture/test_security.py::TestSecretManagement::test_secret_audit_logging[VERTEX] PASSED [ 66%]
+tests/unittests/safetyculture/test_security.py::TestSecretManagement::test_secret_rotation_clears_cache[GOOGLE_AI] PASSED [ 66%]
+tests/unittests/safetyculture/test_security.py::TestSecretManagement::test_secret_rotation_clears_cache[VERTEX] PASSED [ 67%]
+tests/unittests/safetyculture/test_security.py::TestSecretManagement::test_required_secret_raises_error_when_missing[GOOGLE_AI] PASSED [ 68%]
+tests/unittests/safetyculture/test_security.py::TestSecretManagement::test_required_secret_raises_error_when_missing[VERTEX] PASSED [ 68%]
+tests/unittests/safetyculture/test_security.py::TestSecretManagement::test_secret_redaction_for_logging[GOOGLE_AI] PASSED [ 69%]
+tests/unittests/safetyculture/test_security.py::TestSecretManagement::test_secret_redaction_for_logging[VERTEX] PASSED [ 70%]
+tests/unittests/safetyculture/test_security.py::TestSecretManagement::test_secret_type_conversion_int[GOOGLE_AI] PASSED [ 70%]
+tests/unittests/safetyculture/test_security.py::TestSecretManagement::test_secret_type_conversion_int[VERTEX] PASSED [ 71%]
+tests/unittests/safetyculture/test_security.py::TestSecretManagement::test_secret_type_conversion_bool[GOOGLE_AI] PASSED [ 72%]
+tests/unittests/safetyculture/test_security.py::TestSecretManagement::test_secret_type_conversion_bool[VERTEX] PASSED [ 72%]
+tests/unittests/safetyculture/test_security.py::TestRequestSigning::test_request_signature_generation[GOOGLE_AI] PASSED [ 73%]
+tests/unittests/safetyculture/test_security.py::TestRequestSigning::test_request_signature_generation[VERTEX] PASSED [ 74%]
+tests/unittests/safetyculture/test_security.py::TestRequestSigning::test_signature_verification_succeeds_for_valid[GOOGLE_AI] PASSED [ 74%]
+tests/unittests/safetyculture/test_security.py::TestRequestSigning::test_signature_verification_succeeds_for_valid[VERTEX] PASSED [ 75%]
+tests/unittests/safetyculture/test_security.py::TestRequestSigning::test_signature_verification_fails_for_tampering[GOOGLE_AI] PASSED [ 75%]
+tests/unittests/safetyculture/test_security.py::TestRequestSigning::test_signature_verification_fails_for_tampering[VERTEX] PASSED [ 76%]
+tests/unittests/safetyculture/test_security.py::TestRequestSigning::test_replay_attack_prevention[GOOGLE_AI] PASSED [ 77%]
+tests/unittests/safetyculture/test_security.py::TestRequestSigning::test_replay_attack_prevention[VERTEX] PASSED [ 77%]
+tests/unittests/safetyculture/test_security.py::TestRequestSigning::test_signature_includes_request_body[GOOGLE_AI] PASSED [ 78%]
+tests/unittests/safetyculture/test_security.py::TestRequestSigning::test_signature_includes_request_body[VERTEX] PASSED [ 79%]
+tests/unittests/safetyculture/test_security.py::TestRequestSigning::test_future_timestamp_rejected[GOOGLE_AI] PASSED [ 79%]
+tests/unittests/safetyculture/test_security.py::TestRequestSigning::test_future_timestamp_rejected[VERTEX] PASSED [ 80%]
+tests/unittests/safetyculture/test_security.py::TestParameterValidation::test_only_whitelisted_params_allowed[GOOGLE_AI] PASSED [ 81%]
+tests/unittests/safetyculture/test_security.py::TestParameterValidation::test_only_whitelisted_params_allowed[VERTEX] PASSED [ 81%]
+tests/unittests/safetyculture/test_security.py::TestParameterValidation::test_limit_boundary_validation[GOOGLE_AI] PASSED [ 82%]
+tests/unittests/safetyculture/test_security.py::TestParameterValidation::test_limit_boundary_validation[VERTEX] PASSED [ 83%]
+tests/unittests/safetyculture/test_security.py::TestParameterValidation::test_offset_boundary_validation[GOOGLE_AI] PASSED [ 83%]
+tests/unittests/safetyculture/test_security.py::TestParameterValidation::test_offset_boundary_validation[VERTEX] PASSED [ 84%]
+tests/unittests/safetyculture/test_security.py::TestParameterValidation::test_query_length_validation[GOOGLE_AI] PASSED [ 85%]
+tests/unittests/safetyculture/test_security.py::TestParameterValidation::test_query_length_validation[VERTEX] PASSED [ 85%]
+tests/unittests/safetyculture/test_security_integration.py::TestEndToEndSecurity::test_api_client_with_all_security_features[GOOGLE_AI] PASSED [ 86%]
+tests/unittests/safetyculture/test_security_integration.py::TestEndToEndSecurity::test_api_client_with_all_security_features[VERTEX] PASSED [ 87%]
+tests/unittests/safetyculture/test_security_integration.py::TestEndToEndSecurity::test_circuit_breaker_opens_on_failures[GOOGLE_AI] PASSED [ 87%]
+tests/unittests/safetyculture/test_security_integration.py::TestEndToEndSecurity::test_circuit_breaker_opens_on_failures[VERTEX] PASSED [ 88%]
+tests/unittests/safetyculture/test_security_integration.py::TestEndToEndSecurity::test_rate_limiting_protects_api[GOOGLE_AI] PASSED [ 88%]
+tests/unittests/safetyculture/test_security_integration.py::TestEndToEndSecurity::test_rate_limiting_protects_api[VERTEX] PASSED [ 89%]
+tests/unittests/safetyculture/test_security_integration.py::TestEndToEndSecurity::test_https_enforcement_in_production[GOOGLE_AI] PASSED [ 90%]
+tests/unittests/safetyculture/test_security_integration.py::TestEndToEndSecurity::test_https_enforcement_in_production[VERTEX] PASSED [ 90%]
+tests/unittests/safetyculture/test_security_integration.py::TestEndToEndSecurity::test_request_signing_integration[GOOGLE_AI] PASSED [ 91%]
+tests/unittests/safetyculture/test_security_integration.py::TestEndToEndSecurity::test_request_signing_integration[VERTEX] PASSED [ 92%]
+tests/unittests/safetyculture/test_security_integration.py::TestEndToEndSecurity::test_authentication_failure_handling[GOOGLE_AI] PASSED [ 92%]
+tests/unittests/safetyculture/test_security_integration.py::TestEndToEndSecurity::test_authentication_failure_handling[VERTEX] PASSED [ 93%]
+tests/unittests/safetyculture/test_security_integration.py::TestEndToEndSecurity::test_input_validation_prevents_injection[GOOGLE_AI] PASSED [ 94%]
+tests/unittests/safetyculture/test_security_integration.py::TestEndToEndSecurity::test_input_validation_prevents_injection[VERTEX] PASSED [ 94%]
+tests/unittests/safetyculture/test_security_integration.py::TestSecurityHeaders::test_security_headers_present[GOOGLE_AI] PASSED [ 95%]
+tests/unittests/safetyculture/test_security_integration.py::TestSecurityHeaders::test_security_headers_present[VERTEX] PASSED [ 96%]
+tests/unittests/safetyculture/test_security_integration.py::TestCircuitBreakerBehavior::test_circuit_breaker_half_open_state[GOOGLE_AI] PASSED [ 96%]
+tests/unittests/safetyculture/test_security_integration.py::TestCircuitBreakerBehavior::test_circuit_breaker_half_open_state[VERTEX] PASSED [ 97%]
+tests/unittests/safetyculture/test_security_integration.py::TestDataSanitization::test_tokens_not_logged[GOOGLE_AI] PASSED [ 98%]
+tests/unittests/safetyculture/test_security_integration.py::TestDataSanitization::test_tokens_not_logged[VERTEX] PASSED [ 98%]
+tests/unittests/safetyculture/test_security_integration.py::TestDataSanitization::test_error_messages_sanitized[GOOGLE_AI] PASSED [ 99%]
+tests/unittests/safetyculture/test_security_integration.py::TestDataSanitization::test_error_messages_sanitized[VERTEX] PASSED [100%]
+
+================================== FAILURES ===================================
+_ TestDatabaseSecurity.test_sql_injection_prevention_in_field_names[GOOGLE_AI] _
+
+self = <tests.unittests.safetyculture.test_database_security.TestDatabaseSecurity object at 0x000001A8D274CB90>
+repository = <safetyculture_agent.database.asset_repository.AssetRepository object at 0x000001A8D2838690>
+
+    @pytest.mark.asyncio
+    async def test_sql_injection_prevention_in_field_names(self, repository):
+      """Verify SQL injection blocked in field names."""
+      # Try SQL injection in field names
+      malicious_fields = [
+        "status; DROP TABLE asset_inspections; --"
+      ]
+    
+      for field in malicious_fields:
+>       with pytest.raises((SafetyCultureDatabaseError, ValueError)):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE any of (<class 'safetyculture_agent.exceptions.SafetyCultureDatabaseError'>, <class 'ValueError'>)
+
+tests\unittests\safetyculture\test_database_security.py:60: Failed
+__ TestDatabaseSecurity.test_sql_injection_prevention_in_field_names[VERTEX] __
+
+self = <tests.unittests.safetyculture.test_database_security.TestDatabaseSecurity object at 0x000001A8D274CE10>
+repository = <safetyculture_agent.database.asset_repository.AssetRepository object at 0x000001A8D2838CD0>
+
+    @pytest.mark.asyncio
+    async def test_sql_injection_prevention_in_field_names(self, repository):
+      """Verify SQL injection blocked in field names."""
+      # Try SQL injection in field names
+      malicious_fields = [
+        "status; DROP TABLE asset_inspections; --"
+      ]
+    
+      for field in malicious_fields:
+>       with pytest.raises((SafetyCultureDatabaseError, ValueError)):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE any of (<class 'safetyculture_agent.exceptions.SafetyCultureDatabaseError'>, <class 'ValueError'>)
+
+tests\unittests\safetyculture\test_database_security.py:60: Failed
+___________ TestNetworkFailures.test_connection_timeout[GOOGLE_AI] ____________
+
+self = <tests.unittests.safetyculture.test_error_scenarios.TestNetworkFailures object at 0x000001A8D274CF50>
+api_client = <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D27C3CB0>
+
+    @pytest.mark.asyncio
+    async def test_connection_timeout(self, api_client):
+      """Test handling of connection timeouts.
+    
+      Verifies:
+      - Timeout exception is caught
+      - Proper error is raised
+      - System doesn't crash
+      """
+      with patch('aiohttp.ClientSession.request') as mock_request:
+        mock_request.side_effect = asyncio.TimeoutError("Connection timeout")
+    
+        with pytest.raises(SafetyCultureAPIError) as exc_info:
+>         await api_client.search_assets(limit=10)
+
+tests\unittests\safetyculture\test_error_scenarios.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+safetyculture_agent\telemetry\decorators.py:98: in wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:392: in search_assets
+    return await self._make_request('GET', '/assets/search', params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:172: in _make_request
+    return await self.circuit_breaker.call(
+safetyculture_agent\utils\circuit_breaker.py:230: in call
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\telemetry\decorators.py:83: in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:392: in search_assets
+    return await self._make_request('GET', '/assets/search', params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:172: in _make_request
+    return await self.circuit_breaker.call(
+safetyculture_agent\utils\circuit_breaker.py:230: in call
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MagicMock name='request' id='1824597488176'>
+args = ('GET', 'https://api.safetyculture.io/assets/search?limit=10&offset=0')
+kwargs = {'headers': {'Authorization': 'Bearer test_token_1234567890', 'Content-Type': 'application/json', 'User-Agent': 'ADK-SafetyCulture/1.0', 'X-Request-ID': '518cf39e-8116-4679-827a-e9912a1e9cf4', ...}, 'json': None}
+effect = TimeoutError('Connection timeout')
+
+    def _execute_mock_call(self, /, *args, **kwargs):
+        # separate from _increment_mock_call so that awaited functions are
+        # executed separately from their call, also AsyncMock overrides this method
+    
+        effect = self.side_effect
+        if effect is not None:
+            if _is_exception(effect):
+>               raise effect
+E               TimeoutError: Connection timeout
+
+C:\Python313\Lib\unittest\mock.py:1228: TimeoutError
+------------------------------ Captured log call ------------------------------
+ERROR    safetyculture_agent.telemetry.decorators:decorators.py:97 Error in tracing decorator: Connection timeout
+_____________ TestNetworkFailures.test_connection_timeout[VERTEX] _____________
+
+self = <tests.unittests.safetyculture.test_error_scenarios.TestNetworkFailures object at 0x000001A8D274CCD0>
+api_client = <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D283AE90>
+
+    @pytest.mark.asyncio
+    async def test_connection_timeout(self, api_client):
+      """Test handling of connection timeouts.
+    
+      Verifies:
+      - Timeout exception is caught
+      - Proper error is raised
+      - System doesn't crash
+      """
+      with patch('aiohttp.ClientSession.request') as mock_request:
+        mock_request.side_effect = asyncio.TimeoutError("Connection timeout")
+    
+        with pytest.raises(SafetyCultureAPIError) as exc_info:
+>         await api_client.search_assets(limit=10)
+
+tests\unittests\safetyculture\test_error_scenarios.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+safetyculture_agent\telemetry\decorators.py:98: in wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:392: in search_assets
+    return await self._make_request('GET', '/assets/search', params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:172: in _make_request
+    return await self.circuit_breaker.call(
+safetyculture_agent\utils\circuit_breaker.py:230: in call
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\telemetry\decorators.py:83: in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:392: in search_assets
+    return await self._make_request('GET', '/assets/search', params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:172: in _make_request
+    return await self.circuit_breaker.call(
+safetyculture_agent\utils\circuit_breaker.py:230: in call
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MagicMock name='request' id='1824599625744'>
+args = ('GET', 'https://api.safetyculture.io/assets/search?limit=10&offset=0')
+kwargs = {'headers': {'Authorization': 'Bearer test_token_1234567890', 'Content-Type': 'application/json', 'User-Agent': 'ADK-SafetyCulture/1.0', 'X-Request-ID': 'f938ab89-82ec-4989-8509-0d7d63fbaaab', ...}, 'json': None}
+effect = TimeoutError('Connection timeout')
+
+    def _execute_mock_call(self, /, *args, **kwargs):
+        # separate from _increment_mock_call so that awaited functions are
+        # executed separately from their call, also AsyncMock overrides this method
+    
+        effect = self.side_effect
+        if effect is not None:
+            if _is_exception(effect):
+>               raise effect
+E               TimeoutError: Connection timeout
+
+C:\Python313\Lib\unittest\mock.py:1228: TimeoutError
+------------------------------ Captured log call ------------------------------
+ERROR    safetyculture_agent.telemetry.decorators:decorators.py:97 Error in tracing decorator: Connection timeout
+_________ TestNetworkFailures.test_malformed_json_response[GOOGLE_AI] _________
+
+self = <tests.unittests.safetyculture.test_error_scenarios.TestNetworkFailures object at 0x000001A8D276A450>
+api_client = <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D2AC8180>
+
+    @pytest.mark.asyncio
+    async def test_malformed_json_response(self, api_client):
+      """Test handling of malformed API JSON responses.
+    
+      Verifies:
+      - JSON decode errors are caught
+      - Proper error is raised
+      - No data corruption
+      """
+      with patch('aiohttp.ClientSession.request') as mock_request:
+        mock_response = AsyncMock()
+        mock_response.status = 200
+        mock_response.json = AsyncMock(
+          side_effect=json.JSONDecodeError("Invalid JSON", "", 0)
+        )
+        mock_request.return_value.__aenter__.return_value = mock_response
+    
+        with pytest.raises(SafetyCultureAPIError):
+>         await api_client.search_assets(limit=10)
+
+tests\unittests\safetyculture\test_error_scenarios.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+safetyculture_agent\telemetry\decorators.py:98: in wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:392: in search_assets
+    return await self._make_request('GET', '/assets/search', params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:172: in _make_request
+    return await self.circuit_breaker.call(
+safetyculture_agent\utils\circuit_breaker.py:230: in call
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:309: in _make_request_internal
+    return await response.json()
+           ^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:2321: in _execute_mock_call
+    raise effect
+safetyculture_agent\telemetry\decorators.py:83: in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:392: in search_assets
+    return await self._make_request('GET', '/assets/search', params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:172: in _make_request
+    return await self.circuit_breaker.call(
+safetyculture_agent\utils\circuit_breaker.py:230: in call
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:309: in _make_request_internal
+    return await response.json()
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <AsyncMock name='request().__aenter__().json' id='1824599628432'>
+args = (), kwargs = {}, _call = call()
+effect = JSONDecodeError('Invalid JSON: line 1 column 1 (char 0)')
+
+    async def _execute_mock_call(self, /, *args, **kwargs):
+        # This is nearly just like super(), except for special handling
+        # of coroutines
+    
+        _call = _Call((args, kwargs), two=True)
+        self.await_count += 1
+        self.await_args = _call
+        self.await_args_list.append(_call)
+    
+        effect = self.side_effect
+        if effect is not None:
+            if _is_exception(effect):
+>               raise effect
+E               json.decoder.JSONDecodeError: Invalid JSON: line 1 column 1 (char 0)
+
+C:\Python313\Lib\unittest\mock.py:2321: JSONDecodeError
+------------------------------ Captured log call ------------------------------
+ERROR    asyncio:base_events.py:1865 Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x000001A8D2AA0F50>
+ERROR    asyncio:base_events.py:1865 Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x000001A8D2AA0E10>
+ERROR    safetyculture_agent.telemetry.decorators:decorators.py:97 Error in tracing decorator: Invalid JSON: line 1 column 1 (char 0)
+__________ TestNetworkFailures.test_malformed_json_response[VERTEX] ___________
+
+self = <tests.unittests.safetyculture.test_error_scenarios.TestNetworkFailures object at 0x000001A8D2734E20>
+api_client = <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8B05EDFD0>
+
+    @pytest.mark.asyncio
+    async def test_malformed_json_response(self, api_client):
+      """Test handling of malformed API JSON responses.
+    
+      Verifies:
+      - JSON decode errors are caught
+      - Proper error is raised
+      - No data corruption
+      """
+      with patch('aiohttp.ClientSession.request') as mock_request:
+        mock_response = AsyncMock()
+        mock_response.status = 200
+        mock_response.json = AsyncMock(
+          side_effect=json.JSONDecodeError("Invalid JSON", "", 0)
+        )
+        mock_request.return_value.__aenter__.return_value = mock_response
+    
+        with pytest.raises(SafetyCultureAPIError):
+>         await api_client.search_assets(limit=10)
+
+tests\unittests\safetyculture\test_error_scenarios.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+safetyculture_agent\telemetry\decorators.py:98: in wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:392: in search_assets
+    return await self._make_request('GET', '/assets/search', params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:172: in _make_request
+    return await self.circuit_breaker.call(
+safetyculture_agent\utils\circuit_breaker.py:230: in call
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:309: in _make_request_internal
+    return await response.json()
+           ^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:2321: in _execute_mock_call
+    raise effect
+safetyculture_agent\telemetry\decorators.py:83: in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:392: in search_assets
+    return await self._make_request('GET', '/assets/search', params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:172: in _make_request
+    return await self.circuit_breaker.call(
+safetyculture_agent\utils\circuit_breaker.py:230: in call
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:309: in _make_request_internal
+    return await response.json()
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <AsyncMock name='request().__aenter__().json' id='1824597489520'>
+args = (), kwargs = {}, _call = call()
+effect = JSONDecodeError('Invalid JSON: line 1 column 1 (char 0)')
+
+    async def _execute_mock_call(self, /, *args, **kwargs):
+        # This is nearly just like super(), except for special handling
+        # of coroutines
+    
+        _call = _Call((args, kwargs), two=True)
+        self.await_count += 1
+        self.await_args = _call
+        self.await_args_list.append(_call)
+    
+        effect = self.side_effect
+        if effect is not None:
+            if _is_exception(effect):
+>               raise effect
+E               json.decoder.JSONDecodeError: Invalid JSON: line 1 column 1 (char 0)
+
+C:\Python313\Lib\unittest\mock.py:2321: JSONDecodeError
+------------------------------ Captured log call ------------------------------
+ERROR    safetyculture_agent.telemetry.decorators:decorators.py:97 Error in tracing decorator: Invalid JSON: line 1 column 1 (char 0)
+____________ TestNetworkFailures.test_server_500_error[GOOGLE_AI] _____________
+
+self = <tests.unittests.safetyculture.test_error_scenarios.TestNetworkFailures object at 0x000001A8D2735480>
+api_client = <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D29F5480>
+
+    @pytest.mark.asyncio
+    async def test_server_500_error(self, api_client):
+      """Test handling of 500 Internal Server Error.
+    
+      Verifies:
+      - Server errors are caught
+      - Retry logic works
+      - Eventually raises proper error
+      """
+      with patch('aiohttp.ClientSession.request') as mock_request:
+        mock_response = AsyncMock()
+        mock_response.status = 500
+        mock_response.raise_for_status.side_effect = (
+          aiohttp.ClientResponseError(
+            request_info=Mock(),
+            history=(),
+            status=500,
+            message="Internal Server Error"
+          )
+        )
+        mock_request.return_value.__aenter__.return_value = mock_response
+    
+>       with pytest.raises(SafetyCultureAPIError) as exc_info:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'safetyculture_agent.exceptions.SafetyCultureAPIError'>
+
+tests\unittests\safetyculture\test_error_scenarios.py:152: Failed
+______________ TestNetworkFailures.test_server_500_error[VERTEX] ______________
+
+self = <tests.unittests.safetyculture.test_error_scenarios.TestNetworkFailures object at 0x000001A8D2771150>
+api_client = <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D29F5F20>
+
+    @pytest.mark.asyncio
+    async def test_server_500_error(self, api_client):
+      """Test handling of 500 Internal Server Error.
+    
+      Verifies:
+      - Server errors are caught
+      - Retry logic works
+      - Eventually raises proper error
+      """
+      with patch('aiohttp.ClientSession.request') as mock_request:
+        mock_response = AsyncMock()
+        mock_response.status = 500
+        mock_response.raise_for_status.side_effect = (
+          aiohttp.ClientResponseError(
+            request_info=Mock(),
+            history=(),
+            status=500,
+            message="Internal Server Error"
+          )
+        )
+        mock_request.return_value.__aenter__.return_value = mock_response
+    
+>       with pytest.raises(SafetyCultureAPIError) as exc_info:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'safetyculture_agent.exceptions.SafetyCultureAPIError'>
+
+tests\unittests\safetyculture\test_error_scenarios.py:152: Failed
+_ TestCircuitBreakerScenarios.test_circuit_opens_after_threshold_failures[GOOGLE_AI] _
+
+args = (<safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D290F1E0>,)
+kwargs = {'limit': 10}
+manager = <safetyculture_agent.telemetry.telemetry_manager.TelemetryManager object at 0x000001A8C2C0CAD0>
+trace = <module 'opentelemetry.trace' from 'C:\\Users\\jgordon3\\adk-python\\.venv\\Lib\\site-packages\\opentelemetry\\trace\\__init__.py'>
+Status = <class 'opentelemetry.trace.status.Status'>
+StatusCode = <enum 'StatusCode'>
+tracer = <opentelemetry.sdk.trace.Tracer object at 0x000001A8D2D879D0>
+name = 'search_assets'
+span = _Span(name="search_assets", context=SpanContext(trace_id=0x0bc8ddaa29e87ba9db5afb70369d1274, span_id=0x2db048e6d3dee995, trace_flags=0x01, trace_state=[], is_remote=False))
+key = 'operation', value = 'search_assets'
+
+    @functools.wraps(func)
+    async def wrapper(*args: Any, **kwargs: Any) -> Any:
+      manager = get_telemetry_manager()
+      if not manager.is_enabled:
+        return await func(*args, **kwargs)
+    
+      try:
+        from opentelemetry import trace
+        from opentelemetry.trace import Status, StatusCode
+    
+        tracer = manager.get_tracer(__name__)
+        name = span_name or func.__name__
+    
+        with tracer.start_as_current_span(name) as span:
+          # Add custom attributes
+          if attributes:
+            for key, value in attributes.items():
+              span.set_attribute(key, value)
+    
+          # Add function metadata
+          span.set_attribute('function.name', func.__name__)
+          span.set_attribute('function.module', func.__module__)
+    
+          try:
+>           result = await func(*args, **kwargs)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+safetyculture_agent\telemetry\decorators.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+safetyculture_agent\tools\safetyculture_api_client.py:392: in search_assets
+    return await self._make_request('GET', '/assets/search', params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:172: in _make_request
+    return await self.circuit_breaker.call(
+safetyculture_agent\utils\circuit_breaker.py:230: in call
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:336: in _make_request_internal
+    return await self._make_request_internal(
+safetyculture_agent\tools\safetyculture_api_client.py:336: in _make_request_internal
+    return await self._make_request_internal(
+safetyculture_agent\tools\safetyculture_api_client.py:336: in _make_request_internal
+    return await self._make_request_internal(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D290F1E0>
+method = 'GET', endpoint = '/assets/search', params = {'limit': 10, 'offset': 0}
+data = None, retry_count = 3
+
+    async def _make_request_internal(
+        self,
+        method: str,
+        endpoint: str,
+        params: Optional[Dict[str, Any]] = None,
+        data: Optional[Dict[str, Any]] = None,
+        retry_count: int = 0
+    ) -> Dict[str, Any]:
+      """Internal HTTP request implementation with retries.
+    
+      This is the actual implementation that performs the HTTP request.
+      It's wrapped by _make_request which adds circuit breaker protection.
+    
+      Args:
+          method: HTTP method (GET, POST, etc)
+          endpoint: API endpoint path
+          params: Query parameters
+          data: Request body data
+          retry_count: Current retry attempt number
+    
+      Returns:
+          Response data as dictionary
+    
+      Raises:
+          SafetyCultureAPIError: If request fails
+          SafetyCultureAuthError: If authentication fails
+          SafetyCultureRateLimitError: If rate limit exceeded
+          SafetyCultureValidationError: If URL validation fails
+      """
+      await self._ensure_session()
+    
+      # Acquire rate limit token before making request
+      await self.rate_limiter.acquire()
+    
+      # Start timing for metrics
+      start_time = time.perf_counter()
+    
+      # Validate endpoint path
+      safe_endpoint = self.validator.validate_endpoint(endpoint)
+    
+      # Construct and validate full URL
+      full_url = f"{self.config.base_url}{safe_endpoint}"
+      validated_url = self.validator.validate_and_enforce_https(
+        full_url,
+        allow_localhost=False  # Strict HTTPS in production
+      )
+    
+      # Validate and sanitize parameters
+      if params:
+        params = self.validator.validate_params(params)
+    
+      # Get API token securely
+      api_token = await self.config.get_api_token()
+    
+      # Generate secure headers
+      headers = await self.header_manager.get_secure_headers(api_token)
+    
+      # Add request signing if enabled
+      if self.request_signer:
+        try:
+          signing_headers = self.request_signer.sign_request(
+            method=method,
+            url=validated_url,
+            body=data
+          )
+          headers.update(signing_headers)
+          logger.debug(f"Added signature headers to {method} {endpoint}")
+        except Exception as e:
+          sanitized_error = self.header_manager.sanitize_error(e)
+          logger.error(f"Failed to sign request: {sanitized_error}")
+          raise RequestSigningError(
+            f"Request signing failed: {sanitized_error}"
+          ) from e
+    
+      # Use validated URL instead of urljoin
+      url = validated_url
+      if params:
+        # Handle multiple values for same parameter
+        url_params = []
+        for key, value in params.items():
+          if isinstance(value, list):
+            for item in value:
+              url_params.append(f"{key}={item}")
+          else:
+            url_params.append(f"{key}={value}")
+        if url_params:
+          url += '?' + '&'.join(url_params)
+    
+      # Sanitize request data for logging
+      safe_params = self.header_manager.sanitize_for_logging(params)
+      safe_data = self.header_manager.sanitize_for_logging(data)
+      logger.info(
+        f"Making {method} request to {endpoint}",
+        extra={'params': safe_params, 'data': safe_data}
+      )
+    
+      try:
+        if self._session is None:
+          raise SafetyCultureAPIError("Session not initialized")
+    
+        async with self._session.request(
+            method,
+            url,
+            headers=headers,
+            json=data if data else None
+        ) as response:
+          # Record metrics
+          duration = time.perf_counter() - start_time
+          record_api_request(endpoint, method, response.status)
+          record_api_latency(endpoint, method, duration)
+    
+          # Check for rate limit response from server
+          if response.status == 429:
+            retry_after = response.headers.get(
+              'Retry-After',
+              str(DEFAULT_RETRY_AFTER_SECONDS)
+            )
+            record_rate_limit_hit(endpoint)
+            raise SafetyCultureRateLimitError(
+              f"API rate limit exceeded. Retry after {retry_after}s"
+            )
+    
+          if response.status == 401:
+            raise SafetyCultureAuthError(
+              "Authentication failed. Check API token."
+            )
+    
+          response.raise_for_status()
+          return await response.json()
+    
+      except aiohttp.ClientResponseError as e:
+        safe_error = self.header_manager.sanitize_error(e)
+        logger.error(f"HTTP error: {safe_error}")
+    
+        if retry_count < self.config.max_retries:
+          await asyncio.sleep(
+            self.config.retry_delay * (EXPONENTIAL_BACKOFF_BASE ** retry_count)
+          )
+          return await self._make_request_internal(
+              method, endpoint, params, data, retry_count + 1
+          )
+    
+        raise SafetyCultureAPIError(
+          f"API request failed: {safe_error}",
+          status_code=e.status
+        ) from e
+    
+      except aiohttp.ClientError as e:
+        safe_error = self.header_manager.sanitize_error(e)
+        logger.error(f"Network error: {safe_error}")
+    
+        if retry_count < self.config.max_retries:
+          await asyncio.sleep(
+            self.config.retry_delay * (EXPONENTIAL_BACKOFF_BASE ** retry_count)
+          )
+          return await self._make_request_internal(
+              method, endpoint, params, data, retry_count + 1
+          )
+    
+>       raise SafetyCultureAPIError(
+          f"Network error: {safe_error}"
+        ) from e
+E       safetyculture_agent.exceptions.SafetyCultureAPIError: Network error: Network error
+
+safetyculture_agent\tools\safetyculture_api_client.py:340: SafetyCultureAPIError
+
+During handling of the above exception, another exception occurred:
+
+self = <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D290F1E0>
+method = 'GET', endpoint = '/assets/search', params = {'limit': 10, 'offset': 0}
+data = None, retry_count = 3
+
+    async def _make_request_internal(
+        self,
+        method: str,
+        endpoint: str,
+        params: Optional[Dict[str, Any]] = None,
+        data: Optional[Dict[str, Any]] = None,
+        retry_count: int = 0
+    ) -> Dict[str, Any]:
+      """Internal HTTP request implementation with retries.
+    
+      This is the actual implementation that performs the HTTP request.
+      It's wrapped by _make_request which adds circuit breaker protection.
+    
+      Args:
+          method: HTTP method (GET, POST, etc)
+          endpoint: API endpoint path
+          params: Query parameters
+          data: Request body data
+          retry_count: Current retry attempt number
+    
+      Returns:
+          Response data as dictionary
+    
+      Raises:
+          SafetyCultureAPIError: If request fails
+          SafetyCultureAuthError: If authentication fails
+          SafetyCultureRateLimitError: If rate limit exceeded
+          SafetyCultureValidationError: If URL validation fails
+      """
+      await self._ensure_session()
+    
+      # Acquire rate limit token before making request
+      await self.rate_limiter.acquire()
+    
+      # Start timing for metrics
+      start_time = time.perf_counter()
+    
+      # Validate endpoint path
+      safe_endpoint = self.validator.validate_endpoint(endpoint)
+    
+      # Construct and validate full URL
+      full_url = f"{self.config.base_url}{safe_endpoint}"
+      validated_url = self.validator.validate_and_enforce_https(
+        full_url,
+        allow_localhost=False  # Strict HTTPS in production
+      )
+    
+      # Validate and sanitize parameters
+      if params:
+        params = self.validator.validate_params(params)
+    
+      # Get API token securely
+      api_token = await self.config.get_api_token()
+    
+      # Generate secure headers
+      headers = await self.header_manager.get_secure_headers(api_token)
+    
+      # Add request signing if enabled
+      if self.request_signer:
+        try:
+          signing_headers = self.request_signer.sign_request(
+            method=method,
+            url=validated_url,
+            body=data
+          )
+          headers.update(signing_headers)
+          logger.debug(f"Added signature headers to {method} {endpoint}")
+        except Exception as e:
+          sanitized_error = self.header_manager.sanitize_error(e)
+          logger.error(f"Failed to sign request: {sanitized_error}")
+          raise RequestSigningError(
+            f"Request signing failed: {sanitized_error}"
+          ) from e
+    
+      # Use validated URL instead of urljoin
+      url = validated_url
+      if params:
+        # Handle multiple values for same parameter
+        url_params = []
+        for key, value in params.items():
+          if isinstance(value, list):
+            for item in value:
+              url_params.append(f"{key}={item}")
+          else:
+            url_params.append(f"{key}={value}")
+        if url_params:
+          url += '?' + '&'.join(url_params)
+    
+      # Sanitize request data for logging
+      safe_params = self.header_manager.sanitize_for_logging(params)
+      safe_data = self.header_manager.sanitize_for_logging(data)
+      logger.info(
+        f"Making {method} request to {endpoint}",
+        extra={'params': safe_params, 'data': safe_data}
+      )
+    
+      try:
+        if self._session is None:
+          raise SafetyCultureAPIError("Session not initialized")
+    
+>       async with self._session.request(
+            method,
+            url,
+            headers=headers,
+            json=data if data else None
+        ) as response:
+
+safetyculture_agent\tools\safetyculture_api_client.py:281: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MagicMock name='request' id='1824600570720'>
+args = ('GET', 'https://api.safetyculture.io/assets/search?limit=10&offset=0')
+kwargs = {'headers': {'Authorization': 'Bearer test_token_1234567890', 'Content-Type': 'application/json', 'User-Agent': 'ADK-SafetyCulture/1.0', 'X-Request-ID': 'f0ff38aa-a299-4b22-99e1-2c2ef35c7898', ...}, 'json': None}
+effect = ClientError('Network error')
+
+    def _execute_mock_call(self, /, *args, **kwargs):
+        # separate from _increment_mock_call so that awaited functions are
+        # executed separately from their call, also AsyncMock overrides this method
+    
+        effect = self.side_effect
+        if effect is not None:
+            if _is_exception(effect):
+>               raise effect
+E               aiohttp.client_exceptions.ClientError: Network error
+
+C:\Python313\Lib\unittest\mock.py:1228: ClientError
+
+The above exception was the direct cause of the following exception:
+
+args = (<safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D290F1E0>,)
+kwargs = {'limit': 10}
+manager = <safetyculture_agent.telemetry.telemetry_manager.TelemetryManager object at 0x000001A8C2C0CAD0>
+trace = <module 'opentelemetry.trace' from 'C:\\Users\\jgordon3\\adk-python\\.venv\\Lib\\site-packages\\opentelemetry\\trace\\__init__.py'>
+Status = <class 'opentelemetry.trace.status.Status'>
+StatusCode = <enum 'StatusCode'>
+tracer = <opentelemetry.sdk.trace.Tracer object at 0x000001A8D2EC4FD0>
+name = 'search_assets'
+span = _Span(name="search_assets", context=SpanContext(trace_id=0x6b5560fede0746d1908ca3458b3d6de9, span_id=0xcd6352b15ada8617, trace_flags=0x01, trace_state=[], is_remote=False))
+key = 'operation', value = 'search_assets'
+
+    @functools.wraps(func)
+    async def wrapper(*args: Any, **kwargs: Any) -> Any:
+      manager = get_telemetry_manager()
+      if not manager.is_enabled:
+        return await func(*args, **kwargs)
+    
+      try:
+        from opentelemetry import trace
+        from opentelemetry.trace import Status, StatusCode
+    
+        tracer = manager.get_tracer(__name__)
+        name = span_name or func.__name__
+    
+        with tracer.start_as_current_span(name) as span:
+          # Add custom attributes
+          if attributes:
+            for key, value in attributes.items():
+              span.set_attribute(key, value)
+    
+          # Add function metadata
+          span.set_attribute('function.name', func.__name__)
+          span.set_attribute('function.module', func.__module__)
+    
+          try:
+>           result = await func(*args, **kwargs)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+safetyculture_agent\telemetry\decorators.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+safetyculture_agent\tools\safetyculture_api_client.py:392: in search_assets
+    return await self._make_request('GET', '/assets/search', params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:172: in _make_request
+    return await self.circuit_breaker.call(
+safetyculture_agent\utils\circuit_breaker.py:230: in call
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:336: in _make_request_internal
+    return await self._make_request_internal(
+safetyculture_agent\tools\safetyculture_api_client.py:336: in _make_request_internal
+    return await self._make_request_internal(
+safetyculture_agent\tools\safetyculture_api_client.py:336: in _make_request_internal
+    return await self._make_request_internal(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D290F1E0>
+method = 'GET', endpoint = '/assets/search', params = {'limit': 10, 'offset': 0}
+data = None, retry_count = 3
+
+    async def _make_request_internal(
+        self,
+        method: str,
+        endpoint: str,
+        params: Optional[Dict[str, Any]] = None,
+        data: Optional[Dict[str, Any]] = None,
+        retry_count: int = 0
+    ) -> Dict[str, Any]:
+      """Internal HTTP request implementation with retries.
+    
+      This is the actual implementation that performs the HTTP request.
+      It's wrapped by _make_request which adds circuit breaker protection.
+    
+      Args:
+          method: HTTP method (GET, POST, etc)
+          endpoint: API endpoint path
+          params: Query parameters
+          data: Request body data
+          retry_count: Current retry attempt number
+    
+      Returns:
+          Response data as dictionary
+    
+      Raises:
+          SafetyCultureAPIError: If request fails
+          SafetyCultureAuthError: If authentication fails
+          SafetyCultureRateLimitError: If rate limit exceeded
+          SafetyCultureValidationError: If URL validation fails
+      """
+      await self._ensure_session()
+    
+      # Acquire rate limit token before making request
+      await self.rate_limiter.acquire()
+    
+      # Start timing for metrics
+      start_time = time.perf_counter()
+    
+      # Validate endpoint path
+      safe_endpoint = self.validator.validate_endpoint(endpoint)
+    
+      # Construct and validate full URL
+      full_url = f"{self.config.base_url}{safe_endpoint}"
+      validated_url = self.validator.validate_and_enforce_https(
+        full_url,
+        allow_localhost=False  # Strict HTTPS in production
+      )
+    
+      # Validate and sanitize parameters
+      if params:
+        params = self.validator.validate_params(params)
+    
+      # Get API token securely
+      api_token = await self.config.get_api_token()
+    
+      # Generate secure headers
+      headers = await self.header_manager.get_secure_headers(api_token)
+    
+      # Add request signing if enabled
+      if self.request_signer:
+        try:
+          signing_headers = self.request_signer.sign_request(
+            method=method,
+            url=validated_url,
+            body=data
+          )
+          headers.update(signing_headers)
+          logger.debug(f"Added signature headers to {method} {endpoint}")
+        except Exception as e:
+          sanitized_error = self.header_manager.sanitize_error(e)
+          logger.error(f"Failed to sign request: {sanitized_error}")
+          raise RequestSigningError(
+            f"Request signing failed: {sanitized_error}"
+          ) from e
+    
+      # Use validated URL instead of urljoin
+      url = validated_url
+      if params:
+        # Handle multiple values for same parameter
+        url_params = []
+        for key, value in params.items():
+          if isinstance(value, list):
+            for item in value:
+              url_params.append(f"{key}={item}")
+          else:
+            url_params.append(f"{key}={value}")
+        if url_params:
+          url += '?' + '&'.join(url_params)
+    
+      # Sanitize request data for logging
+      safe_params = self.header_manager.sanitize_for_logging(params)
+      safe_data = self.header_manager.sanitize_for_logging(data)
+      logger.info(
+        f"Making {method} request to {endpoint}",
+        extra={'params': safe_params, 'data': safe_data}
+      )
+    
+      try:
+        if self._session is None:
+          raise SafetyCultureAPIError("Session not initialized")
+    
+        async with self._session.request(
+            method,
+            url,
+            headers=headers,
+            json=data if data else None
+        ) as response:
+          # Record metrics
+          duration = time.perf_counter() - start_time
+          record_api_request(endpoint, method, response.status)
+          record_api_latency(endpoint, method, duration)
+    
+          # Check for rate limit response from server
+          if response.status == 429:
+            retry_after = response.headers.get(
+              'Retry-After',
+              str(DEFAULT_RETRY_AFTER_SECONDS)
+            )
+            record_rate_limit_hit(endpoint)
+            raise SafetyCultureRateLimitError(
+              f"API rate limit exceeded. Retry after {retry_after}s"
+            )
+    
+          if response.status == 401:
+            raise SafetyCultureAuthError(
+              "Authentication failed. Check API token."
+            )
+    
+          response.raise_for_status()
+          return await response.json()
+    
+      except aiohttp.ClientResponseError as e:
+        safe_error = self.header_manager.sanitize_error(e)
+        logger.error(f"HTTP error: {safe_error}")
+    
+        if retry_count < self.config.max_retries:
+          await asyncio.sleep(
+            self.config.retry_delay * (EXPONENTIAL_BACKOFF_BASE ** retry_count)
+          )
+          return await self._make_request_internal(
+              method, endpoint, params, data, retry_count + 1
+          )
+    
+        raise SafetyCultureAPIError(
+          f"API request failed: {safe_error}",
+          status_code=e.status
+        ) from e
+    
+      except aiohttp.ClientError as e:
+        safe_error = self.header_manager.sanitize_error(e)
+        logger.error(f"Network error: {safe_error}")
+    
+        if retry_count < self.config.max_retries:
+          await asyncio.sleep(
+            self.config.retry_delay * (EXPONENTIAL_BACKOFF_BASE ** retry_count)
+          )
+          return await self._make_request_internal(
+              method, endpoint, params, data, retry_count + 1
+          )
+    
+>       raise SafetyCultureAPIError(
+          f"Network error: {safe_error}"
+        ) from e
+E       safetyculture_agent.exceptions.SafetyCultureAPIError: Network error: Network error
+
+safetyculture_agent\tools\safetyculture_api_client.py:340: SafetyCultureAPIError
+
+During handling of the above exception, another exception occurred:
+
+self = <tests.unittests.safetyculture.test_error_scenarios.TestCircuitBreakerScenarios object at 0x000001A8D274DD10>
+api_client = <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D290F1E0>
+
+    @pytest.mark.asyncio
+    async def test_circuit_opens_after_threshold_failures(self, api_client):
+      """Test circuit breaker opens after repeated failures.
+    
+      Verifies:
+      - Circuit opens after threshold
+      - Subsequent requests are blocked
+      - Metrics are updated
+      """
+      with patch('aiohttp.ClientSession.request') as mock_request:
+        mock_request.side_effect = aiohttp.ClientError("Network error")
+    
+        # Make requests until circuit opens
+        for i in range(10):
+          try:
+>           await api_client.search_assets(limit=10)
+
+tests\unittests\safetyculture\test_error_scenarios.py:267: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+safetyculture_agent\telemetry\decorators.py:98: in wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:392: in search_assets
+    return await self._make_request('GET', '/assets/search', params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:172: in _make_request
+    return await self.circuit_breaker.call(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <safetyculture_agent.utils.circuit_breaker.CircuitBreaker object at 0x000001A8D290E4E0>
+func = <bound method SafetyCultureAPIClient._make_request_internal of <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D290F1E0>>
+args = ('GET', '/assets/search', {'limit': 10, 'offset': 0}, None, 0)
+kwargs = {}, timeout = 120.0, time_remaining = 119.96016645431519
+
+    async def call(
+        self,
+        func: Callable[..., Any],
+        *args: Any,
+        **kwargs: Any
+    ) -> Any:
+      """Execute function call through circuit breaker.
+    
+      Args:
+          func: Async function to execute
+          *args: Positional arguments for func
+          **kwargs: Keyword arguments for func
+    
+      Returns:
+          Result from func execution
+    
+      Raises:
+          CircuitBreakerOpenError: If circuit is open
+          Exception: Any exception raised by func
+      """
+      async with self._lock:
+        self._total_calls += 1
+    
+        # Check if we should attempt reset from OPEN to HALF_OPEN
+        if self._should_attempt_reset():
+          self._transition_to_half_open()
+    
+        # Reject calls if circuit is open
+        if self._state == CircuitState.OPEN:
+          timeout = self._calculate_timeout()
+          time_remaining = (
+            timeout - (time.time() - self._last_failure_time)
+          )
+>         raise CircuitBreakerOpenError(
+            f"Circuit breaker is OPEN. Retry in {time_remaining:.1f}s "
+            f"(attempt #{self._open_count})"
+          )
+E         safetyculture_agent.utils.circuit_breaker.CircuitBreakerOpenError: Circuit breaker is OPEN. Retry in 120.0s (attempt #1)
+
+safetyculture_agent\utils\circuit_breaker.py:223: CircuitBreakerOpenError
+------------------------------ Captured log call ------------------------------
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.telemetry.decorators:decorators.py:97 Error in tracing decorator: Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.telemetry.decorators:decorators.py:97 Error in tracing decorator: Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+WARNING  safetyculture_agent.utils.circuit_breaker:circuit_breaker.py:134 Circuit breaker OPENED after 5 failures. Timeout: 120.0s (attempt #1)
+ERROR    asyncio:base_events.py:1865 Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x000001A8D2AA02D0>
+ERROR    safetyculture_agent.telemetry.decorators:decorators.py:97 Error in tracing decorator: Network error: Network error
+_ TestCircuitBreakerScenarios.test_circuit_opens_after_threshold_failures[VERTEX] _
+
+args = (<safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D29128D0>,)
+kwargs = {'limit': 10}
+manager = <safetyculture_agent.telemetry.telemetry_manager.TelemetryManager object at 0x000001A8C2C0CAD0>
+trace = <module 'opentelemetry.trace' from 'C:\\Users\\jgordon3\\adk-python\\.venv\\Lib\\site-packages\\opentelemetry\\trace\\__init__.py'>
+Status = <class 'opentelemetry.trace.status.Status'>
+StatusCode = <enum 'StatusCode'>
+tracer = <opentelemetry.sdk.trace.Tracer object at 0x000001A8D2A55650>
+name = 'search_assets'
+span = _Span(name="search_assets", context=SpanContext(trace_id=0xf893b4b5ebb5daaf1adea8913c479cee, span_id=0x5519fa43b0d6012e, trace_flags=0x01, trace_state=[], is_remote=False))
+key = 'operation', value = 'search_assets'
+
+    @functools.wraps(func)
+    async def wrapper(*args: Any, **kwargs: Any) -> Any:
+      manager = get_telemetry_manager()
+      if not manager.is_enabled:
+        return await func(*args, **kwargs)
+    
+      try:
+        from opentelemetry import trace
+        from opentelemetry.trace import Status, StatusCode
+    
+        tracer = manager.get_tracer(__name__)
+        name = span_name or func.__name__
+    
+        with tracer.start_as_current_span(name) as span:
+          # Add custom attributes
+          if attributes:
+            for key, value in attributes.items():
+              span.set_attribute(key, value)
+    
+          # Add function metadata
+          span.set_attribute('function.name', func.__name__)
+          span.set_attribute('function.module', func.__module__)
+    
+          try:
+>           result = await func(*args, **kwargs)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+safetyculture_agent\telemetry\decorators.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+safetyculture_agent\tools\safetyculture_api_client.py:392: in search_assets
+    return await self._make_request('GET', '/assets/search', params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:172: in _make_request
+    return await self.circuit_breaker.call(
+safetyculture_agent\utils\circuit_breaker.py:230: in call
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:336: in _make_request_internal
+    return await self._make_request_internal(
+safetyculture_agent\tools\safetyculture_api_client.py:336: in _make_request_internal
+    return await self._make_request_internal(
+safetyculture_agent\tools\safetyculture_api_client.py:336: in _make_request_internal
+    return await self._make_request_internal(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D29128D0>
+method = 'GET', endpoint = '/assets/search', params = {'limit': 10, 'offset': 0}
+data = None, retry_count = 3
+
+    async def _make_request_internal(
+        self,
+        method: str,
+        endpoint: str,
+        params: Optional[Dict[str, Any]] = None,
+        data: Optional[Dict[str, Any]] = None,
+        retry_count: int = 0
+    ) -> Dict[str, Any]:
+      """Internal HTTP request implementation with retries.
+    
+      This is the actual implementation that performs the HTTP request.
+      It's wrapped by _make_request which adds circuit breaker protection.
+    
+      Args:
+          method: HTTP method (GET, POST, etc)
+          endpoint: API endpoint path
+          params: Query parameters
+          data: Request body data
+          retry_count: Current retry attempt number
+    
+      Returns:
+          Response data as dictionary
+    
+      Raises:
+          SafetyCultureAPIError: If request fails
+          SafetyCultureAuthError: If authentication fails
+          SafetyCultureRateLimitError: If rate limit exceeded
+          SafetyCultureValidationError: If URL validation fails
+      """
+      await self._ensure_session()
+    
+      # Acquire rate limit token before making request
+      await self.rate_limiter.acquire()
+    
+      # Start timing for metrics
+      start_time = time.perf_counter()
+    
+      # Validate endpoint path
+      safe_endpoint = self.validator.validate_endpoint(endpoint)
+    
+      # Construct and validate full URL
+      full_url = f"{self.config.base_url}{safe_endpoint}"
+      validated_url = self.validator.validate_and_enforce_https(
+        full_url,
+        allow_localhost=False  # Strict HTTPS in production
+      )
+    
+      # Validate and sanitize parameters
+      if params:
+        params = self.validator.validate_params(params)
+    
+      # Get API token securely
+      api_token = await self.config.get_api_token()
+    
+      # Generate secure headers
+      headers = await self.header_manager.get_secure_headers(api_token)
+    
+      # Add request signing if enabled
+      if self.request_signer:
+        try:
+          signing_headers = self.request_signer.sign_request(
+            method=method,
+            url=validated_url,
+            body=data
+          )
+          headers.update(signing_headers)
+          logger.debug(f"Added signature headers to {method} {endpoint}")
+        except Exception as e:
+          sanitized_error = self.header_manager.sanitize_error(e)
+          logger.error(f"Failed to sign request: {sanitized_error}")
+          raise RequestSigningError(
+            f"Request signing failed: {sanitized_error}"
+          ) from e
+    
+      # Use validated URL instead of urljoin
+      url = validated_url
+      if params:
+        # Handle multiple values for same parameter
+        url_params = []
+        for key, value in params.items():
+          if isinstance(value, list):
+            for item in value:
+              url_params.append(f"{key}={item}")
+          else:
+            url_params.append(f"{key}={value}")
+        if url_params:
+          url += '?' + '&'.join(url_params)
+    
+      # Sanitize request data for logging
+      safe_params = self.header_manager.sanitize_for_logging(params)
+      safe_data = self.header_manager.sanitize_for_logging(data)
+      logger.info(
+        f"Making {method} request to {endpoint}",
+        extra={'params': safe_params, 'data': safe_data}
+      )
+    
+      try:
+        if self._session is None:
+          raise SafetyCultureAPIError("Session not initialized")
+    
+        async with self._session.request(
+            method,
+            url,
+            headers=headers,
+            json=data if data else None
+        ) as response:
+          # Record metrics
+          duration = time.perf_counter() - start_time
+          record_api_request(endpoint, method, response.status)
+          record_api_latency(endpoint, method, duration)
+    
+          # Check for rate limit response from server
+          if response.status == 429:
+            retry_after = response.headers.get(
+              'Retry-After',
+              str(DEFAULT_RETRY_AFTER_SECONDS)
+            )
+            record_rate_limit_hit(endpoint)
+            raise SafetyCultureRateLimitError(
+              f"API rate limit exceeded. Retry after {retry_after}s"
+            )
+    
+          if response.status == 401:
+            raise SafetyCultureAuthError(
+              "Authentication failed. Check API token."
+            )
+    
+          response.raise_for_status()
+          return await response.json()
+    
+      except aiohttp.ClientResponseError as e:
+        safe_error = self.header_manager.sanitize_error(e)
+        logger.error(f"HTTP error: {safe_error}")
+    
+        if retry_count < self.config.max_retries:
+          await asyncio.sleep(
+            self.config.retry_delay * (EXPONENTIAL_BACKOFF_BASE ** retry_count)
+          )
+          return await self._make_request_internal(
+              method, endpoint, params, data, retry_count + 1
+          )
+    
+        raise SafetyCultureAPIError(
+          f"API request failed: {safe_error}",
+          status_code=e.status
+        ) from e
+    
+      except aiohttp.ClientError as e:
+        safe_error = self.header_manager.sanitize_error(e)
+        logger.error(f"Network error: {safe_error}")
+    
+        if retry_count < self.config.max_retries:
+          await asyncio.sleep(
+            self.config.retry_delay * (EXPONENTIAL_BACKOFF_BASE ** retry_count)
+          )
+          return await self._make_request_internal(
+              method, endpoint, params, data, retry_count + 1
+          )
+    
+>       raise SafetyCultureAPIError(
+          f"Network error: {safe_error}"
+        ) from e
+E       safetyculture_agent.exceptions.SafetyCultureAPIError: Network error: Network error
+
+safetyculture_agent\tools\safetyculture_api_client.py:340: SafetyCultureAPIError
+
+During handling of the above exception, another exception occurred:
+
+self = <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D29128D0>
+method = 'GET', endpoint = '/assets/search', params = {'limit': 10, 'offset': 0}
+data = None, retry_count = 3
+
+    async def _make_request_internal(
+        self,
+        method: str,
+        endpoint: str,
+        params: Optional[Dict[str, Any]] = None,
+        data: Optional[Dict[str, Any]] = None,
+        retry_count: int = 0
+    ) -> Dict[str, Any]:
+      """Internal HTTP request implementation with retries.
+    
+      This is the actual implementation that performs the HTTP request.
+      It's wrapped by _make_request which adds circuit breaker protection.
+    
+      Args:
+          method: HTTP method (GET, POST, etc)
+          endpoint: API endpoint path
+          params: Query parameters
+          data: Request body data
+          retry_count: Current retry attempt number
+    
+      Returns:
+          Response data as dictionary
+    
+      Raises:
+          SafetyCultureAPIError: If request fails
+          SafetyCultureAuthError: If authentication fails
+          SafetyCultureRateLimitError: If rate limit exceeded
+          SafetyCultureValidationError: If URL validation fails
+      """
+      await self._ensure_session()
+    
+      # Acquire rate limit token before making request
+      await self.rate_limiter.acquire()
+    
+      # Start timing for metrics
+      start_time = time.perf_counter()
+    
+      # Validate endpoint path
+      safe_endpoint = self.validator.validate_endpoint(endpoint)
+    
+      # Construct and validate full URL
+      full_url = f"{self.config.base_url}{safe_endpoint}"
+      validated_url = self.validator.validate_and_enforce_https(
+        full_url,
+        allow_localhost=False  # Strict HTTPS in production
+      )
+    
+      # Validate and sanitize parameters
+      if params:
+        params = self.validator.validate_params(params)
+    
+      # Get API token securely
+      api_token = await self.config.get_api_token()
+    
+      # Generate secure headers
+      headers = await self.header_manager.get_secure_headers(api_token)
+    
+      # Add request signing if enabled
+      if self.request_signer:
+        try:
+          signing_headers = self.request_signer.sign_request(
+            method=method,
+            url=validated_url,
+            body=data
+          )
+          headers.update(signing_headers)
+          logger.debug(f"Added signature headers to {method} {endpoint}")
+        except Exception as e:
+          sanitized_error = self.header_manager.sanitize_error(e)
+          logger.error(f"Failed to sign request: {sanitized_error}")
+          raise RequestSigningError(
+            f"Request signing failed: {sanitized_error}"
+          ) from e
+    
+      # Use validated URL instead of urljoin
+      url = validated_url
+      if params:
+        # Handle multiple values for same parameter
+        url_params = []
+        for key, value in params.items():
+          if isinstance(value, list):
+            for item in value:
+              url_params.append(f"{key}={item}")
+          else:
+            url_params.append(f"{key}={value}")
+        if url_params:
+          url += '?' + '&'.join(url_params)
+    
+      # Sanitize request data for logging
+      safe_params = self.header_manager.sanitize_for_logging(params)
+      safe_data = self.header_manager.sanitize_for_logging(data)
+      logger.info(
+        f"Making {method} request to {endpoint}",
+        extra={'params': safe_params, 'data': safe_data}
+      )
+    
+      try:
+        if self._session is None:
+          raise SafetyCultureAPIError("Session not initialized")
+    
+>       async with self._session.request(
+            method,
+            url,
+            headers=headers,
+            json=data if data else None
+        ) as response:
+
+safetyculture_agent\tools\safetyculture_api_client.py:281: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+safetyculture_agent\tools\safetyculture_api_client.py:281: in _make_request_internal
+    async with self._session.request(
+C:\Python313\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python313\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MagicMock name='request' id='1824600561984'>
+args = ('GET', 'https://api.safetyculture.io/assets/search?limit=10&offset=0')
+kwargs = {'headers': {'Authorization': 'Bearer test_token_1234567890', 'Content-Type': 'application/json', 'User-Agent': 'ADK-SafetyCulture/1.0', 'X-Request-ID': '931e9ee4-c254-4d36-b53d-66e51de7513f', ...}, 'json': None}
+effect = ClientError('Network error')
+
+    def _execute_mock_call(self, /, *args, **kwargs):
+        # separate from _increment_mock_call so that awaited functions are
+        # executed separately from their call, also AsyncMock overrides this method
+    
+        effect = self.side_effect
+        if effect is not None:
+            if _is_exception(effect):
+>               raise effect
+E               aiohttp.client_exceptions.ClientError: Network error
+
+C:\Python313\Lib\unittest\mock.py:1228: ClientError
+
+The above exception was the direct cause of the following exception:
+
+args = (<safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D29128D0>,)
+kwargs = {'limit': 10}
+manager = <safetyculture_agent.telemetry.telemetry_manager.TelemetryManager object at 0x000001A8C2C0CAD0>
+trace = <module 'opentelemetry.trace' from 'C:\\Users\\jgordon3\\adk-python\\.venv\\Lib\\site-packages\\opentelemetry\\trace\\__init__.py'>
+Status = <class 'opentelemetry.trace.status.Status'>
+StatusCode = <enum 'StatusCode'>
+tracer = <opentelemetry.sdk.trace.Tracer object at 0x000001A8D2C33C50>
+name = 'search_assets'
+span = _Span(name="search_assets", context=SpanContext(trace_id=0x53f37fb65586f5037c0a9088ff0d834a, span_id=0xead64657cc694650, trace_flags=0x01, trace_state=[], is_remote=False))
+key = 'operation', value = 'search_assets'
+
+    @functools.wraps(func)
+    async def wrapper(*args: Any, **kwargs: Any) -> Any:
+      manager = get_telemetry_manager()
+      if not manager.is_enabled:
+        return await func(*args, **kwargs)
+    
+      try:
+        from opentelemetry import trace
+        from opentelemetry.trace import Status, StatusCode
+    
+        tracer = manager.get_tracer(__name__)
+        name = span_name or func.__name__
+    
+        with tracer.start_as_current_span(name) as span:
+          # Add custom attributes
+          if attributes:
+            for key, value in attributes.items():
+              span.set_attribute(key, value)
+    
+          # Add function metadata
+          span.set_attribute('function.name', func.__name__)
+          span.set_attribute('function.module', func.__module__)
+    
+          try:
+>           result = await func(*args, **kwargs)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+safetyculture_agent\telemetry\decorators.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+safetyculture_agent\tools\safetyculture_api_client.py:392: in search_assets
+    return await self._make_request('GET', '/assets/search', params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:172: in _make_request
+    return await self.circuit_breaker.call(
+safetyculture_agent\utils\circuit_breaker.py:230: in call
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:336: in _make_request_internal
+    return await self._make_request_internal(
+safetyculture_agent\tools\safetyculture_api_client.py:336: in _make_request_internal
+    return await self._make_request_internal(
+safetyculture_agent\tools\safetyculture_api_client.py:336: in _make_request_internal
+    return await self._make_request_internal(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D29128D0>
+method = 'GET', endpoint = '/assets/search', params = {'limit': 10, 'offset': 0}
+data = None, retry_count = 3
+
+    async def _make_request_internal(
+        self,
+        method: str,
+        endpoint: str,
+        params: Optional[Dict[str, Any]] = None,
+        data: Optional[Dict[str, Any]] = None,
+        retry_count: int = 0
+    ) -> Dict[str, Any]:
+      """Internal HTTP request implementation with retries.
+    
+      This is the actual implementation that performs the HTTP request.
+      It's wrapped by _make_request which adds circuit breaker protection.
+    
+      Args:
+          method: HTTP method (GET, POST, etc)
+          endpoint: API endpoint path
+          params: Query parameters
+          data: Request body data
+          retry_count: Current retry attempt number
+    
+      Returns:
+          Response data as dictionary
+    
+      Raises:
+          SafetyCultureAPIError: If request fails
+          SafetyCultureAuthError: If authentication fails
+          SafetyCultureRateLimitError: If rate limit exceeded
+          SafetyCultureValidationError: If URL validation fails
+      """
+      await self._ensure_session()
+    
+      # Acquire rate limit token before making request
+      await self.rate_limiter.acquire()
+    
+      # Start timing for metrics
+      start_time = time.perf_counter()
+    
+      # Validate endpoint path
+      safe_endpoint = self.validator.validate_endpoint(endpoint)
+    
+      # Construct and validate full URL
+      full_url = f"{self.config.base_url}{safe_endpoint}"
+      validated_url = self.validator.validate_and_enforce_https(
+        full_url,
+        allow_localhost=False  # Strict HTTPS in production
+      )
+    
+      # Validate and sanitize parameters
+      if params:
+        params = self.validator.validate_params(params)
+    
+      # Get API token securely
+      api_token = await self.config.get_api_token()
+    
+      # Generate secure headers
+      headers = await self.header_manager.get_secure_headers(api_token)
+    
+      # Add request signing if enabled
+      if self.request_signer:
+        try:
+          signing_headers = self.request_signer.sign_request(
+            method=method,
+            url=validated_url,
+            body=data
+          )
+          headers.update(signing_headers)
+          logger.debug(f"Added signature headers to {method} {endpoint}")
+        except Exception as e:
+          sanitized_error = self.header_manager.sanitize_error(e)
+          logger.error(f"Failed to sign request: {sanitized_error}")
+          raise RequestSigningError(
+            f"Request signing failed: {sanitized_error}"
+          ) from e
+    
+      # Use validated URL instead of urljoin
+      url = validated_url
+      if params:
+        # Handle multiple values for same parameter
+        url_params = []
+        for key, value in params.items():
+          if isinstance(value, list):
+            for item in value:
+              url_params.append(f"{key}={item}")
+          else:
+            url_params.append(f"{key}={value}")
+        if url_params:
+          url += '?' + '&'.join(url_params)
+    
+      # Sanitize request data for logging
+      safe_params = self.header_manager.sanitize_for_logging(params)
+      safe_data = self.header_manager.sanitize_for_logging(data)
+      logger.info(
+        f"Making {method} request to {endpoint}",
+        extra={'params': safe_params, 'data': safe_data}
+      )
+    
+      try:
+        if self._session is None:
+          raise SafetyCultureAPIError("Session not initialized")
+    
+        async with self._session.request(
+            method,
+            url,
+            headers=headers,
+            json=data if data else None
+        ) as response:
+          # Record metrics
+          duration = time.perf_counter() - start_time
+          record_api_request(endpoint, method, response.status)
+          record_api_latency(endpoint, method, duration)
+    
+          # Check for rate limit response from server
+          if response.status == 429:
+            retry_after = response.headers.get(
+              'Retry-After',
+              str(DEFAULT_RETRY_AFTER_SECONDS)
+            )
+            record_rate_limit_hit(endpoint)
+            raise SafetyCultureRateLimitError(
+              f"API rate limit exceeded. Retry after {retry_after}s"
+            )
+    
+          if response.status == 401:
+            raise SafetyCultureAuthError(
+              "Authentication failed. Check API token."
+            )
+    
+          response.raise_for_status()
+          return await response.json()
+    
+      except aiohttp.ClientResponseError as e:
+        safe_error = self.header_manager.sanitize_error(e)
+        logger.error(f"HTTP error: {safe_error}")
+    
+        if retry_count < self.config.max_retries:
+          await asyncio.sleep(
+            self.config.retry_delay * (EXPONENTIAL_BACKOFF_BASE ** retry_count)
+          )
+          return await self._make_request_internal(
+              method, endpoint, params, data, retry_count + 1
+          )
+    
+        raise SafetyCultureAPIError(
+          f"API request failed: {safe_error}",
+          status_code=e.status
+        ) from e
+    
+      except aiohttp.ClientError as e:
+        safe_error = self.header_manager.sanitize_error(e)
+        logger.error(f"Network error: {safe_error}")
+    
+        if retry_count < self.config.max_retries:
+          await asyncio.sleep(
+            self.config.retry_delay * (EXPONENTIAL_BACKOFF_BASE ** retry_count)
+          )
+          return await self._make_request_internal(
+              method, endpoint, params, data, retry_count + 1
+          )
+    
+>       raise SafetyCultureAPIError(
+          f"Network error: {safe_error}"
+        ) from e
+E       safetyculture_agent.exceptions.SafetyCultureAPIError: Network error: Network error
+
+safetyculture_agent\tools\safetyculture_api_client.py:340: SafetyCultureAPIError
+
+During handling of the above exception, another exception occurred:
+
+self = <tests.unittests.safetyculture.test_error_scenarios.TestCircuitBreakerScenarios object at 0x000001A8D274DE50>
+api_client = <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D29128D0>
+
+    @pytest.mark.asyncio
+    async def test_circuit_opens_after_threshold_failures(self, api_client):
+      """Test circuit breaker opens after repeated failures.
+    
+      Verifies:
+      - Circuit opens after threshold
+      - Subsequent requests are blocked
+      - Metrics are updated
+      """
+      with patch('aiohttp.ClientSession.request') as mock_request:
+        mock_request.side_effect = aiohttp.ClientError("Network error")
+    
+        # Make requests until circuit opens
+        for i in range(10):
+          try:
+>           await api_client.search_assets(limit=10)
+
+tests\unittests\safetyculture\test_error_scenarios.py:267: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+safetyculture_agent\telemetry\decorators.py:98: in wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:392: in search_assets
+    return await self._make_request('GET', '/assets/search', params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+safetyculture_agent\tools\safetyculture_api_client.py:172: in _make_request
+    return await self.circuit_breaker.call(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <safetyculture_agent.utils.circuit_breaker.CircuitBreaker object at 0x000001A8D2913950>
+func = <bound method SafetyCultureAPIClient._make_request_internal of <safetyculture_agent.tools.safetyculture_api_client.SafetyCultureAPIClient object at 0x000001A8D29128D0>>
+args = ('GET', '/assets/search', {'limit': 10, 'offset': 0}, None, 0)
+kwargs = {}, timeout = 120.0, time_remaining = 119.95937919616699
+
+    async def call(
+        self,
+        func: Callable[..., Any],
+        *args: Any,
+        **kwargs: Any
+    ) -> Any:
+      """Execute function call through circuit breaker.
+    
+      Args:
+          func: Async function to execute
+          *args: Positional arguments for func
+          **kwargs: Keyword arguments for func
+    
+      Returns:
+          Result from func execution
+    
+      Raises:
+          CircuitBreakerOpenError: If circuit is open
+          Exception: Any exception raised by func
+      """
+      async with self._lock:
+        self._total_calls += 1
+    
+        # Check if we should attempt reset from OPEN to HALF_OPEN
+        if self._should_attempt_reset():
+          self._transition_to_half_open()
+    
+        # Reject calls if circuit is open
+        if self._state == CircuitState.OPEN:
+          timeout = self._calculate_timeout()
+          time_remaining = (
+            timeout - (time.time() - self._last_failure_time)
+          )
+>         raise CircuitBreakerOpenError(
+            f"Circuit breaker is OPEN. Retry in {time_remaining:.1f}s "
+            f"(attempt #{self._open_count})"
+          )
+E         safetyculture_agent.utils.circuit_breaker.CircuitBreakerOpenError: Circuit breaker is OPEN. Retry in 120.0s (attempt #1)
+
+safetyculture_agent\utils\circuit_breaker.py:223: CircuitBreakerOpenError
+------------------------------ Captured log call ------------------------------
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.telemetry.decorators:decorators.py:97 Error in tracing decorator: Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.telemetry.decorators:decorators.py:97 Error in tracing decorator: Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+ERROR    safetyculture_agent.tools.safetyculture_api_client:safetyculture_api_client.py:330 Network error: Network error
+WARNING  safetyculture_agent.utils.circuit_breaker:circuit_breaker.py:134 Circuit breaker OPENED after 5 failures. Timeout: 120.0s (attempt #1)
+ERROR    safetyculture_agent.telemetry.decorators:decorators.py:97 Error in tracing decorator: Network error: Network error
+_________ TestCredentialSecurity.test_token_caching_exists[GOOGLE_AI] _________
+
+self = <tests.unittests.safetyculture.test_security.TestCredentialSecurity object at 0x000001A8D274EAD0>
+
+    @pytest.mark.asyncio
+    async def test_token_caching_exists(self):
+      """Verify tokens are cached in memory."""
+      with patch.dict(os.environ, {'SAFETYCULTURE_API_TOKEN': 'test_token'}):
+        manager = SecureCredentialManager()
+    
+        # Get token
+        token = await manager.get_api_token()
+>       assert token == 'test_token'
+E       AssertionError: assert 'test_token_1234567890' == 'test_token'
+E         
+E         - test_token
+E         + test_token_1234567890
+
+tests\unittests\safetyculture\test_security.py:51: AssertionError
+__________ TestCredentialSecurity.test_token_caching_exists[VERTEX] ___________
+
+self = <tests.unittests.safetyculture.test_security.TestCredentialSecurity object at 0x000001A8D274E5D0>
+
+    @pytest.mark.asyncio
+    async def test_token_caching_exists(self):
+      """Verify tokens are cached in memory."""
+      with patch.dict(os.environ, {'SAFETYCULTURE_API_TOKEN': 'test_token'}):
+        manager = SecureCredentialManager()
+    
+        # Get token
+        token = await manager.get_api_token()
+>       assert token == 'test_token'
+E       AssertionError: assert 'test_token_1234567890' == 'test_token'
+E         
+E         - test_token
+E         + test_token_1234567890
+
+tests\unittests\safetyculture\test_security.py:51: AssertionError
+_____ TestCredentialSecurity.test_token_rotation_updates_cache[GOOGLE_AI] _____
+
+self = <tests.unittests.safetyculture.test_security.TestCredentialSecurity object at 0x000001A8D2790830>
+
+    @pytest.mark.asyncio
+    async def test_token_rotation_updates_cache(self):
+      """Verify token rotation updates cached value."""
+      with patch.dict(os.environ, {'SAFETYCULTURE_API_TOKEN': 'old_token'}):
+        manager = SecureCredentialManager()
+    
+        # Get initial token
+        old_token = await manager.get_api_token()
+>       assert old_token == 'old_token'
+E       AssertionError: assert 'test_token_1234567890' == 'old_token'
+E         
+E         - old_token
+E         + test_token_1234567890
+
+tests\unittests\safetyculture\test_security.py:80: AssertionError
+______ TestCredentialSecurity.test_token_rotation_updates_cache[VERTEX] _______
+
+self = <tests.unittests.safetyculture.test_security.TestCredentialSecurity object at 0x000001A8D2735BF0>
+
+    @pytest.mark.asyncio
+    async def test_token_rotation_updates_cache(self):
+      """Verify token rotation updates cached value."""
+      with patch.dict(os.environ, {'SAFETYCULTURE_API_TOKEN': 'old_token'}):
+        manager = SecureCredentialManager()
+    
+        # Get initial token
+        old_token = await manager.get_api_token()
+>       assert old_token == 'old_token'
+E       AssertionError: assert 'test_token_1234567890' == 'old_token'
+E         
+E         - old_token
+E         + test_token_1234567890
+
+tests\unittests\safetyculture\test_security.py:80: AssertionError
+______ TestCredentialSecurity.test_missing_token_raises_error[GOOGLE_AI] ______
+
+self = <tests.unittests.safetyculture.test_security.TestCredentialSecurity object at 0x000001A8D2771850>
+
+    @pytest.mark.asyncio
+    async def test_missing_token_raises_error(self):
+      """Verify missing token raises appropriate error."""
+      with patch.dict(os.environ, {}, clear=True):
+        manager = SecureCredentialManager()
+    
+>       with pytest.raises(SafetyCultureCredentialError) as exc_info:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'safetyculture_agent.exceptions.SafetyCultureCredentialError'>
+
+tests\unittests\safetyculture\test_security.py:115: Failed
+_______ TestCredentialSecurity.test_missing_token_raises_error[VERTEX] ________
+
+self = <tests.unittests.safetyculture.test_security.TestCredentialSecurity object at 0x000001A8D26DB110>
+
+    @pytest.mark.asyncio
+    async def test_missing_token_raises_error(self):
+      """Verify missing token raises appropriate error."""
+      with patch.dict(os.environ, {}, clear=True):
+        manager = SecureCredentialManager()
+    
+>       with pytest.raises(SafetyCultureCredentialError) as exc_info:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'safetyculture_agent.exceptions.SafetyCultureCredentialError'>
+
+tests\unittests\safetyculture\test_security.py:115: Failed
+__ TestCredentialSecurity.test_token_info_redacts_sensitive_data[GOOGLE_AI] ___
+
+self = <tests.unittests.safetyculture.test_security.TestCredentialSecurity object at 0x000001A8D26DB020>
+
+    @pytest.mark.asyncio
+    async def test_token_info_redacts_sensitive_data(self):
+      """Verify token info shows preview but not full token."""
+      with patch.dict(
+        os.environ,
+        {'SAFETYCULTURE_API_TOKEN': 'test_token_12345'}
+      ):
+        manager = SecureCredentialManager()
+        await manager.get_api_token()
+    
+        info = await manager.get_token_info()
+    
+        assert info['has_token']
+>       assert info['token_length'] == 17
+E       assert 21 == 17
+
+tests\unittests\safetyculture\test_security.py:133: AssertionError
+____ TestCredentialSecurity.test_token_info_redacts_sensitive_data[VERTEX] ____
+
+self = <tests.unittests.safetyculture.test_security.TestCredentialSecurity object at 0x000001A8D2798050>
+
+    @pytest.mark.asyncio
+    async def test_token_info_redacts_sensitive_data(self):
+      """Verify token info shows preview but not full token."""
+      with patch.dict(
+        os.environ,
+        {'SAFETYCULTURE_API_TOKEN': 'test_token_12345'}
+      ):
+        manager = SecureCredentialManager()
+        await manager.get_api_token()
+    
+        info = await manager.get_token_info()
+    
+        assert info['has_token']
+>       assert info['token_length'] == 17
+E       assert 21 == 17
+
+tests\unittests\safetyculture\test_security.py:133: AssertionError
+______ TestHeaderSecurity.test_sanitize_nested_dict_structure[GOOGLE_AI] ______
+
+self = <tests.unittests.safetyculture.test_security.TestHeaderSecurity object at 0x000001A8D2736140>
+
+    def test_sanitize_nested_dict_structure(self):
+      """Verify nested dictionaries are properly sanitized."""
+      manager = SecureHeaderManager()
+    
+      data = {
+        'user': 'john',
+        'auth': {
+          'authorization': 'Bearer secret123',
+          'x-api-key': 'apikey456'
+        },
+        'payload': {
+          'message': 'Hello',
+          'token': 'hidden789'
+        }
+      }
+    
+      sanitized = manager.sanitize_for_logging(data)
+    
+      # Check nested redaction
+      assert sanitized['auth']['authorization'] == '[REDACTED]'
+      assert sanitized['auth']['x-api-key'] == '[REDACTED]'
+>     assert '[REDACTED]' in sanitized['payload']['token']
+E     AssertionError: assert '[REDACTED]' in 'hidden789'
+
+tests\unittests\safetyculture\test_security.py:304: AssertionError
+_______ TestHeaderSecurity.test_sanitize_nested_dict_structure[VERTEX] ________
+
+self = <tests.unittests.safetyculture.test_security.TestHeaderSecurity object at 0x000001A8D2771B50>
+
+    def test_sanitize_nested_dict_structure(self):
+      """Verify nested dictionaries are properly sanitized."""
+      manager = SecureHeaderManager()
+    
+      data = {
+        'user': 'john',
+        'auth': {
+          'authorization': 'Bearer secret123',
+          'x-api-key': 'apikey456'
+        },
+        'payload': {
+          'message': 'Hello',
+          'token': 'hidden789'
+        }
+      }
+    
+      sanitized = manager.sanitize_for_logging(data)
+    
+      # Check nested redaction
+      assert sanitized['auth']['authorization'] == '[REDACTED]'
+      assert sanitized['auth']['x-api-key'] == '[REDACTED]'
+>     assert '[REDACTED]' in sanitized['payload']['token']
+E     AssertionError: assert '[REDACTED]' in 'hidden789'
+
+tests\unittests\safetyculture\test_security.py:304: AssertionError
+Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x000001A8D2AA1310>
+============================== warnings summary ===============================
+tests/unittests/safetyculture/test_error_scenarios.py: 132 warnings
+tests/unittests/safetyculture/test_security.py: 4 warnings
+tests/unittests/safetyculture/test_security_integration.py: 36 warnings
+  C:\Users\jgordon3\adk-python\safetyculture_agent\utils\secure_header_manager.py:103: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    'X-Request-Time': datetime.utcnow().isoformat(),
+
+tests/unittests/safetyculture/test_error_scenarios.py: 6 warnings
+tests/unittests/safetyculture/test_security_integration.py: 12 warnings
+  C:\Users\jgordon3\adk-python\safetyculture_agent\tools\safetyculture_api_client.py:308: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    response.raise_for_status()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_expired_token_handling[GOOGLE_AI]
+tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_expired_token_handling[VERTEX]
+  C:\Users\jgordon3\adk-python\safetyculture_agent\config\credential_manager.py:140: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    async with session.get(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_sql_injection_prevention_in_field_names[GOOGLE_AI]
+FAILED tests/unittests/safetyculture/test_database_security.py::TestDatabaseSecurity::test_sql_injection_prevention_in_field_names[VERTEX]
+FAILED tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_connection_timeout[GOOGLE_AI]
+FAILED tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_connection_timeout[VERTEX]
+FAILED tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_malformed_json_response[GOOGLE_AI]
+FAILED tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_malformed_json_response[VERTEX]
+FAILED tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_server_500_error[GOOGLE_AI]
+FAILED tests/unittests/safetyculture/test_error_scenarios.py::TestNetworkFailures::test_server_500_error[VERTEX]
+FAILED tests/unittests/safetyculture/test_error_scenarios.py::TestCircuitBreakerScenarios::test_circuit_opens_after_threshold_failures[GOOGLE_AI]
+FAILED tests/unittests/safetyculture/test_error_scenarios.py::TestCircuitBreakerScenarios::test_circuit_opens_after_threshold_failures[VERTEX]
+FAILED tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_token_caching_exists[GOOGLE_AI]
+FAILED tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_token_caching_exists[VERTEX]
+FAILED tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_token_rotation_updates_cache[GOOGLE_AI]
+FAILED tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_token_rotation_updates_cache[VERTEX]
+FAILED tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_missing_token_raises_error[GOOGLE_AI]
+FAILED tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_missing_token_raises_error[VERTEX]
+FAILED tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_token_info_redacts_sensitive_data[GOOGLE_AI]
+FAILED tests/unittests/safetyculture/test_security.py::TestCredentialSecurity::test_token_info_redacts_sensitive_data[VERTEX]
+FAILED tests/unittests/safetyculture/test_security.py::TestHeaderSecurity::test_sanitize_nested_dict_structure[GOOGLE_AI]
+FAILED tests/unittests/safetyculture/test_security.py::TestHeaderSecurity::test_sanitize_nested_dict_structure[VERTEX]
+========== 20 failed, 134 passed, 192 warnings in 209.04s (0:03:29) ===========

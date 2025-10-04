@@ -19,7 +19,7 @@ from __future__ import annotations
 import logging
 import re
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 # Secure header constants
@@ -31,9 +31,9 @@ class SecureHeaderManager:
 
   SENSITIVE_HEADERS = {'authorization', 'x-api-key', 'api-token'}
   SENSITIVE_PATTERNS = [
-    r'(authorization["\']?\s*:\s*["\']?)bearer\s+\S+',
-    r'(api[_-]?key["\']?\s*:\s*["\']?)\S+',
-    r'(token["\']?\s*:\s*["\']?)\S+',
+    r'(authorization["\']?\s*[:=]\s*["\']?)bearer\s+\S+',
+    r'(api[_-]?key["\']?\s*[:=]\s*["\']?)\S+',
+    r'(token["\']?\s*[:=]\s*["\']?)\S+',
   ]
 
   def __init__(self):
@@ -53,7 +53,7 @@ class SecureHeaderManager:
 
           # Redact authorization headers
           message = re.sub(
-            r'(authorization["\']?\s*:\s*["\']?)bearer\s+\S+',
+            r'(authorization["\']?\s*[:=]\s*["\']?)bearer\s+\S+',
             r'\1Bearer [REDACTED]',
             message,
             flags=re.IGNORECASE
@@ -61,7 +61,7 @@ class SecureHeaderManager:
 
           # Redact API keys
           message = re.sub(
-            r'(api[_-]?key["\']?\s*:\s*["\']?)\S+',
+            r'(api[_-]?key["\']?\s*[:=]\s*["\']?)\S+',
             r'\1[REDACTED]',
             message,
             flags=re.IGNORECASE
@@ -69,7 +69,7 @@ class SecureHeaderManager:
 
           # Redact tokens
           message = re.sub(
-            rf'(token["\']?\s*:\s*["\']?)\S{{{MIN_TOKEN_LENGTH_FOR_REDACTION},}}',
+            rf'(token["\']?\s*[:=]\s*["\']?)\S{{{MIN_TOKEN_LENGTH_FOR_REDACTION},}}',
             r'\1[REDACTED]',
             message,
             flags=re.IGNORECASE
@@ -100,7 +100,7 @@ class SecureHeaderManager:
       'Content-Type': 'application/json',
       'User-Agent': 'ADK-SafetyCulture/1.0',
       'X-Request-ID': str(uuid.uuid4()),
-      'X-Request-Time': datetime.utcnow().isoformat(),
+      'X-Request-Time': datetime.now(timezone.utc).isoformat(),
     }
 
     # Add extra headers if provided

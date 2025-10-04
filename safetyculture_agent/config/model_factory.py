@@ -186,14 +186,15 @@ class ModelFactory:
     generation_config.update(kwargs.pop('generation_config', {}))
 
     # Build retry options if configured
-    retry_options = None
+    # Note: Google GenAI SDK's HttpRetryOptions only supports 'attempts' and
+    # 'initial_delay' parameters. Other retry configuration fields like
+    # max_delay and exponential_base are not supported in the current SDK.
+    http_options = None
     if model_def.retry and types is not None:
-      retry_options = types.HttpOptions(
-          retry=types.HttpRetryOptions(
-              max_retries=model_def.retry.max_retries,
+      http_options = types.HttpOptions(
+          retry_options=types.HttpRetryOptions(
+              attempts=model_def.retry.max_retries,
               initial_delay=model_def.retry.initial_delay,
-              max_delay=model_def.retry.max_delay,
-              exponential_base=model_def.retry.exponential_base,
           )
       )
 
@@ -203,8 +204,8 @@ class ModelFactory:
         'generation_config': generation_config,
     }
 
-    if retry_options:
-      gemini_kwargs['http_options'] = retry_options
+    if http_options:
+      gemini_kwargs['http_options'] = http_options
 
     # Add any additional kwargs
     gemini_kwargs.update(kwargs)

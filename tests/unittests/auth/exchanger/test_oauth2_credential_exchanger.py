@@ -12,15 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import time
 from unittest.mock import Mock
 from unittest.mock import patch
 
-from authlib.oauth2.rfc6749 import OAuth2Token
-from google.adk.auth.auth_credential import AuthCredential
-from google.adk.auth.auth_credential import AuthCredentialTypes
-from google.adk.auth.auth_credential import OAuth2Auth
-from google.adk.auth.auth_schemes import OpenIdConnectWithConfig
 from google.adk.auth.exchanger.base_credential_exchanger import CredentialExchangError
 from google.adk.auth.exchanger.oauth2_credential_exchanger import OAuth2CredentialExchanger
 import pytest
@@ -30,69 +24,49 @@ class TestOAuth2CredentialExchanger:
   """Test suite for OAuth2CredentialExchanger."""
 
   @pytest.mark.asyncio
-  async def test_exchange_with_existing_token(self):
+  async def test_exchange_with_existing_token(
+      self, oauth2_credential, openid_connect_scheme
+  ):
     """Test exchange method when access token already exists."""
-    scheme = OpenIdConnectWithConfig(
-        type_="openIdConnect",
-        openId_connect_url=(
-            "https://example.com/.well-known/openid_configuration"
-        ),
-        authorization_endpoint="https://example.com/auth",
-        token_endpoint="https://example.com/token",
-        scopes=["openid"],
-    )
-    credential = AuthCredential(
-        auth_type=AuthCredentialTypes.OPEN_ID_CONNECT,
-        oauth2=OAuth2Auth(
-            client_id="test_client_id",
-            client_secret="test_client_secret",
-            access_token="existing_token",
-        ),
-    )
+    oauth2_credential.oauth2.access_token = "existing_token"
 
     exchanger = OAuth2CredentialExchanger()
-    result = await exchanger.exchange(credential, scheme)
+    result = await exchanger.exchange(
+        oauth2_credential, openid_connect_scheme
+    )
 
     # Should return the same credential since access token already exists
-    assert result == credential
+    assert result == oauth2_credential
     assert result.oauth2.access_token == "existing_token"
 
   @patch("google.adk.auth.oauth2_credential_util.OAuth2Session")
   @pytest.mark.asyncio
-  async def test_exchange_success(self, mock_oauth2_session):
+  async def test_exchange_success(
+      self,
+      mock_oauth2_session,
+      oauth2_credential,
+      openid_connect_scheme,
+      oauth2_token_factory,
+  ):
     """Test successful token exchange."""
     # Setup mock
     mock_client = Mock()
     mock_oauth2_session.return_value = mock_client
-    mock_tokens = OAuth2Token({
-        "access_token": "new_access_token",
-        "refresh_token": "new_refresh_token",
-        "expires_at": int(time.time()) + 3600,
-        "expires_in": 3600,
-    })
+    mock_tokens = oauth2_token_factory(
+        access_token="new_access_token",
+        refresh_token="new_refresh_token",
+    )
     mock_client.fetch_token.return_value = mock_tokens
 
-    scheme = OpenIdConnectWithConfig(
-        type_="openIdConnect",
-        openId_connect_url=(
-            "https://example.com/.well-known/openid_configuration"
-        ),
-        authorization_endpoint="https://example.com/auth",
-        token_endpoint="https://example.com/token",
-        scopes=["openid"],
+    oauth2_credential.oauth2.auth_response_uri = (
+        "https://example.com/callback?code=auth_code"
     )
-    credential = AuthCredential(
-        auth_type=AuthCredentialTypes.OPEN_ID_CONNECT,
-        oauth2=OAuth2Auth(
-            client_id="test_client_id",
-            client_secret="test_client_secret",
-            auth_response_uri="https://example.com/callback?code=auth_code",
-            auth_code="auth_code",
-        ),
-    )
+    oauth2_credential.oauth2.auth_code = "auth_code"
 
     exchanger = OAuth2CredentialExchanger()
-    result = await exchanger.exchange(credential, scheme)
+    result = await exchanger.exchange(
+        oauth2_credential, openid_connect_scheme
+    )
 
     # Verify token exchange was successful
     assert result.oauth2.access_token == "new_access_token"
@@ -100,111 +74,71 @@ class TestOAuth2CredentialExchanger:
     mock_client.fetch_token.assert_called_once()
 
   @pytest.mark.asyncio
-  async def test_exchange_missing_auth_scheme(self):
+  async def test_exchange_missing_auth_scheme(self, oauth2_credential):
     """Test exchange with missing auth_scheme raises ValueError."""
-    credential = AuthCredential(
-        auth_type=AuthCredentialTypes.OPEN_ID_CONNECT,
-        oauth2=OAuth2Auth(
-            client_id="test_client_id",
-            client_secret="test_client_secret",
-        ),
-    )
-
     exchanger = OAuth2CredentialExchanger()
     try:
-      await exchanger.exchange(credential, None)
+      await exchanger.exchange(oauth2_credential, None)
       assert False, "Should have raised ValueError"
     except CredentialExchangError as e:
       assert "auth_scheme is required" in str(e)
 
   @patch("google.adk.auth.oauth2_credential_util.OAuth2Session")
   @pytest.mark.asyncio
-  async def test_exchange_no_session(self, mock_oauth2_session):
+  async def test_exchange_no_session(
+      self, mock_oauth2_session, oauth2_credential, openid_connect_scheme
+  ):
     """Test exchange when OAuth2Session cannot be created."""
     # Mock to return None for create_oauth2_session
     mock_oauth2_session.return_value = None
 
-    scheme = OpenIdConnectWithConfig(
-        type_="openIdConnect",
-        openId_connect_url=(
-            "https://example.com/.well-known/openid_configuration"
-        ),
-        authorization_endpoint="https://example.com/auth",
-        token_endpoint="https://example.com/token",
-        scopes=["openid"],
-    )
-    credential = AuthCredential(
-        auth_type=AuthCredentialTypes.OPEN_ID_CONNECT,
-        oauth2=OAuth2Auth(
-            client_id="test_client_id",
-            # Missing client_secret to trigger session creation failure
-        ),
-    )
+    # Missing client_secret to trigger session creation failure
+    oauth2_credential.oauth2.client_secret = None
 
     exchanger = OAuth2CredentialExchanger()
-    result = await exchanger.exchange(credential, scheme)
+    result = await exchanger.exchange(
+        oauth2_credential, openid_connect_scheme
+    )
 
     # Should return original credential when session creation fails
-    assert result == credential
+    assert result == oauth2_credential
     assert result.oauth2.access_token is None
 
   @patch("google.adk.auth.oauth2_credential_util.OAuth2Session")
   @pytest.mark.asyncio
-  async def test_exchange_fetch_token_failure(self, mock_oauth2_session):
+  async def test_exchange_fetch_token_failure(
+      self, mock_oauth2_session, oauth2_credential, openid_connect_scheme
+  ):
     """Test exchange when fetch_token fails."""
     # Setup mock to raise exception during fetch_token
     mock_client = Mock()
     mock_oauth2_session.return_value = mock_client
     mock_client.fetch_token.side_effect = Exception("Token fetch failed")
 
-    scheme = OpenIdConnectWithConfig(
-        type_="openIdConnect",
-        openId_connect_url=(
-            "https://example.com/.well-known/openid_configuration"
-        ),
-        authorization_endpoint="https://example.com/auth",
-        token_endpoint="https://example.com/token",
-        scopes=["openid"],
+    oauth2_credential.oauth2.auth_response_uri = (
+        "https://example.com/callback?code=auth_code"
     )
-    credential = AuthCredential(
-        auth_type=AuthCredentialTypes.OPEN_ID_CONNECT,
-        oauth2=OAuth2Auth(
-            client_id="test_client_id",
-            client_secret="test_client_secret",
-            auth_response_uri="https://example.com/callback?code=auth_code",
-            auth_code="auth_code",
-        ),
-    )
+    oauth2_credential.oauth2.auth_code = "auth_code"
 
     exchanger = OAuth2CredentialExchanger()
-    result = await exchanger.exchange(credential, scheme)
+    result = await exchanger.exchange(
+        oauth2_credential, openid_connect_scheme
+    )
 
     # Should return original credential when fetch_token fails
-    assert result == credential
+    assert result == oauth2_credential
     assert result.oauth2.access_token is None
     mock_client.fetch_token.assert_called_once()
 
   @pytest.mark.asyncio
-  async def test_exchange_authlib_not_available(self):
+  async def test_exchange_authlib_not_available(
+      self, oauth2_credential, openid_connect_scheme
+  ):
     """Test exchange when authlib is not available."""
-    scheme = OpenIdConnectWithConfig(
-        type_="openIdConnect",
-        openId_connect_url=(
-            "https://example.com/.well-known/openid_configuration"
-        ),
-        authorization_endpoint="https://example.com/auth",
-        token_endpoint="https://example.com/token",
-        scopes=["openid"],
+    oauth2_credential.oauth2.auth_response_uri = (
+        "https://example.com/callback?code=auth_code"
     )
-    credential = AuthCredential(
-        auth_type=AuthCredentialTypes.OPEN_ID_CONNECT,
-        oauth2=OAuth2Auth(
-            client_id="test_client_id",
-            client_secret="test_client_secret",
-            auth_response_uri="https://example.com/callback?code=auth_code",
-            auth_code="auth_code",
-        ),
-    )
+    oauth2_credential.oauth2.auth_code = "auth_code"
 
     exchanger = OAuth2CredentialExchanger()
 
@@ -213,8 +147,10 @@ class TestOAuth2CredentialExchanger:
         "google.adk.auth.exchanger.oauth2_credential_exchanger.AUTHLIB_AVAILABLE",
         False,
     ):
-      result = await exchanger.exchange(credential, scheme)
+      result = await exchanger.exchange(
+          oauth2_credential, openid_connect_scheme
+      )
 
     # Should return original credential when authlib is not available
-    assert result == credential
+    assert result == oauth2_credential
     assert result.oauth2.access_token is None

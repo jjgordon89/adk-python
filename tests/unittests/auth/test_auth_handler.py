@@ -81,11 +81,10 @@ class MockOAuth2Session:
     }
 
 
-# Fixtures for common test objects
+# Test-specific fixtures (leveraging shared fixtures from conftest.py)
 @pytest.fixture
 def oauth2_auth_scheme():
-  """Create an OAuth2 auth scheme for testing."""
-  # Create the OAuthFlows object first
+  """OAuth2 auth scheme with specific test endpoints."""
   flows = OAuthFlows(
       authorizationCode=OAuthFlowAuthorizationCode(
           authorizationUrl="https://example.com/oauth2/authorize",
@@ -93,88 +92,54 @@ def oauth2_auth_scheme():
           scopes={"read": "Read access", "write": "Write access"},
       )
   )
-
-  # Then create the OAuth2 object with the flows
   return OAuth2(flows=flows)
 
 
 @pytest.fixture
-def openid_auth_scheme():
-  """Create an OpenID Connect auth scheme for testing."""
-  return OpenIdConnectWithConfig(
-      openIdConnectUrl="https://example.com/.well-known/openid-configuration",
-      authorization_endpoint="https://example.com/oauth2/authorize",
-      token_endpoint="https://example.com/oauth2/token",
-      scopes=["openid", "profile", "email"],
-  )
+def oauth2_credentials(oauth2_credential):
+  """OAuth2 credentials using shared fixture with test-specific values."""
+  cred = oauth2_credential.model_copy(deep=True)
+  cred.oauth2.client_id = "mock_client_id"
+  cred.oauth2.client_secret = "mock_client_secret"
+  return cred
 
 
 @pytest.fixture
-def oauth2_credentials():
-  """Create OAuth2 credentials for testing."""
-  return AuthCredential(
-      auth_type=AuthCredentialTypes.OAUTH2,
-      oauth2=OAuth2Auth(
-          client_id="mock_client_id",
-          client_secret="mock_client_secret",
-          redirect_uri="https://example.com/callback",
-      ),
-  )
+def oauth2_credentials_with_token(oauth2_credentials):
+  """OAuth2 credentials with access and refresh tokens."""
+  cred = oauth2_credentials.model_copy(deep=True)
+  cred.oauth2.access_token = "mock_access_token"
+  cred.oauth2.refresh_token = "mock_refresh_token"
+  return cred
 
 
 @pytest.fixture
-def oauth2_credentials_with_token():
-  """Create OAuth2 credentials with a token for testing."""
-  return AuthCredential(
-      auth_type=AuthCredentialTypes.OAUTH2,
-      oauth2=OAuth2Auth(
-          client_id="mock_client_id",
-          client_secret="mock_client_secret",
-          redirect_uri="https://example.com/callback",
-          access_token="mock_access_token",
-          refresh_token="mock_refresh_token",
-      ),
+def oauth2_credentials_with_auth_uri(oauth2_credentials):
+  """OAuth2 credentials with auth URI and state."""
+  cred = oauth2_credentials.model_copy(deep=True)
+  cred.oauth2.auth_uri = (
+    "https://example.com/oauth2/authorize?"
+    "client_id=mock_client_id&scope=read,write"
   )
+  cred.oauth2.state = "mock_state"
+  return cred
 
 
 @pytest.fixture
-def oauth2_credentials_with_auth_uri():
-  """Create OAuth2 credentials with an auth URI for testing."""
-  return AuthCredential(
-      auth_type=AuthCredentialTypes.OAUTH2,
-      oauth2=OAuth2Auth(
-          client_id="mock_client_id",
-          client_secret="mock_client_secret",
-          redirect_uri="https://example.com/callback",
-          auth_uri="https://example.com/oauth2/authorize?client_id=mock_client_id&scope=read,write",
-          state="mock_state",
-      ),
+def oauth2_credentials_with_auth_code(oauth2_credentials_with_auth_uri):
+  """OAuth2 credentials with auth code and response URI."""
+  cred = oauth2_credentials_with_auth_uri.model_copy(deep=True)
+  cred.oauth2.auth_code = "mock_auth_code"
+  cred.oauth2.auth_response_uri = (
+    "https://example.com/callback?code=mock_auth_code&state=mock_state"
   )
-
-
-@pytest.fixture
-def oauth2_credentials_with_auth_code():
-  """Create OAuth2 credentials with an auth code for testing."""
-  return AuthCredential(
-      auth_type=AuthCredentialTypes.OAUTH2,
-      oauth2=OAuth2Auth(
-          client_id="mock_client_id",
-          client_secret="mock_client_secret",
-          redirect_uri="https://example.com/callback",
-          auth_uri="https://example.com/oauth2/authorize?client_id=mock_client_id&scope=read,write",
-          state="mock_state",
-          auth_code="mock_auth_code",
-          auth_response_uri="https://example.com/callback?code=mock_auth_code&state=mock_state",
-      ),
-  )
+  return cred
 
 
 @pytest.fixture
 def auth_config(oauth2_auth_scheme, oauth2_credentials):
-  """Create an AuthConfig for testing."""
-  # Create a copy of the credentials for the exchanged_auth_credential
+  """AuthConfig with OAuth2 scheme and credentials."""
   exchanged_credential = oauth2_credentials.model_copy(deep=True)
-
   return AuthConfig(
       auth_scheme=oauth2_auth_scheme,
       raw_auth_credential=oauth2_credentials,
@@ -186,7 +151,7 @@ def auth_config(oauth2_auth_scheme, oauth2_credentials):
 def auth_config_with_exchanged(
     oauth2_auth_scheme, oauth2_credentials, oauth2_credentials_with_auth_uri
 ):
-  """Create an AuthConfig with exchanged credentials for testing."""
+  """AuthConfig with exchanged credentials containing auth URI."""
   return AuthConfig(
       auth_scheme=oauth2_auth_scheme,
       raw_auth_credential=oauth2_credentials,
@@ -198,7 +163,7 @@ def auth_config_with_exchanged(
 def auth_config_with_auth_code(
     oauth2_auth_scheme, oauth2_credentials, oauth2_credentials_with_auth_code
 ):
-  """Create an AuthConfig with auth code for testing."""
+  """AuthConfig with exchanged credentials containing auth code."""
   return AuthConfig(
       auth_scheme=oauth2_auth_scheme,
       raw_auth_credential=oauth2_credentials,

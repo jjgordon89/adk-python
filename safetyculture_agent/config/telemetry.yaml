@@ -85,6 +85,36 @@ resource_attributes:
   # cluster: production
 
 # ============================================================================
+# Monitored Metrics
+# ============================================================================
+
+# The following metrics are automatically collected when enabled:
+#
+# API Metrics:
+# - safetyculture.api.requests: Count of API requests by endpoint and status
+# - safetyculture.api.latency: API request latency in seconds
+# - safetyculture.api.errors: Count of API errors by endpoint and error type
+# - safetyculture.api.timeouts: Count of API request timeouts by endpoint
+#
+# Circuit Breaker Metrics:
+# - safetyculture.circuit_breaker.state: Circuit breaker state (0=closed,
+#   1=open, 2=half_open)
+# - safetyculture.circuit_breaker.trips: Count of circuit breaker trips
+# - safetyculture.circuit_breaker.recoveries: Count of circuit breaker
+#   recoveries
+# - safetyculture.circuit_breaker.rejections: Count of rejected calls due to
+#   open circuit
+# - safetyculture.circuit_breaker.successes: Count of successful calls
+# - safetyculture.circuit_breaker.failures: Count of failed calls
+#
+# Database Metrics:
+# - safetyculture.db.queries: Count of database queries by operation type
+# - safetyculture.db.query_duration: Database query duration in seconds
+#
+# Rate Limiting Metrics:
+# - safetyculture.rate_limit.hits: Count of rate limit hits
+
+# ============================================================================
 # Performance Tuning
 # ============================================================================
 
